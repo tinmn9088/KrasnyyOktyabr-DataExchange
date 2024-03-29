@@ -1,0 +1,1 @@
+﻿# KrasnyyOktyabr.JsonTransform
