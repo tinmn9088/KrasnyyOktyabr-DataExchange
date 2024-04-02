@@ -13,12 +13,14 @@ public sealed class JsonStringFormatExpressionFactory(IJsonAbstractExpressionFac
     private static readonly Lazy<JsonSchema> s_jsonSchema = new(() =>
         JsonSchema.FromJsonAsync(@"{
               'type': 'object',
+              'additionalProperties': false,
               'properties': {
                 '" + JsonSchemaPropertyComment + @"': {
                     'type': 'string'
                 },
                 '" + JsonSchemaPropertyStrformat + @"': {
                   'type': 'object',
+                  'additionalProperties': false,
                   'properties': {
                     '" + JsonSchemaPropertyValue + @"': {},
                     '" + JsonSchemaPropertyArgs + @"': {

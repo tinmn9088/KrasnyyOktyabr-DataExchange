@@ -45,6 +45,9 @@ public class JsonStringFormatExpressionFactoryTests
         JObject input = new()
         {
             {
+                JsonSchemaPropertyComment, "TestComment"  
+            },
+            {
                 JsonSchemaPropertyStrformat,
                 new JObject()
                 {
@@ -57,6 +60,32 @@ public class JsonStringFormatExpressionFactoryTests
         bool isMatch = _stringFormatExpressionFactory!.Match(input);
 
         Assert.IsTrue(isMatch);
+    }
+
+    [TestMethod]
+    public void Match_WhenInputWithAdditionalProperties_ShouldReturnFalse()
+    {
+        JObject input = new()
+        {
+            {
+                "AdditionalProperty", null
+            },
+            {
+                JsonSchemaPropertyComment, "TestComment"
+            },
+            {
+                JsonSchemaPropertyStrformat,
+                new JObject()
+                {
+                    { JsonSchemaPropertyValue, null },
+                    { JsonSchemaPropertyArgs, new JArray() },
+                }
+            },
+        };
+
+        bool isMatch = _stringFormatExpressionFactory!.Match(input);
+
+        Assert.IsFalse(isMatch);
     }
 
     [TestMethod]
