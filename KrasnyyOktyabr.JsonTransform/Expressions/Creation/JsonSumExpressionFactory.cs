@@ -1,7 +1,7 @@
 ﻿using KrasnyyOktyabr.JsonTransform.Numerics;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
-using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
+using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonNumberExpressionFactoriesHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
@@ -9,43 +9,18 @@ public sealed class JsonSumExpressionFactory(IJsonAbstractExpressionFactory fact
 {
     public static string JsonSchemaPropertySum => "$sum";
 
-    private static readonly Lazy<JsonSchema> s_jsonSchema = new(() =>
-        JsonSchema.FromJsonAsync(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                    'type': 'string'
-                },
-                '" + JsonSchemaPropertySum + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyLeft + @"': {},
-                    '" + JsonSchemaPropertyRight + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyLeft + @"',
-                    '" + JsonSchemaPropertyRight + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertySum + @"'
-              ]
-            }").Result);
+    private static readonly Lazy<JsonSchema> s_jsonSchema = new(() => BuildJsonSchema(expressionName: JsonSchemaPropertySum).Result);
 
+    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     public SumExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
-
-        JObject instruction = (JObject)input[JsonSchemaPropertySum]!;
-        JToken leftInstruction = instruction[JsonSchemaPropertyLeft]!;
-        JToken rightInstruction = instruction[JsonSchemaPropertyRight]!;
-
-        IExpression<Task<Number>> leftExpression = factory.Create<IExpression<Task<Number>>>(leftInstruction);
-        IExpression<Task<Number>> rightExpression = factory.Create<IExpression<Task<Number>>>(rightInstruction);
+        GetExpressions(
+            input,
+            expressionName: JsonSchemaPropertySum,
+            factory,
+            out IExpression<Task<Number>> leftExpression,
+            out IExpression<Task<Number>> rightExpression);
 
         return new SumExpression(leftExpression, rightExpression);
     }
