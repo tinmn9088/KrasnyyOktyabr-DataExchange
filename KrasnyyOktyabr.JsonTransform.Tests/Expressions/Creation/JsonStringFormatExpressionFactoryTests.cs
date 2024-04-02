@@ -45,7 +45,7 @@ public class JsonStringFormatExpressionFactoryTests
         JObject input = new()
         {
             {
-                JsonSchemaPropertyComment, "TestComment"  
+                JsonSchemaPropertyComment, "TestComment"
             },
             {
                 JsonSchemaPropertyStrformat,
