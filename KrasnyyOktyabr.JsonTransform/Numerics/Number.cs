@@ -14,6 +14,14 @@ public readonly struct Number
         get;
     }
 
+    /// <summary>
+    /// Int 0.
+    /// </summary>
+    public Number()
+    {
+        Int = 0;
+    }
+
     public Number(double value)
     {
         Double = value;
