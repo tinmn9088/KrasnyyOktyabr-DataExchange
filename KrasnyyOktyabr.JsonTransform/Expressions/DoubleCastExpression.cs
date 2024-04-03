@@ -5,23 +5,13 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 /// <summary>
 /// Casts inner expression result to <see cref="double"/> or translates it to <see cref="string"/> and parses.
 /// </summary>
-public sealed class DoubleCastExpression : IExpression<Task<double>>
+public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<double>(innerExpression)
 {
-    private readonly IExpression<Task> _innerExpression;
-
     /// <exception cref="ArgumentNullException"></exception>
-    public DoubleCastExpression(IExpression<Task> innerExpression)
-    {
-        ArgumentNullException.ThrowIfNull(innerExpression);
-
-        _innerExpression = innerExpression;
-    }
-
-    /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="DoubleCastExpressionException"></exception>
-    public async Task<double> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override double Cast(object? innerExpressionTaskResult)
     {
-        object innerExpressionTaskResult = await CastExpressionsHelper.ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken)) ?? throw new NullReferenceException();
+        ArgumentNullException.ThrowIfNull(innerExpressionTaskResult);
 
         if (innerExpressionTaskResult is double doubleResult)
         {
@@ -37,7 +27,7 @@ public sealed class DoubleCastExpression : IExpression<Task<double>>
         }
     }
 
-    public class DoubleCastExpressionException : CastExpressionsHelper.AbstractCastExpressionException
+    public class DoubleCastExpressionException : AbstractCastExpressionException
     {
         internal DoubleCastExpressionException(object? value) : base(value, typeof(double))
         {

@@ -9,13 +9,13 @@ public class DoubleCastExpressionTests
 {
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
-    public void DoubleCastExpression_WhenInnerNull_ShouldThrowArgumentNullException()
+    public void DoubleCastExpression_WhenInnerExpressionNull_ShouldThrowArgumentNullException()
     {
         new DoubleCastExpression(null!);
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
+    [ExpectedException(typeof(ArgumentNullException))]
     public async Task InterpretAsync_WhenInnerExpressionResultNull_ShouldThrowNullReferenceException()
     {
         // Setting up inner expression mock that returns null

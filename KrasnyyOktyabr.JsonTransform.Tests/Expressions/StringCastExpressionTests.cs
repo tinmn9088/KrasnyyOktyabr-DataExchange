@@ -8,13 +8,13 @@ public class StringCastExpressionTests
 {
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
-    public void StringCastExpression_WhenInnerNull_ShouldThrowArgumentNullException()
+    public void StringCastExpression_WhenInnerExpressionNull_ShouldThrowArgumentNullException()
     {
         new StringCastExpression(null!);
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
+    [ExpectedException(typeof(ArgumentNullException))]
     public async Task InterpretAsync_WhenInnerExpressionResultNull_ShouldThrowNullReferenceException()
     {
         // Setting up inner expression mock that returns null

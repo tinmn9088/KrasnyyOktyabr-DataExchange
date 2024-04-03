@@ -5,7 +5,7 @@ public class ObjectCastExpressionTests
 {
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
-    public void ObjectCastExpression_WhenInnerNull_ShouldThrowArgumentNullException()
+    public void ObjectCastExpression_WhenInnerExpressionNull_ShouldThrowArgumentNullException()
     {
         new ObjectCastExpression(null!);
     }

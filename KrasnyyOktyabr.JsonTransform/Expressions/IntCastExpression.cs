@@ -5,23 +5,13 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 /// <summary>
 /// Casts inner expression result to <see cref="int"/> or translates it to <see cref="string"/> and parses.
 /// </summary>
-public sealed class IntCastExpression : IExpression<Task<int>>
+public sealed class IntCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<int>(innerExpression)
 {
-    private readonly IExpression<Task> _innerExpression;
-
     /// <exception cref="ArgumentNullException"></exception>
-    public IntCastExpression(IExpression<Task> innerExpression)
-    {
-        ArgumentNullException.ThrowIfNull(innerExpression);
-
-        _innerExpression = innerExpression;
-    }
-
-    /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="IntCastExpressionException"></exception>
-    public async Task<int> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override int Cast(object? innerExpressionTaskResult)
     {
-        object innerExpressionTaskResult = await CastExpressionsHelper.ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken)) ?? throw new NullReferenceException();
+        ArgumentNullException.ThrowIfNull(innerExpressionTaskResult);
 
         if (innerExpressionTaskResult is int intResult)
         {
@@ -37,7 +27,7 @@ public sealed class IntCastExpression : IExpression<Task<int>>
         }
     }
 
-    public class IntCastExpressionException : CastExpressionsHelper.AbstractCastExpressionException
+    public class IntCastExpressionException : AbstractCastExpressionException
     {
         internal IntCastExpressionException(object? value) : base(value, typeof(int))
         {

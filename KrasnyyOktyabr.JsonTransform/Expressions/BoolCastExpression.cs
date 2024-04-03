@@ -3,23 +3,13 @@
 /// <summary>
 /// Casts inner expression result to <see cref="bool"/> or translates it to <see cref="string"/> and parses.
 /// </summary>
-public sealed class BoolCastExpression : IExpression<Task<bool>>
+public sealed class BoolCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<bool>(innerExpression)
 {
-    private readonly IExpression<Task> _innerExpression;
-
     /// <exception cref="ArgumentNullException"></exception>
-    public BoolCastExpression(IExpression<Task> innerExpression)
-    {
-        ArgumentNullException.ThrowIfNull(innerExpression);
-
-        _innerExpression = innerExpression;
-    }
-
-    /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="BoolCastExpressionException"></exception>
-    public async Task<bool> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override bool Cast(object? innerExpressionTaskResult)
     {
-        object innerExpressionTaskResult = await CastExpressionsHelper.ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken)) ?? throw new NullReferenceException();
+        ArgumentNullException.ThrowIfNull(innerExpressionTaskResult);
 
         if (innerExpressionTaskResult is bool boolResult)
         {
@@ -35,7 +25,7 @@ public sealed class BoolCastExpression : IExpression<Task<bool>>
         }
     }
 
-    public class BoolCastExpressionException : CastExpressionsHelper.AbstractCastExpressionException
+    public class BoolCastExpressionException : AbstractCastExpressionException
     {
         internal BoolCastExpressionException(object? value) : base(value, typeof(bool))
         {
