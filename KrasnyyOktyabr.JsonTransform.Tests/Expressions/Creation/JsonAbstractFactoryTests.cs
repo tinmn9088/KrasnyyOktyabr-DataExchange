@@ -15,40 +15,17 @@ public class JsonAbstractFactoryTests
         get; set;
     }
 
-    private JsonConstExpressionFactory? _constExpressionFactory;
-
-    private JsonExpressionsBlockFactory? _expressionsBlockFactory;
-
     private JsonAbstractExpressionFactory? _abstractFactory;
 
     [TestInitialize]
     public void Initialize()
     {
-        string? testName = TestContext.TestName;
-
-        if (testName != null && SkipTestInitialize(GetType(), testName))
-        {
-            return;
-        }
-
         _abstractFactory = new();
-
-        _constExpressionFactory = new();
-        _expressionsBlockFactory = new(_abstractFactory);
-
-        _abstractFactory.ExpressionFactories = [_constExpressionFactory, _expressionsBlockFactory];
     }
 
     [TestMethod]
-    [SkipTestInitialize]
     public void Create_ShouldReturnExpressionWithoutWrapping()
     {
-        // Setting up abstract expressions factory
-        _abstractFactory = new();
-
-        _constExpressionFactory = new();
-        _expressionsBlockFactory = new(_abstractFactory);
-
         // Setting up expression factory mock
         Mock<IJsonExpressionFactory<IExpression<Task<object?>>>> factoryMock = new();
         Mock<IExpression<Task<object?>>> createdExpressionMock = new();
@@ -59,7 +36,7 @@ public class JsonAbstractFactoryTests
             .Setup(mf => mf.Create(It.IsAny<JToken>()))
             .Returns(createdExpressionMock.Object);
 
-        _abstractFactory.ExpressionFactories = [factoryMock.Object];
+        _abstractFactory!.ExpressionFactories = [factoryMock.Object];
 
         JObject fakeInstruction = new();
 
@@ -91,6 +68,10 @@ public class JsonAbstractFactoryTests
     [ExpectedException(typeof(JsonAbstractExpressionFactory.InvalidExpressionReturnTypeException))]
     public void Create_WhenExpressionReturnTypeInvalid_ShouldThrowInvalidExpressionReturnTypeException()
     {
+        // Setting up abstract expression factory
+        JsonConstExpressionFactory constExpressionFactory = new();
+        _abstractFactory!.ExpressionFactories = [constExpressionFactory];
+
         // Setting up instruction
         JToken testValue = "TestValue";
         JObject objectInstruction = new()
@@ -105,6 +86,10 @@ public class JsonAbstractFactoryTests
     [TestMethod]
     public async Task Create_WhenConstInstruction_ShouldReturnConstExpression()
     {
+        // Setting up abstract expression factory
+        JsonConstExpressionFactory constExpressionFactory = new();
+        _abstractFactory!.ExpressionFactories = [constExpressionFactory];
+
         // Setting up instruction
         JToken testValue = "TestValue";
         JObject instruction = new()
@@ -125,15 +110,8 @@ public class JsonAbstractFactoryTests
     }
 
     [TestMethod]
-    [SkipTestInitialize]
     public void Create_ShouldWrapIntExpressionInNumberCastExpression()
     {
-        // Setting up abstract expressions factory
-        _abstractFactory = new();
-
-        _constExpressionFactory = new();
-        _expressionsBlockFactory = new(_abstractFactory);
-
         // Setting up expression factory mock
         Mock<IJsonExpressionFactory<IExpression<Task<int>>>> factoryMock = new();
         Mock<IExpression<Task<int>>> createdIntExpressionMock = new();
@@ -144,7 +122,7 @@ public class JsonAbstractFactoryTests
             .Setup(mf => mf.Create(It.IsAny<JToken>()))
             .Returns(createdIntExpressionMock.Object);
 
-        _abstractFactory.ExpressionFactories = [factoryMock.Object];
+        _abstractFactory!.ExpressionFactories = [factoryMock.Object];
 
         JObject fakeInstruction = new();
 
@@ -154,15 +132,8 @@ public class JsonAbstractFactoryTests
     }
 
     [TestMethod]
-    [SkipTestInitialize]
     public void Create_ShouldWrapDoubleExpressionInNumberCastExpression()
     {
-        // Setting up abstract expressions factory
-        _abstractFactory = new();
-
-        _constExpressionFactory = new();
-        _expressionsBlockFactory = new(_abstractFactory);
-
         // Setting up expression factory mock
         Mock<IJsonExpressionFactory<IExpression<Task<double>>>> factoryMock = new();
         Mock<IExpression<Task<double>>> createdDoubleExpressionMock = new();
@@ -173,7 +144,7 @@ public class JsonAbstractFactoryTests
             .Setup(mf => mf.Create(It.IsAny<JToken>()))
             .Returns(createdDoubleExpressionMock.Object);
 
-        _abstractFactory.ExpressionFactories = [factoryMock.Object];
+        _abstractFactory!.ExpressionFactories = [factoryMock.Object];
 
         JObject fakeInstruction = new();
 
@@ -183,15 +154,8 @@ public class JsonAbstractFactoryTests
     }
 
     [TestMethod]
-    [SkipTestInitialize]
     public void Create_ShouldWrapInObjectCastExpression()
     {
-        // Setting up abstract expressions factory
-        _abstractFactory = new();
-
-        _constExpressionFactory = new();
-        _expressionsBlockFactory = new(_abstractFactory);
-
         // Setting up expression factory mock
         Mock<IJsonExpressionFactory<IExpression<Task>>> factoryMock = new();
         Mock<IExpression<Task>> createdExpressionMock = new();
@@ -202,12 +166,44 @@ public class JsonAbstractFactoryTests
             .Setup(mf => mf.Create(It.IsAny<JToken>()))
             .Returns(createdExpressionMock.Object);
 
-        _abstractFactory.ExpressionFactories = [factoryMock.Object];
+        _abstractFactory!.ExpressionFactories = [factoryMock.Object];
 
         JObject fakeInstruction = new();
 
         IExpression<Task<object?>> createdExpression = _abstractFactory.Create<IExpression<Task<object?>>>(fakeInstruction);
 
         Assert.IsInstanceOfType(createdExpression, typeof(ObjectCastExpression));
+    }
+
+    /// <summary>
+    /// Solve ((5 - 1) + 3) * 6.
+    /// </summary>
+    [TestMethod]
+    public async Task Create_ShouldCreateComplexExpression()
+    {
+        JsonConstExpressionFactory constExpressionFactory = new();
+        JsonCastExpressionFactory castExpressionFactory = new(_abstractFactory!);
+        JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
+        JsonSubstractExpressionFactory substractExpressionFactory = new(_abstractFactory!);
+        JsonMultiplyExpressionFactory multiplyExpressionFactory = new(_abstractFactory!);
+
+        _abstractFactory!.ExpressionFactories =
+        [
+            constExpressionFactory,
+            castExpressionFactory,
+            sumExpressionFactory,
+            substractExpressionFactory,
+            multiplyExpressionFactory
+        ];
+
+        JObject input = JObject.Parse(GetTestInputInstruction(GetType(), TestContext.TestName ?? throw new NullReferenceException()));
+
+        MultiplyExpression expression = _abstractFactory.Create<MultiplyExpression>(input);
+
+        Number expected = new((5 - 1 + 3) * 6);
+
+        Number actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+
+        Assert.AreEqual(expected, actual);
     }
 }

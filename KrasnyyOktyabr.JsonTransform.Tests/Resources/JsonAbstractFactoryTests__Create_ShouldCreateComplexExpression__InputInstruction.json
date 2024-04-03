@@ -1,0 +1,44 @@
+﻿{
+  "$mul": {
+    "left": {
+      "$sum": {
+        "left": {
+          "$substract": {
+            "left": {
+              "$cast": {
+                "value": {
+                  "$const": 5
+                },
+                "type": "int"
+              }
+            },
+            "right": {
+              "$cast": {
+                "value": {
+                  "$const": 1
+                },
+                "type": "int"
+              }
+            }
+          }
+        },
+        "right": {
+          "$cast": {
+            "value": {
+              "$const": 3
+            },
+            "type": "int"
+          }
+        }
+      }
+    },
+    "right": {
+      "$cast": {
+        "value": {
+          "$const": 6
+        },
+        "type": "int"
+      }
+    }
+  }
+}
