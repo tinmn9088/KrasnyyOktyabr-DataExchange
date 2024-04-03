@@ -1,19 +1,19 @@
 ﻿using KrasnyyOktyabr.JsonTransform.Numerics;
 using Newtonsoft.Json.Linq;
-using NJsonSchema;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public static class JsonNumberExpressionFactoriesHelper
+public abstract class AbstractJsonNumberExpressionFactory<TOut> : AbstractJsonExpressionFactory<TOut> where TOut : IExpression<Task<Number>>
 {
+    private readonly string _expressionName;
+
+    private readonly IJsonAbstractExpressionFactory _factory;
+
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task<JsonSchema> BuildJsonSchema(string expressionName)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(expressionName);
-
-        return await JsonSchema.FromJsonAsync(@"{
+    public AbstractJsonNumberExpressionFactory(string expressionName, IJsonAbstractExpressionFactory factory)
+        : base(@"{
               'type': 'object',
               'additionalProperties': false,
               'properties': {
@@ -36,26 +36,28 @@ public static class JsonNumberExpressionFactoriesHelper
               'required': [
                 '" + expressionName + @"'
               ]
-            }");
+            }")
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(expressionName);
+        ArgumentNullException.ThrowIfNull(factory);
+
+        _expressionName = expressionName;
+        _factory = factory;
     }
 
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static void GetExpressions(
-        JToken input,
-        string expressionName,
-        IJsonAbstractExpressionFactory factory,
-        out IExpression<Task<Number>> leftExpression,
-        out IExpression<Task<Number>> rightExpression)
+    public override TOut Create(JToken input)
     {
         ArgumentNullException.ThrowIfNull(input);
-        ArgumentException.ThrowIfNullOrWhiteSpace(expressionName);
 
-        JObject instruction = (JObject)input[expressionName]!;
+        JObject instruction = (JObject)input[_expressionName]!;
         JToken leftInstruction = instruction[JsonSchemaPropertyLeft]!;
         JToken rightInstruction = instruction[JsonSchemaPropertyRight]!;
 
-        leftExpression = factory.Create<IExpression<Task<Number>>>(leftInstruction);
-        rightExpression = factory.Create<IExpression<Task<Number>>>(rightInstruction);
+        IExpression<Task<Number>> leftExpression = _factory.Create<IExpression<Task<Number>>>(leftInstruction);
+        IExpression<Task<Number>> rightExpression = _factory.Create<IExpression<Task<Number>>>(rightInstruction);
+
+        return CreateExpressionInstance(leftExpression, rightExpression);
     }
+
+    protected abstract TOut CreateExpressionInstance(IExpression<Task<Number>> leftExpression, IExpression<Task<Number>> rightExpression);
 }

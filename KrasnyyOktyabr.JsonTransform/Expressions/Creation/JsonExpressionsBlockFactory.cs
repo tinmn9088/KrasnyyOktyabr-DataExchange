@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json.Linq;
-using NJsonSchema;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory factory) : IJsonExpressionFactory<ExpressionsBlock>
+public sealed class JsonExpressionsBlockFactory : AbstractJsonExpressionFactory<ExpressionsBlock>
 {
-    private static readonly Lazy<JsonSchema> s_jsonSchema = new(() =>
-        JsonSchema.FromJsonAsync(@"{
+    private readonly IJsonAbstractExpressionFactory _factory;
+
+    public JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory factory)
+        : base(@"{
               'type': 'array',
               'items': {
                 'type': {
@@ -16,18 +17,23 @@ public sealed class JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory f
                   ]
                 }
               }
-            }").Result);
+            }")
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+
+        _factory = factory;
+    }
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"><paramref name="input"/> is not <see cref="JArray"/>.</exception>
-    public ExpressionsBlock Create(JToken input)
+    public override ExpressionsBlock Create(JToken input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
         if (input is JArray instructions)
         {
             List<IExpression<Task>> expressions = instructions
-                .Select(factory.Create<IExpression<Task>>)
+                .Select(_factory.Create<IExpression<Task>>)
                 .ToList();
 
             return new ExpressionsBlock(expressions);
@@ -36,10 +42,5 @@ public sealed class JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory f
         {
             throw new ArgumentException($"'{nameof(input)}' must be array");
         }
-    }
-
-    public bool Match(JToken value)
-    {
-        return s_jsonSchema.Value.Validate(value).Count == 0;
     }
 }

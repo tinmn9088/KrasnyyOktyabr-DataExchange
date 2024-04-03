@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using NJsonSchema;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonCastExpressionFactory(IJsonAbstractExpressionFactory factory) : IJsonExpressionFactory<IExpression<Task>>
+public sealed class JsonCastExpressionFactory : AbstractJsonExpressionFactory<IExpression<Task>>
 {
     public enum ReturnType
     {
@@ -18,8 +17,10 @@ public sealed class JsonCastExpressionFactory(IJsonAbstractExpressionFactory fac
 
     public static string JsonSchemaPropertyType => "type";
 
-    private static readonly Lazy<JsonSchema> s_jsonSchema = new(() =>
-        JsonSchema.FromJsonAsync(@"{
+    private readonly IJsonAbstractExpressionFactory _factory;
+
+    public JsonCastExpressionFactory(IJsonAbstractExpressionFactory factory)
+        : base(@"{
               'type': 'object',
               'additionalProperties': false,
               'properties': {
@@ -45,11 +46,16 @@ public sealed class JsonCastExpressionFactory(IJsonAbstractExpressionFactory fac
               'required': [
                 '" + JsonSchemaPropertyCast + @"'
               ]
-            }").Result);
+            }")
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+
+        _factory = factory;
+    }
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
-    public IExpression<Task> Create(JToken input)
+    public override IExpression<Task> Create(JToken input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
@@ -61,7 +67,7 @@ public sealed class JsonCastExpressionFactory(IJsonAbstractExpressionFactory fac
         // No InvalidOperationException because of JSON Schema
         ReturnType returnType = (ReturnType)Enum.Parse(typeof(ReturnType), returnTypeString, ignoreCase: true);
 
-        IExpression<Task> innerExpression = factory.Create<IExpression<Task>>(valueInstruction);
+        IExpression<Task> innerExpression = _factory.Create<IExpression<Task>>(valueInstruction);
 
         return returnType switch
         {
@@ -71,11 +77,6 @@ public sealed class JsonCastExpressionFactory(IJsonAbstractExpressionFactory fac
             ReturnType.String => new StringCastExpression(innerExpression),
             _ => throw new ArgumentException($"Unexpected '{JsonSchemaPropertyType}' value: '{returnTypeString}'"),
         };
-    }
-
-    public bool Match(JToken value)
-    {
-        return s_jsonSchema.Value.Validate(value).Count == 0;
     }
 
     private static string GetPropertyTypeValuesString()

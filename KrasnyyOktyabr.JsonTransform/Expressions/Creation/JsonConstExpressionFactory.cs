@@ -1,16 +1,15 @@
 ﻿using Newtonsoft.Json.Linq;
-using NJsonSchema;
 
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonConstExpressionFactory : IJsonExpressionFactory<ConstExpression>
+public sealed class JsonConstExpressionFactory : AbstractJsonExpressionFactory<ConstExpression>
 {
     public static string JsonSchemaPropertyConst => "$const";
 
-    private static readonly Lazy<JsonSchema> s_jsonSchema = new(() =>
-        JsonSchema.FromJsonAsync(@"{
+    public JsonConstExpressionFactory()
+        : base(@"{
               'type': 'object',
               'additionalProperties': false,
               'properties': {
@@ -22,16 +21,13 @@ public sealed class JsonConstExpressionFactory : IJsonExpressionFactory<ConstExp
               'required': [
                 '" + JsonSchemaPropertyConst + @"'
               ]
-            }").Result);
+            }")
+    {
+    }
 
-    public ConstExpression Create(JToken input)
+    public override ConstExpression Create(JToken input)
     {
         JToken? value = input[JsonSchemaPropertyConst];
         return new ConstExpression(value);
-    }
-
-    public bool Match(JToken value)
-    {
-        return s_jsonSchema.Value.Validate(value).Count == 0;
     }
 }

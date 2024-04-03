@@ -1,17 +1,18 @@
 ﻿using Newtonsoft.Json.Linq;
-using NJsonSchema;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonStringFormatExpressionFactory(IJsonAbstractExpressionFactory factory) : IJsonExpressionFactory<StringFormatExpression>
+public sealed class JsonStringFormatExpressionFactory : AbstractJsonExpressionFactory<StringFormatExpression>
 {
     public static string JsonSchemaPropertyStrformat => "$strformat";
 
     public static string JsonSchemaPropertyArgs => "args";
 
-    private static readonly Lazy<JsonSchema> s_jsonSchema = new(() =>
-        JsonSchema.FromJsonAsync(@"{
+    private readonly IJsonAbstractExpressionFactory _factory;
+
+    public JsonStringFormatExpressionFactory(IJsonAbstractExpressionFactory factory)
+        : base(@"{
               'type': 'object',
               'additionalProperties': false,
               'properties': {
@@ -36,10 +37,15 @@ public sealed class JsonStringFormatExpressionFactory(IJsonAbstractExpressionFac
               'required': [
                 '" + JsonSchemaPropertyStrformat + @"'
               ]
-            }").Result);
+            }")
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+
+        _factory = factory;
+    }
 
     /// <exception cref="ArgumentNullException"></exception>
-    public StringFormatExpression Create(JToken input)
+    public override StringFormatExpression Create(JToken input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
@@ -47,16 +53,11 @@ public sealed class JsonStringFormatExpressionFactory(IJsonAbstractExpressionFac
         JToken valueInstruction = instruction[JsonSchemaPropertyValue]!;
         JArray argInstructions = (JArray)instruction[JsonSchemaPropertyArgs]!; // checked cast, look at JSON Schema
 
-        IExpression<Task<string>> formatExpression = factory.Create<IExpression<Task<string>>>(valueInstruction);
+        IExpression<Task<string>> formatExpression = _factory.Create<IExpression<Task<string>>>(valueInstruction);
         List<IExpression<Task<object?>>> argExpressions = argInstructions
-                .Select(factory.Create<IExpression<Task<object?>>>)
+                .Select(_factory.Create<IExpression<Task<object?>>>)
                 .ToList();
 
         return new StringFormatExpression(formatExpression, argExpressions);
-    }
-
-    public bool Match(JToken value)
-    {
-        return s_jsonSchema.Value.Validate(value).Count == 0;
     }
 }
