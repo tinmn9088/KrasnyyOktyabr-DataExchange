@@ -7,9 +7,9 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 /// </summary>
 public abstract class AbstractBinaryNumberExpression : AbstractExpression<Task<Number>>
 {
-    protected readonly IExpression<Task<Number>> _leftExpression;
+    private readonly IExpression<Task<Number>> _leftExpression;
 
-    protected readonly IExpression<Task<Number>> _rightExpression;
+    private readonly IExpression<Task<Number>> _rightExpression;
 
     /// <exception cref="ArgumentNullException"></exception>
     public AbstractBinaryNumberExpression(IExpression<Task<Number>> leftExpression, IExpression<Task<Number>> rightExpression)
