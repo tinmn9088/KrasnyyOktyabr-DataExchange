@@ -5,7 +5,7 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 /// <summary>
 /// Abstract expression which consumes 2 <see cref="Number"/>'s and produces <see cref="Number"/>.
 /// </summary>
-public abstract class AbstractBinaryNumberExpression : IExpression<Task<Number>>
+public abstract class AbstractBinaryNumberExpression : AbstractExpression<Task<Number>>
 {
     protected readonly IExpression<Task<Number>> _leftExpression;
 
@@ -21,7 +21,7 @@ public abstract class AbstractBinaryNumberExpression : IExpression<Task<Number>>
         _rightExpression = rightExpression;
     }
 
-    public async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         Number left = await _leftExpression.InterpretAsync(context, cancellationToken);
         Number right = await _rightExpression.InterpretAsync(context, cancellationToken);

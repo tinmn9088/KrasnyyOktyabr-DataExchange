@@ -3,7 +3,7 @@
 /// <summary>
 /// Sequence of expressions.
 /// </summary>
-public sealed class ExpressionsBlock : IExpression<Task>
+public sealed class ExpressionsBlock : AbstractExpression<Task>
 {
     private readonly IReadOnlyList<IExpression<Task>> _expressions;
 
@@ -20,7 +20,7 @@ public sealed class ExpressionsBlock : IExpression<Task>
         _expressions = expressions;
     }
 
-    public async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         foreach (IExpression<Task> expression in _expressions)
         {

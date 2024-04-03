@@ -1,6 +1,6 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public abstract class AbstractCastExpression<TOut> : IExpression<Task<TOut>>
+public abstract class AbstractCastExpression<T> : AbstractExpression<Task<T>>
 {
     private readonly IExpression<Task> _innerExpression;
 
@@ -12,14 +12,14 @@ public abstract class AbstractCastExpression<TOut> : IExpression<Task<TOut>>
         _innerExpression = innerExpression;
     }
 
-    public async Task<TOut> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<T> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         object? innerExpressionTaskResult = await ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken));
 
         return Cast(innerExpressionTaskResult);
     }
 
-    public abstract TOut Cast(object? innerExpressionTaskResult);
+    public abstract T Cast(object? innerExpressionTaskResult);
 
     public abstract class AbstractCastExpressionException(object? value, Type castType)
         : Exception($"Cannot cast value '{value}' to '{castType.Name}'")

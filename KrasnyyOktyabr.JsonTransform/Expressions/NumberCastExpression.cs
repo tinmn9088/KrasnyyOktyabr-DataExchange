@@ -5,7 +5,7 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 /// <summary>
 /// Wraps inner expression result to <see cref="Number"/>.
 /// </summary>
-public sealed class NumberCastExpression : IExpression<Task<Number>>
+public sealed class NumberCastExpression : AbstractExpression<Task<Number>>
 {
     private readonly IExpression<Task<int>>? _innerIntExpression;
 
@@ -27,7 +27,7 @@ public sealed class NumberCastExpression : IExpression<Task<Number>>
         _innerDoubleExpression = innerDoubleExpression;
     }
 
-    public async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken)
     {
         if (_innerIntExpression != null)
         {

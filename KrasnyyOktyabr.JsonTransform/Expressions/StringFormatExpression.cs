@@ -3,7 +3,7 @@
 /// <summary>
 /// Runs <see cref="string.Format(string, object?[])"/>.
 /// </summary>
-public sealed class StringFormatExpression : IExpression<Task<string>>
+public sealed class StringFormatExpression : AbstractExpression<Task<string>>
 {
     private readonly IExpression<Task<string>> _formatExpression;
 
@@ -25,7 +25,7 @@ public sealed class StringFormatExpression : IExpression<Task<string>>
     }
 
     /// <exception cref="NullReferenceException"></exception>
-    public async Task<string> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<string> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
