@@ -3,12 +3,9 @@
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
 public sealed class JsonMultiplyExpressionFactory(IJsonAbstractExpressionFactory factory)
-    : AbstractJsonNumberExpressionFactory<MultiplyExpression>(JsonSchemaPropertyMultiply, factory)
+    : AbstractJsonBinaryNumberExpressionFactory<MultiplyExpression>(JsonSchemaPropertyMultiply, factory)
 {
     public static string JsonSchemaPropertyMultiply => "$mul";
 
-    protected override MultiplyExpression CreateExpressionInstance(IExpression<Task<Number>> leftExpression, IExpression<Task<Number>> rightExpression)
-    {
-        return new MultiplyExpression(leftExpression, rightExpression);
-    }
+    protected override MultiplyExpression CreateExpressionInstance(IExpression<Task<Number>> leftExpression, IExpression<Task<Number>> rightExpression) => new(leftExpression, rightExpression);
 }

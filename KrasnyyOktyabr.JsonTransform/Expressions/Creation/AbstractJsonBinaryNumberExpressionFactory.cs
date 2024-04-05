@@ -4,7 +4,7 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public abstract class AbstractJsonNumberExpressionFactory<TOut> : AbstractJsonExpressionFactory<TOut> where TOut : IExpression<Task<Number>>
+public abstract class AbstractJsonBinaryNumberExpressionFactory<TOut> : AbstractJsonExpressionFactory<TOut> where TOut : IExpression<Task<Number>>
 {
     private readonly string _expressionName;
 
@@ -12,7 +12,7 @@ public abstract class AbstractJsonNumberExpressionFactory<TOut> : AbstractJsonEx
 
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public AbstractJsonNumberExpressionFactory(string expressionName, IJsonAbstractExpressionFactory factory)
+    public AbstractJsonBinaryNumberExpressionFactory(string expressionName, IJsonAbstractExpressionFactory factory)
         : base(@"{
               'type': 'object',
               'additionalProperties': false,
