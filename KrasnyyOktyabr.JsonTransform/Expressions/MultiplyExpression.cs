@@ -9,8 +9,8 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 public sealed class MultiplyExpression(IExpression<Task<Number>> leftExpression, IExpression<Task<Number>> rightExpression)
     : AbstractBinaryExpression<Number>(leftExpression, rightExpression)
 {
-    protected override ValueTask<Number> CalculateAsync(Number left, Number right)
+    protected override async ValueTask<Number> CalculateAsync(Func<Task<Number>> getLeft, Func<Task<Number>> getRight)
     {
-        return ValueTask.FromResult(left * right);
+        return await getLeft() * await getRight();
     }
 }

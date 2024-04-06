@@ -18,13 +18,13 @@ public abstract class AbstractBinaryExpression<TLeft, TRight, TResult> : Abstrac
 
     protected override async Task<TResult> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        TLeft left = await _leftExpression.InterpretAsync(context, cancellationToken);
-        TRight right = await _rightExpression.InterpretAsync(context, cancellationToken);
+        Task<TLeft> getLeft() => _leftExpression.InterpretAsync(context, cancellationToken);
+        Task<TRight> getRight() => _rightExpression.InterpretAsync(context, cancellationToken);
 
-        return await CalculateAsync(left, right);
+        return await CalculateAsync(getLeft, getRight);
     }
 
-    protected abstract ValueTask<TResult> CalculateAsync(TLeft left, TRight right);
+    protected abstract ValueTask<TResult> CalculateAsync(Func<Task<TLeft>> getLeft, Func<Task<TRight>> getRight);
 }
 
 public abstract class AbstractBinaryExpression<T>(IExpression<Task<T>> leftExpression, IExpression<Task<T>> rightExpression)

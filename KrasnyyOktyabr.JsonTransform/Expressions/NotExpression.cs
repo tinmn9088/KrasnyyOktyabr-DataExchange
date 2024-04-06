@@ -2,5 +2,5 @@
 
 public sealed class NotExpression(IExpression<Task<bool>> valueExpression) : AbstractUnaryExpression<bool>(valueExpression)
 {
-    protected override ValueTask<bool> Calculate(bool value) => ValueTask.FromResult(!value);
+    protected override async ValueTask<bool> CalculateAsync(Func<Task<bool>> getValue) => !await getValue();
 }

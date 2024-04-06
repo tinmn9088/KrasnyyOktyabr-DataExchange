@@ -5,17 +5,20 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 public class AreEqualExpression(IExpression<Task<object?>> leftExpression, IExpression<Task<object?>> rightExpression)
     : AbstractBinaryExpression<object?, object?, bool>(leftExpression, rightExpression)
 {
-    protected override ValueTask<bool> CalculateAsync(object? left, object? right)
+    protected override async ValueTask<bool> CalculateAsync(Func<Task<object?>> getLeft, Func<Task<object?>> getRight)
     {
+        object? left = await getLeft();
+        object? right = await getRight();
+
         if (left == right)
         {
-            return ValueTask.FromResult(true);
+            return true;
         }
 
         JToken leftToken = FromObject(left);
         JToken rightToken = FromObject(right);
 
-        return ValueTask.FromResult(JToken.DeepEquals(leftToken, rightToken));
+        return JToken.DeepEquals(leftToken, rightToken);
     }
 
     private static JToken FromObject(object? value)
