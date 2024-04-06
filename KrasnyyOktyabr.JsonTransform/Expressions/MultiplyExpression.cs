@@ -6,10 +6,11 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 /// Multiplies 2 numbers.
 /// </summary>
 /// <exception cref="ArgumentNullException"></exception>
-public sealed class MultiplyExpression(IExpression<Task<Number>> leftExpression, IExpression<Task<Number>> rightExpression) : AbstractBinaryNumberExpression(leftExpression, rightExpression)
+public sealed class MultiplyExpression(IExpression<Task<Number>> leftExpression, IExpression<Task<Number>> rightExpression)
+    : AbstractBinaryExpression<Number>(leftExpression, rightExpression)
 {
-    protected override Number Calculate(Number left, Number right)
+    protected override ValueTask<Number> CalculateAsync(Number left, Number right)
     {
-        return left * right;
+        return ValueTask.FromResult(left * right);
     }
 }

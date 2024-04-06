@@ -30,7 +30,7 @@ public abstract class AbstractExpression<T> : IExpression<T> where T : Task
     /// Is wrapped by <see cref="InterpretAsync"/> with try-catch block to wrap all raised exceptions
     /// with <see cref="InterpretException"/>.
     /// </summary>
-    public abstract T InnerInterpretAsync(IContext context, CancellationToken cancellationToken);
+    protected abstract T InnerInterpretAsync(IContext context, CancellationToken cancellationToken);
 
     /// <summary>
     /// Shows where exception was raised using <see cref="Mark"/>.

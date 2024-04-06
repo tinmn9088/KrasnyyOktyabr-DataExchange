@@ -12,7 +12,7 @@ public abstract class AbstractCastExpression<T> : AbstractExpression<Task<T>>
         _innerExpression = innerExpression;
     }
 
-    public override async Task<T> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    protected override async Task<T> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         object? innerExpressionTaskResult = await ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken));
 

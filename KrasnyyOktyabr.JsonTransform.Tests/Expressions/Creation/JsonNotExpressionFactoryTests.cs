@@ -93,7 +93,7 @@ public class JsonNotExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateSumExpression()
+    public void Create_ShouldCreateNotExpression()
     {
         // Setting up value instruction mock
         JObject fakeValueInstruction = new();

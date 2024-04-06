@@ -20,7 +20,7 @@ public sealed class ExpressionsBlock : AbstractExpression<Task>
         _expressions = expressions;
     }
 
-    public override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         foreach (IExpression<Task> expression in _expressions)
         {

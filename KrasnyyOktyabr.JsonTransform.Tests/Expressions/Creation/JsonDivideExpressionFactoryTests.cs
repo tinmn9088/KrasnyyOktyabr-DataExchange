@@ -97,7 +97,7 @@ public class JsonDivideExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateSumExpression()
+    public void Create_ShouldCreateDivideExpression()
     {
         // Setting up left instruction mock
         JObject fakeLeftInstruction = new();

@@ -1,23 +1,22 @@
-﻿using KrasnyyOktyabr.JsonTransform.Numerics;
-using Moq;
+﻿using Moq;
 using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonAreEqualExpressionFactory;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
-using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonMultiplyExpressionFactory;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation.Tests;
 
 [TestClass]
-public class JsonMultiplyExpressionFactoryTests
+public class JsonAreEqualExpressionFactoryTests
 {
     private Mock<IJsonAbstractExpressionFactory>? _abstractFactoryMock;
 
-    private JsonMultiplyExpressionFactory? _multiplyExpressionFactory;
+    private JsonAreEqualExpressionFactory? _areEqualExpressionFactory;
 
     [TestInitialize]
     public void Initialize()
     {
         _abstractFactoryMock = new();
-        _multiplyExpressionFactory = new(_abstractFactoryMock.Object);
+        _areEqualExpressionFactory = new(_abstractFactoryMock.Object);
     }
 
     [TestMethod]
@@ -26,7 +25,7 @@ public class JsonMultiplyExpressionFactoryTests
         JObject input = new()
         {
             {
-                JsonSchemaPropertyMultiply,
+                JsonSchemaPropertyEq,
                 new JObject()
                 {
                     { JsonSchemaPropertyLeft, null },
@@ -35,7 +34,7 @@ public class JsonMultiplyExpressionFactoryTests
             },
         };
 
-        bool isMatch = _multiplyExpressionFactory!.Match(input);
+        bool isMatch = _areEqualExpressionFactory!.Match(input);
 
         Assert.IsTrue(isMatch);
     }
@@ -49,7 +48,7 @@ public class JsonMultiplyExpressionFactoryTests
                 JsonSchemaPropertyComment, "TestComment"
             },
             {
-                JsonSchemaPropertyMultiply,
+                JsonSchemaPropertyEq,
                 new JObject()
                 {
                     { JsonSchemaPropertyLeft, null },
@@ -58,7 +57,7 @@ public class JsonMultiplyExpressionFactoryTests
             },
         };
 
-        bool isMatch = _multiplyExpressionFactory!.Match(input);
+        bool isMatch = _areEqualExpressionFactory!.Match(input);
 
         Assert.IsTrue(isMatch);
     }
@@ -75,7 +74,7 @@ public class JsonMultiplyExpressionFactoryTests
                 JsonSchemaPropertyComment, "TestComment"
             },
             {
-                JsonSchemaPropertyMultiply,
+                JsonSchemaPropertyEq,
                 new JObject()
                 {
                     { JsonSchemaPropertyLeft, null },
@@ -84,7 +83,7 @@ public class JsonMultiplyExpressionFactoryTests
             },
         };
 
-        bool isMatch = _multiplyExpressionFactory!.Match(input);
+        bool isMatch = _areEqualExpressionFactory!.Match(input);
 
         Assert.IsFalse(isMatch);
     }
@@ -93,30 +92,30 @@ public class JsonMultiplyExpressionFactoryTests
     [ExpectedException(typeof(ArgumentNullException))]
     public void Create_WhenInputNull_ShouldThrowArgumentNullException()
     {
-        _multiplyExpressionFactory!.Create(null!);
+        _areEqualExpressionFactory!.Create(null!);
     }
 
     [TestMethod]
-    public void Create_ShouldCreateMultiplyExpression()
+    public void Create_ShouldCreateAreEqualExpression()
     {
         // Setting up left instruction mock
         JObject fakeLeftInstruction = new();
-        Mock<IExpression<Task<Number>>> leftExpressionMock = new();
+        Mock<IExpression<Task<object?>>> leftExpressionMock = new();
         _abstractFactoryMock!
-            .Setup(f => f.Create<IExpression<Task<Number>>>(fakeLeftInstruction))
+            .Setup(f => f.Create<IExpression<Task<object?>>>(fakeLeftInstruction))
             .Returns(leftExpressionMock.Object);
 
         // Setting up right instruction mock
         JObject fakeRightInstruction = new();
-        Mock<IExpression<Task<Number>>> rightExpressionMock = new();
+        Mock<IExpression<Task<object?>>> rightExpressionMock = new();
         _abstractFactoryMock!
-            .Setup(f => f.Create<IExpression<Task<Number>>>(fakeRightInstruction))
+            .Setup(f => f.Create<IExpression<Task<object?>>>(fakeRightInstruction))
             .Returns(rightExpressionMock.Object);
 
         JObject input = new()
         {
             {
-                JsonSchemaPropertyMultiply,
+                JsonSchemaPropertyEq,
                 new JObject()
                 {
                     { JsonSchemaPropertyLeft, fakeLeftInstruction },
@@ -125,11 +124,11 @@ public class JsonMultiplyExpressionFactoryTests
             },
         };
 
-        MultiplyExpression expression = _multiplyExpressionFactory!.Create(input);
+        AreEqualExpression expression = _areEqualExpressionFactory!.Create(input);
 
         Assert.IsNotNull(expression);
-        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<Number>>>(It.Is<JToken>(i => i == fakeLeftInstruction)), Times.Once);
-        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<Number>>>(It.Is<JToken>(i => i == fakeRightInstruction)), Times.Once);
+        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<object?>>>(It.Is<JToken>(i => i == fakeLeftInstruction)), Times.Once);
+        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<object?>>>(It.Is<JToken>(i => i == fakeRightInstruction)), Times.Once);
         _abstractFactoryMock.VerifyNoOtherCalls();
     }
 }

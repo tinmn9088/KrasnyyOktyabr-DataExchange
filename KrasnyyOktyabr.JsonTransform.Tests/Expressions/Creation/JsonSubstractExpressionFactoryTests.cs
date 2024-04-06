@@ -97,7 +97,7 @@ public class JsonSubstractExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateSumExpression()
+    public void Create_ShouldCreateSubstractExpression()
     {
         // Setting up left instruction mock
         JObject fakeLeftInstruction = new();

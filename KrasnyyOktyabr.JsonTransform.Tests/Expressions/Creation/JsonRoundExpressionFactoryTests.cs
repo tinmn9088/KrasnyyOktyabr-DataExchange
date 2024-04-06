@@ -94,7 +94,7 @@ public class JsonRoundExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateSumExpression()
+    public void Create_ShouldCreateRoundExpression()
     {
         // Setting up value instruction mock
         JObject fakeValueInstruction = new();

@@ -26,7 +26,7 @@ public class SumExpressionTests
     }
 
     [TestMethod]
-    public async Task InterpretAsync_ShouldReturnSum()
+    public async Task InterpretAsync_ShouldReturnResult()
     {
         Number leftExpressionResult = new(2);
         Number rightExpressionResult = new(3);

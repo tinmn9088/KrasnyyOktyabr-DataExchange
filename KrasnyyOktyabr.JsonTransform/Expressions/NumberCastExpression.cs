@@ -27,7 +27,7 @@ public sealed class NumberCastExpression : AbstractExpression<Task<Number>>
         _innerDoubleExpression = innerDoubleExpression;
     }
 
-    public override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    protected override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
     {
         if (_innerIntExpression != null)
         {
