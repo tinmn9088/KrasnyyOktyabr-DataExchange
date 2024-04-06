@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Tests;
 
@@ -8,8 +8,7 @@ public class ConstExpressionTests
     [TestMethod]
     public void InterpretAsync_ShouldReturnSameTaskInstance()
     {
-        JObject contextInput = new();
-        Context context = new(contextInput);
+        Context context = GetEmptyExpressionContext();
 
         ConstExpression expression = new(null!);
 

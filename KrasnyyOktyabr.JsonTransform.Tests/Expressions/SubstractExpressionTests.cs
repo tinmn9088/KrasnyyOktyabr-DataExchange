@@ -47,7 +47,7 @@ public class SubstractExpressionTests
 
         Number expected = leftExpressionResult - rightExpressionResult;
 
-        Number actual = await substractExpression.InterpretAsync(GetEmptyExpressionContext(), default);
+        Number actual = await substractExpression.InterpretAsync(GetEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

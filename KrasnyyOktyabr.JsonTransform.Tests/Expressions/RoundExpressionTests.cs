@@ -29,7 +29,7 @@ public class RoundExpressionTests
 
         Number expected = new(2);
 
-        Number actual = await roundExpression.InterpretAsync(GetEmptyExpressionContext(), default);
+        Number actual = await roundExpression.InterpretAsync(GetEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }
