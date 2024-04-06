@@ -1,6 +1,7 @@
 ﻿using KrasnyyOktyabr.JsonTransform.Numerics;
 using Moq;
 using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonAbstractExpressionFactory;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonConstExpressionFactory;
 using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 
@@ -52,7 +53,7 @@ public class JsonAbstractFactoryTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(JsonAbstractExpressionFactory.UnknownInstructionException))]
+    [ExpectedException(typeof(UnknownInstructionException))]
     public void Create_WhenInstructionUnknown_ShouldThrowUnknownExpressionException()
     {
         JObject invalidInstruction = new()
@@ -64,7 +65,7 @@ public class JsonAbstractFactoryTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(JsonAbstractExpressionFactory.InvalidExpressionReturnTypeException))]
+    [ExpectedException(typeof(InvalidExpressionReturnTypeException))]
     public void Create_WhenExpressionReturnTypeInvalid_ShouldThrowInvalidExpressionReturnTypeException()
     {
         // Setting up abstract expression factory

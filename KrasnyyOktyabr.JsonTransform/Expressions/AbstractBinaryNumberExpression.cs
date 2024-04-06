@@ -21,7 +21,7 @@ public abstract class AbstractBinaryNumberExpression : AbstractExpression<Task<N
         _rightExpression = rightExpression;
     }
 
-    public override async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         Number left = await _leftExpression.InterpretAsync(context, cancellationToken);
         Number right = await _rightExpression.InterpretAsync(context, cancellationToken);

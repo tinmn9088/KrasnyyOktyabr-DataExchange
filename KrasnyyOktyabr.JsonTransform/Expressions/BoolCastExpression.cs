@@ -21,13 +21,13 @@ public sealed class BoolCastExpression(IExpression<Task> innerExpression) : Abst
         }
         else
         {
-            throw new BoolCastExpressionException(innerExpressionTaskResult);
+            throw new BoolCastExpressionException(innerExpressionTaskResult, Mark);
         }
     }
 
     public class BoolCastExpressionException : AbstractCastExpressionException
     {
-        internal BoolCastExpressionException(object? value) : base(value, typeof(bool))
+        internal BoolCastExpressionException(object? value, string? mark) : base(value, typeof(bool), mark)
         {
         }
     }

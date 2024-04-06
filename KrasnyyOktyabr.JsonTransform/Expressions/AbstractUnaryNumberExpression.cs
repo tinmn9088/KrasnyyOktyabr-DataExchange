@@ -14,7 +14,7 @@ public abstract class AbstractUnaryNumberExpression : AbstractExpression<Task<Nu
         _valueExpression = valueExpression;
     }
 
-    public override async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         Number value = await _valueExpression.InterpretAsync(context, cancellationToken);
 

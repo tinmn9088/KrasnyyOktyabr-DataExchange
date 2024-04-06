@@ -23,13 +23,13 @@ public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : Ab
         }
         else
         {
-            throw new DoubleCastExpressionException(innerExpressionTaskResult);
+            throw new DoubleCastExpressionException(innerExpressionTaskResult, Mark);
         }
     }
 
     public class DoubleCastExpressionException : AbstractCastExpressionException
     {
-        internal DoubleCastExpressionException(object? value) : base(value, typeof(double))
+        internal DoubleCastExpressionException(object? value, string? mark) : base(value, typeof(double), mark)
         {
         }
     }

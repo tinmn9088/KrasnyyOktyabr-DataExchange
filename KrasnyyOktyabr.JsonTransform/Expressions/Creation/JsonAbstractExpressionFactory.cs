@@ -1,5 +1,6 @@
 ﻿using KrasnyyOktyabr.JsonTransform.Numerics;
 using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.JsonTransform.ExceptionsHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
@@ -41,6 +42,9 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
 
         IExpression<Task> uncheckedExpression = expressionFactory.Create(instruction);
 
+        // Mark expression before return
+        uncheckedExpression.Mark = instruction.Path;
+
         if (uncheckedExpression is TOut checkedExpression)
         {
             return checkedExpression;
@@ -62,7 +66,7 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
             return (TOut)(object)new ObjectCastExpression(uncheckedExpression);
         }
 
-        throw new InvalidExpressionReturnTypeException(typeof(TOut), uncheckedExpression.GetType());
+        throw new InvalidExpressionReturnTypeException(instruction, typeof(TOut), uncheckedExpression.GetType());
     }
 
     /// <exception cref="ArgumentNullException"></exception>
@@ -84,14 +88,14 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
 
     public class UnknownInstructionException : Exception
     {
-        internal UnknownInstructionException(JToken value) : base(value.ToString())
+        internal UnknownInstructionException(JToken value) : base($"At '{value.Path}': '{value.ToString(Newtonsoft.Json.Formatting.None)}'")
         {
         }
     }
 
     public class InvalidExpressionReturnTypeException : Exception
     {
-        internal InvalidExpressionReturnTypeException(Type expected, Type actual) : base($"Got '{ExceptionsHelper.BuildTypeNameWithParameters(actual)}' instead of '{ExceptionsHelper.BuildTypeNameWithParameters(expected)}'")
+        internal InvalidExpressionReturnTypeException(JToken value, Type expected, Type actual) : base($"At '{value.Path}' got '{BuildTypeNameWithParameters(actual)}' instead of '{BuildTypeNameWithParameters(expected)}'")
         {
         }
     }

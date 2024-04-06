@@ -23,13 +23,13 @@ public sealed class IntCastExpression(IExpression<Task> innerExpression) : Abstr
         }
         else
         {
-            throw new IntCastExpressionException(innerExpressionTaskResult);
+            throw new IntCastExpressionException(innerExpressionTaskResult, Mark);
         }
     }
 
     public class IntCastExpressionException : AbstractCastExpressionException
     {
-        internal IntCastExpressionException(object? value) : base(value, typeof(int))
+        internal IntCastExpressionException(object? value, string? mark) : base(value, typeof(int), mark)
         {
         }
     }

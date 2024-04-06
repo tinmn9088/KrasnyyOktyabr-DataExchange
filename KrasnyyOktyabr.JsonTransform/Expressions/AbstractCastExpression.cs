@@ -12,7 +12,7 @@ public abstract class AbstractCastExpression<T> : AbstractExpression<Task<T>>
         _innerExpression = innerExpression;
     }
 
-    public override async Task<T> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<T> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         object? innerExpressionTaskResult = await ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken));
 
@@ -21,8 +21,8 @@ public abstract class AbstractCastExpression<T> : AbstractExpression<Task<T>>
 
     public abstract T Cast(object? innerExpressionTaskResult);
 
-    public abstract class AbstractCastExpressionException(object? value, Type castType)
-        : Exception($"Cannot cast value '{value}' to '{castType.Name}'")
+    public abstract class AbstractCastExpressionException(object? value, Type castType, string? mark)
+        : InterpretException($"Cannot cast value '{value}' to '{castType.Name}'", mark)
     {
     }
 
