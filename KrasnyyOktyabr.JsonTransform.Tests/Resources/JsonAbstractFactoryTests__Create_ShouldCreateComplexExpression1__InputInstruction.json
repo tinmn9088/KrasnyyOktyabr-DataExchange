@@ -1,8 +1,11 @@
 ﻿{
+  "comment": "((5 - 1) + 3) * 6",
   "$mul": {
     "left": {
+      "comment": "(5 - 1) + 3",
       "$sum": {
         "left": {
+          "comment": "5 - 1",
           "$substract": {
             "left": {
               "$cast": {

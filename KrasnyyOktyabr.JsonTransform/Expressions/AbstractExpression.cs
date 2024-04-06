@@ -32,8 +32,6 @@ public abstract class AbstractExpression<T> : IExpression<T> where T : Task
     /// </summary>
     public abstract T InnerInterpretAsync(IContext context, CancellationToken cancellationToken);
 
-    public override string ToString() => Mark ?? base.ToString() ?? throw new NullReferenceException();
-
     /// <summary>
     /// Shows where exception was raised using <see cref="Mark"/>.
     /// </summary>

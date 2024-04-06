@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KrasnyyOktyabr.JsonTransform.Tests;
 
@@ -21,16 +23,14 @@ internal static class TestsHelper
     }
 
     /// <exception cref="FileNotFoundException"></exception>
-    public static string GetTestInputInstruction(Type testClass, string testName)
+    public static async Task<JToken> LoadTestInputInstructionAsync(Type testClass, string testName)
     {
         string fileName = $"{testClass.Name}__{testName}__InputInstruction.json";
         string absolutePath = Path.Combine(ResourcesDirectoryPath, fileName);
 
-        FileInfo fileInfo = new(absolutePath);
-
-        using (StreamReader reader = fileInfo.OpenText())
+        using (StreamReader reader = File.OpenText(absolutePath))
         {
-            return reader.ReadToEnd();
+            return await JToken.LoadAsync(new JsonTextReader(reader));
         }
     }
 }

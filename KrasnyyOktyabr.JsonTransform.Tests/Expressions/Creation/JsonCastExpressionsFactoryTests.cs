@@ -1,22 +1,22 @@
 ﻿using Moq;
 using Newtonsoft.Json.Linq;
-using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonCastExpressionFactory;
+using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonCastExpressionsFactory;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation.Tests;
 
 [TestClass]
-public class JsonCastExpressionFactoryTests
+public class JsonCastExpressionsFactoryTests
 {
     private Mock<IJsonAbstractExpressionFactory>? _abstractFactoryMock;
 
-    private JsonCastExpressionFactory? _castExpressionFactory;
+    private JsonCastExpressionsFactory? _castExpressionsFactory;
 
     [TestInitialize]
     public void Initialize()
     {
         _abstractFactoryMock = new();
-        _castExpressionFactory = new(_abstractFactoryMock.Object);
+        _castExpressionsFactory = new(_abstractFactoryMock.Object);
     }
 
     [TestMethod]
@@ -34,7 +34,7 @@ public class JsonCastExpressionFactoryTests
             }
         };
 
-        bool isMatch = _castExpressionFactory!.Match(input);
+        bool isMatch = _castExpressionsFactory!.Match(input);
 
         Assert.IsTrue(isMatch);
     }
@@ -58,7 +58,7 @@ public class JsonCastExpressionFactoryTests
             }
         };
 
-        bool isMatch = _castExpressionFactory!.Match(input);
+        bool isMatch = _castExpressionsFactory!.Match(input);
 
         Assert.IsTrue(isMatch);
     }
@@ -67,7 +67,7 @@ public class JsonCastExpressionFactoryTests
     [ExpectedException(typeof(ArgumentNullException))]
     public void Create_WhenInputNull_ShouldThrowArgumentNullException()
     {
-        _castExpressionFactory!.Create(null!);
+        _castExpressionsFactory!.Create(null!);
     }
 
     [TestMethod]
@@ -89,7 +89,7 @@ public class JsonCastExpressionFactoryTests
             }
         };
 
-        IExpression<Task> expression = _castExpressionFactory!.Create(input);
+        IExpression<Task> expression = _castExpressionsFactory!.Create(input);
 
         Assert.IsNotNull(expression);
         Assert.IsInstanceOfType<IntCastExpression>(expression);
@@ -116,7 +116,7 @@ public class JsonCastExpressionFactoryTests
             }
         };
 
-        IExpression<Task> expression = _castExpressionFactory!.Create(input);
+        IExpression<Task> expression = _castExpressionsFactory!.Create(input);
 
         Assert.IsNotNull(expression);
         Assert.IsInstanceOfType<DoubleCastExpression>(expression);
@@ -143,7 +143,7 @@ public class JsonCastExpressionFactoryTests
             }
         };
 
-        IExpression<Task> expression = _castExpressionFactory!.Create(input);
+        IExpression<Task> expression = _castExpressionsFactory!.Create(input);
 
         Assert.IsNotNull(expression);
         Assert.IsInstanceOfType<BoolCastExpression>(expression);
@@ -170,7 +170,7 @@ public class JsonCastExpressionFactoryTests
             }
         };
 
-        IExpression<Task> expression = _castExpressionFactory!.Create(input);
+        IExpression<Task> expression = _castExpressionsFactory!.Create(input);
 
         Assert.IsNotNull(expression);
         Assert.IsInstanceOfType<StringCastExpression>(expression);

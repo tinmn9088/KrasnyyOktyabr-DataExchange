@@ -179,10 +179,10 @@ public class JsonAbstractFactoryTests
     /// Solve ((5 - 1) + 3) * 6.
     /// </summary>
     [TestMethod]
-    public async Task Create_ShouldCreateComplexExpression()
+    public async Task Create_ShouldCreateComplexExpression1()
     {
         JsonConstExpressionFactory constExpressionFactory = new();
-        JsonCastExpressionFactory castExpressionFactory = new(_abstractFactory!);
+        JsonCastExpressionsFactory castExpressionsFactory = new(_abstractFactory!);
         JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
         JsonSubstractExpressionFactory substractExpressionFactory = new(_abstractFactory!);
         JsonMultiplyExpressionFactory multiplyExpressionFactory = new(_abstractFactory!);
@@ -190,13 +190,13 @@ public class JsonAbstractFactoryTests
         _abstractFactory!.ExpressionFactories =
         [
             constExpressionFactory,
-            castExpressionFactory,
+            castExpressionsFactory,
             sumExpressionFactory,
             substractExpressionFactory,
             multiplyExpressionFactory
         ];
 
-        JObject input = JObject.Parse(GetTestInputInstruction(GetType(), TestContext.TestName ?? throw new NullReferenceException()));
+        JToken input = await GetCurrentTestInputInstructionAsync();
 
         MultiplyExpression expression = _abstractFactory.Create<MultiplyExpression>(input);
 
@@ -205,5 +205,43 @@ public class JsonAbstractFactoryTests
         Number actual = await expression.InterpretAsync(GetEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
+    }
+
+    /// <summary>
+    /// Solve (12.5 * 2) + (34 / 2).
+    /// </summary>
+    [TestMethod]
+    public async Task Create_ShouldCreateComplexExpression2()
+    {
+        JsonConstIntExpressionFactory constIntExpressionFactory = new();
+        JsonConstDoubleExpressionFactory constDoubleExpressionFactory = new();
+        JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
+        JsonMultiplyExpressionFactory multiplyExpressionFactory = new(_abstractFactory!);
+        JsonDivideExpressionFactory divideExpressionFactory = new(_abstractFactory!);
+
+        _abstractFactory!.ExpressionFactories =
+        [
+            constIntExpressionFactory,
+            constDoubleExpressionFactory,
+            sumExpressionFactory,
+            divideExpressionFactory,
+            multiplyExpressionFactory
+        ];
+
+        JToken input = await GetCurrentTestInputInstructionAsync();
+
+        SumExpression expression = _abstractFactory.Create<SumExpression>(input);
+
+        Number expected = new((12.5 * 2) + (34 / 2));
+
+        Number actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    /// <exception cref="NullReferenceException"></exception>
+    private async Task<JToken> GetCurrentTestInputInstructionAsync()
+    {
+        return await LoadTestInputInstructionAsync(GetType(), TestContext.TestName ?? throw new NullReferenceException());
     }
 }

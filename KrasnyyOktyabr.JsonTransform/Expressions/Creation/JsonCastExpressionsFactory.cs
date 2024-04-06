@@ -3,7 +3,7 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonCastExpressionFactory : AbstractJsonExpressionFactory<IExpression<Task>>
+public sealed class JsonCastExpressionsFactory : AbstractJsonExpressionFactory<IExpression<Task>>
 {
     public enum ReturnType
     {
@@ -19,7 +19,7 @@ public sealed class JsonCastExpressionFactory : AbstractJsonExpressionFactory<IE
 
     private readonly IJsonAbstractExpressionFactory _factory;
 
-    public JsonCastExpressionFactory(IJsonAbstractExpressionFactory factory)
+    public JsonCastExpressionsFactory(IJsonAbstractExpressionFactory factory)
         : base(@"{
               'type': 'object',
               'additionalProperties': false,

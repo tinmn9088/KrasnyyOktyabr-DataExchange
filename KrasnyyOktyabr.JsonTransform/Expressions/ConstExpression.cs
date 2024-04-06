@@ -1,14 +1,5 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-/// <summary>
-/// Returns passed <paramref name="value"/>.
-/// </summary>
-public sealed class ConstExpression(object? value) : AbstractExpression<Task<object?>>
+public sealed class ConstExpression(object? value) : AbstractConstExpression<object?>(value)
 {
-    private readonly Task<object?> _valueTask = Task.FromResult(value);
-
-    public override Task<object?> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
-    {
-        return _valueTask;
-    }
 }
