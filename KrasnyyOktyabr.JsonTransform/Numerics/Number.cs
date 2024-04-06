@@ -259,6 +259,56 @@ public readonly struct Number
         throw new NotImplementedException();
     }
 
+    public static bool operator <=(Number a, Number b)
+    {
+        if (a.Int != null && b.Int != null)
+        {
+            return a.Int <= b.Int;
+        }
+
+        if (a.Int != null && b.Double != null)
+        {
+            return a.Int <= b.Double;
+        }
+
+        if (a.Double != null && b.Int != null)
+        {
+            return a.Double <= b.Int;
+        }
+
+        if (a.Double != null && b.Double != null)
+        {
+            return a.Double <= b.Double;
+        }
+
+        throw new NotImplementedException();
+    }
+
+    public static bool operator >=(Number a, Number b)
+    {
+        if (a.Int != null && b.Int != null)
+        {
+            return a.Int >= b.Int;
+        }
+
+        if (a.Int != null && b.Double != null)
+        {
+            return a.Int >= b.Double;
+        }
+
+        if (a.Double != null && b.Int != null)
+        {
+            return a.Double >= b.Int;
+        }
+
+        if (a.Double != null && b.Double != null)
+        {
+            return a.Double >= b.Double;
+        }
+
+        throw new NotImplementedException();
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is Number other)

@@ -334,6 +334,24 @@ public class NumberTests
     }
 
     [TestMethod]
+    public void LessOrEqual_ShouldReturnTrueIfLess()
+    {
+        Assert.IsTrue(new Number(2) <= new Number(2));
+        Assert.IsTrue(new Number(2) <= new Number(2.0));
+        Assert.IsTrue(new Number(2.0) <= new Number(2));
+        Assert.IsTrue(new Number(2.0) <= new Number(2.0));
+    }
+
+    [TestMethod]
+    public void GreaterOrEqual_ShouldReturnTrueIfGreater()
+    {
+        Assert.IsTrue(new Number(2) >= new Number(2));
+        Assert.IsTrue(new Number(2) >= new Number(2.0));
+        Assert.IsTrue(new Number(2.0) >= new Number(2));
+        Assert.IsTrue(new Number(2.0) >= new Number(2.0));
+    }
+
+    [TestMethod]
     public void ToString_ShouldReturnString()
     {
         Assert.AreEqual("1", new Number(1).ToString());
