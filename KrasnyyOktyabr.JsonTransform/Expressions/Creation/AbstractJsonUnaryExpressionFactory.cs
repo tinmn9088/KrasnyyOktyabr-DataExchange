@@ -17,7 +17,7 @@ public abstract class AbstractJsonUnaryExpressionFactory<TValue, TOut> : Abstrac
               'additionalProperties': false,
               'properties': {
                 '" + JsonSchemaPropertyComment + @"': {
-                    'type': 'string'
+                  'type': 'string'
                 },
                 '" + expressionName + @"': {
                   'type': 'object',

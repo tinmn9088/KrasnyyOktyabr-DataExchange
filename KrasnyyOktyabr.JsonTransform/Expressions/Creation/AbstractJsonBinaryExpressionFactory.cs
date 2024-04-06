@@ -17,7 +17,7 @@ public abstract class AbstractJsonBinaryExpressionFactory<TLeft, TRight, TOut> :
               'additionalProperties': false,
               'properties': {
                 '" + JsonSchemaPropertyComment + @"': {
-                    'type': 'string'
+                  'type': 'string'
                 },
                 '" + expressionName + @"': {
                   'type': 'object',

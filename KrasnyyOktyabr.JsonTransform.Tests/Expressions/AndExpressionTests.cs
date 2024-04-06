@@ -64,6 +64,6 @@ public class AndExpressionTests
 
         AndExpression andExpression = new(leftExpressionMock.Object, rightExpressionMock.Object);
 
-        return await andExpression.InterpretAsync(GetEmptyExpressionContext());
+        return await andExpression.InterpretAsync(CreateEmptyExpressionContext());
     }
 }

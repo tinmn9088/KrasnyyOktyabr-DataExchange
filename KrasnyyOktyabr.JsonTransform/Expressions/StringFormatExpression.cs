@@ -25,7 +25,7 @@ public sealed class StringFormatExpression : AbstractExpression<Task<string>>
     }
 
     /// <exception cref="NullReferenceException"></exception>
-    protected override async Task<string> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    protected override async Task<string> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 

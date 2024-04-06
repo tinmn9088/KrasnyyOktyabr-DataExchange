@@ -127,6 +127,6 @@ public class AreNotEqualExpressionTests
 
     private static async Task<bool> Run(IExpression<Task<object?>> leftExpression, IExpression<Task<object?>> rightExpression)
     {
-        return await new AreNotEqualExpression(leftExpression, rightExpression).InterpretAsync(GetEmptyExpressionContext());
+        return await new AreNotEqualExpression(leftExpression, rightExpression).InterpretAsync(CreateEmptyExpressionContext());
     }
 }

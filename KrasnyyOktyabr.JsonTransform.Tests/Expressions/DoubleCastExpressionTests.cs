@@ -26,7 +26,7 @@ public class DoubleCastExpressionTests
 
         DoubleCastExpression expression = new(innerExpressionMock.Object);
 
-        await expression.InterpretAsync(GetEmptyExpressionContext());
+        await expression.InterpretAsync(CreateEmptyExpressionContext());
     }
 
     [TestMethod]
@@ -41,7 +41,7 @@ public class DoubleCastExpressionTests
 
         DoubleCastExpression expression = new(innerExpressionMock.Object);
 
-        await expression.InterpretAsync(GetEmptyExpressionContext());
+        await expression.InterpretAsync(CreateEmptyExpressionContext());
     }
 
     [TestMethod]
@@ -57,7 +57,7 @@ public class DoubleCastExpressionTests
 
         DoubleCastExpression expression = new(innerExpressionMock.Object);
 
-        double actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+        double actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }
@@ -75,7 +75,7 @@ public class DoubleCastExpressionTests
 
         DoubleCastExpression expression = new(innerExpressionMock.Object);
 
-        double actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+        double actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

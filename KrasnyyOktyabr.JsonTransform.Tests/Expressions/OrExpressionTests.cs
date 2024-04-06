@@ -64,6 +64,6 @@ public class ExpressionTests
 
         OrExpression orExpression = new(leftExpressionMock.Object, rightExpressionMock.Object);
 
-        return await orExpression.InterpretAsync(GetEmptyExpressionContext());
+        return await orExpression.InterpretAsync(CreateEmptyExpressionContext());
     }
 }

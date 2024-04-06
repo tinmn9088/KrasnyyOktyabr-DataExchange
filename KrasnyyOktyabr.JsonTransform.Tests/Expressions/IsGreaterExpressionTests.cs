@@ -45,7 +45,7 @@ public class IsGreaterExpressionTests
 
         IsGreaterExpression isGreaterExpression = new(leftExpressionMock.Object, rightExpressionMock.Object);
 
-        bool result = await isGreaterExpression.InterpretAsync(GetEmptyExpressionContext());
+        bool result = await isGreaterExpression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.IsTrue(result);
     }
@@ -70,7 +70,7 @@ public class IsGreaterExpressionTests
 
         IsGreaterExpression isGreaterExpression = new(leftExpressionMock.Object, rightExpressionMock.Object);
 
-        bool result = await isGreaterExpression.InterpretAsync(GetEmptyExpressionContext());
+        bool result = await isGreaterExpression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.IsFalse(result);
     }

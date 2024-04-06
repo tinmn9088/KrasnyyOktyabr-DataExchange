@@ -47,7 +47,7 @@ public class DivideExpressionTests
 
         Number expected = leftExpressionResult / rightExpressionResult;
 
-        Number actual = await divideExpression.InterpretAsync(GetEmptyExpressionContext());
+        Number actual = await divideExpression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

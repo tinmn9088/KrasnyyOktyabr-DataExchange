@@ -104,7 +104,7 @@ public class JsonAbstractFactoryTests
 
         // Run expression
         ConstExpression constExpression = (ConstExpression)expression;
-        object? result = await constExpression.InterpretAsync(GetEmptyExpressionContext());
+        object? result = await constExpression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(testValue, result);
     }
@@ -202,7 +202,7 @@ public class JsonAbstractFactoryTests
 
         Number expected = new((5 - 1 + 3) * 6);
 
-        Number actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+        Number actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }
@@ -234,7 +234,7 @@ public class JsonAbstractFactoryTests
 
         Number expected = new((12.5 * 2) + (34 / 2));
 
-        Number actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+        Number actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

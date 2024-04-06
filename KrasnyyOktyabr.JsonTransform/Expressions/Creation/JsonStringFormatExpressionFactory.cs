@@ -17,7 +17,7 @@ public sealed class JsonStringFormatExpressionFactory : AbstractJsonExpressionFa
               'additionalProperties': false,
               'properties': {
                 '" + JsonSchemaPropertyComment + @"': {
-                    'type': 'string'
+                  'type': 'string'
                 },
                 '" + JsonSchemaPropertyStrformat + @"': {
                   'type': 'object',

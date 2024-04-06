@@ -25,7 +25,7 @@ public class IntCastExpressionTests
 
         IntCastExpression expression = new(innerExpressionMock.Object);
 
-        await expression.InterpretAsync(GetEmptyExpressionContext());
+        await expression.InterpretAsync(CreateEmptyExpressionContext());
     }
 
     [TestMethod]
@@ -40,7 +40,7 @@ public class IntCastExpressionTests
 
         IntCastExpression expression = new(innerExpressionMock.Object);
 
-        await expression.InterpretAsync(GetEmptyExpressionContext());
+        await expression.InterpretAsync(CreateEmptyExpressionContext());
     }
 
     [TestMethod]
@@ -56,7 +56,7 @@ public class IntCastExpressionTests
 
         IntCastExpression expression = new(innerExpressionMock.Object);
 
-        int actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+        int actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }
@@ -74,7 +74,7 @@ public class IntCastExpressionTests
 
         IntCastExpression expression = new(innerExpressionMock.Object);
 
-        int actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+        int actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

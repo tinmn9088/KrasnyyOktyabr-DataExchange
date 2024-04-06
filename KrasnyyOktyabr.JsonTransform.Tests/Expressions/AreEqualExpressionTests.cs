@@ -135,6 +135,6 @@ public class AreEqualExpressionTests
 
     private static async Task<bool> Run(IExpression<Task<object?>> leftExpression, IExpression<Task<object?>> rightExpression)
     {
-        return await new AreEqualExpression(leftExpression, rightExpression).InterpretAsync(GetEmptyExpressionContext());
+        return await new AreEqualExpression(leftExpression, rightExpression).InterpretAsync(CreateEmptyExpressionContext());
     }
 }

@@ -8,15 +8,7 @@ public sealed class JsonExpressionsBlockFactory : AbstractJsonExpressionFactory<
 
     public JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory factory)
         : base(@"{
-              'type': 'array',
-              'items': {
-                'type': {
-                  'anyOf': [
-                    'object',
-                    'array'
-                  ]
-                }
-              }
+              'type': 'array'
             }")
     {
         ArgumentNullException.ThrowIfNull(factory);

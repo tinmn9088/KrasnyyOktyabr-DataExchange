@@ -53,7 +53,7 @@ public class StringFormatExpressionTests
         // Setting up string format expression
         StringFormatExpression stringFormatExpression = new(formatExpression, [arg0Expression]);
 
-        Context context = GetEmptyExpressionContext();
+        Context context = CreateEmptyExpressionContext();
 
         string expected = string.Format(format, [arg0]);
 
@@ -79,6 +79,6 @@ public class StringFormatExpressionTests
         // Setting up string format expression
         StringFormatExpression stringFormatExpression = new(nullFormatExpression, []);
 
-        await stringFormatExpression.InterpretAsync(GetEmptyExpressionContext(), default);
+        await stringFormatExpression.InterpretAsync(CreateEmptyExpressionContext(), default);
     }
 }

@@ -17,7 +17,7 @@ internal static class TestsHelper
     }
 
     /// <returns>New instance of <see cref="Context"/>.</returns>
-    public static Context GetEmptyExpressionContext()
+    public static Context CreateEmptyExpressionContext()
     {
         return new([]);
     }

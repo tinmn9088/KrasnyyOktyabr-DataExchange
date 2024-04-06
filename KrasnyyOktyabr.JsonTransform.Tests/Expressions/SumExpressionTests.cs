@@ -47,7 +47,7 @@ public class SumExpressionTests
 
         Number expected = leftExpressionResult + rightExpressionResult;
 
-        Number actual = await sumExpression.InterpretAsync(GetEmptyExpressionContext());
+        Number actual = await sumExpression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

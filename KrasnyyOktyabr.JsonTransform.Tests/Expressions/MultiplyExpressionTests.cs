@@ -47,7 +47,7 @@ public class MultiplyExpressionTests
 
         Number expected = leftExpressionResult * rightExpressionResult;
 
-        Number actual = await multiplyExpression.InterpretAsync(GetEmptyExpressionContext());
+        Number actual = await multiplyExpression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

@@ -25,7 +25,7 @@ public class StringCastExpressionTests
 
         StringCastExpression expression = new(innerExpressionMock.Object);
 
-        await expression.InterpretAsync(GetEmptyExpressionContext());
+        await expression.InterpretAsync(CreateEmptyExpressionContext());
     }
 
     [TestMethod]
@@ -41,7 +41,7 @@ public class StringCastExpressionTests
 
         StringCastExpression expression = new(innerExpressionMock.Object);
 
-        string actual = await expression.InterpretAsync(GetEmptyExpressionContext());
+        string actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

@@ -26,7 +26,7 @@ public class NotExpressionTests
 
         NotExpression notExpression = new(valueExpressionMock.Object);
 
-        bool result = await notExpression.InterpretAsync(GetEmptyExpressionContext());
+        bool result = await notExpression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.IsFalse(result);
     }

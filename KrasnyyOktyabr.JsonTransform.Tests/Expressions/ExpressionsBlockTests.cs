@@ -33,7 +33,7 @@ public class ExpressionsBlockTests
         List<IExpression<Task>> expressions = [expressionMock.Object];
         ExpressionsBlock expressionsBlock = new(expressions);
 
-        await expressionsBlock.InterpretAsync(GetEmptyExpressionContext());
+        await expressionsBlock.InterpretAsync(CreateEmptyExpressionContext());
 
         expressionMock.Verify(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()), Times.Once());
         expressionMock.VerifyNoOtherCalls();

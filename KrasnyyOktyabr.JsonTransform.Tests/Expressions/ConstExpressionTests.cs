@@ -8,7 +8,7 @@ public class ConstExpressionTests
     [TestMethod]
     public void InterpretAsync_ShouldReturnSameTaskInstance()
     {
-        Context context = GetEmptyExpressionContext();
+        Context context = CreateEmptyExpressionContext();
 
         ConstExpression expression = new(null!);
 

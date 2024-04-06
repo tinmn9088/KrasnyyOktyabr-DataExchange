@@ -1,8 +1,6 @@
-﻿using KrasnyyOktyabr.JsonTransform.Expressions;
-using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
-namespace KrasnyyOktyabr.JsonTransform.Tests.Expressions.Creation;
+namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation.Tests;
 
 [TestClass]
 public class JsonConstStringExpressionFactoryTests
