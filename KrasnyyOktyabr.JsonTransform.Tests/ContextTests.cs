@@ -69,7 +69,7 @@ public class ContextTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(Context.MemoryValueNotFoundException))]
+    [ExpectedException(typeof(IContext.MemoryValueNotFoundException))]
     public void MemoryGet_WhenValueAbsent_ShouldThrowMemoryValueNotFoundException()
     {
         _context!.MemoryGet("AbsentValueKey");
