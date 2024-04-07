@@ -2,7 +2,10 @@
 
 namespace KrasnyyOktyabr.JsonTransform.Numerics;
 
-public readonly struct Number
+/// <remarks>
+/// No symmetry when checking equivalence with <see cref="int"/> or <see cref="double"/>.
+/// </remarks>
+public readonly struct Number : IEquatable<Number>, IComparable<Number>
 {
     public double? Double
     {
@@ -159,166 +162,97 @@ public readonly struct Number
         throw new NotImplementedException();
     }
 
-    public static bool operator ==(Number a, Number b)
-    {
-        if (a.Int != null && b.Int != null)
-        {
-            return a.Int == b.Int;
-        }
+    public static bool operator ==(Number a, Number b) => a.Equals(b);
 
-        if (a.Int != null && b.Double != null)
-        {
-            return a.Int == b.Double;
-        }
+    public static bool operator !=(Number a, Number b) => !a.Equals(b);
 
-        if (a.Double != null && b.Int != null)
-        {
-            return a.Double == b.Int;
-        }
+    public static bool operator <(Number a, Number b) => a.CompareTo(b) < 0;
 
-        if (a.Double != null && b.Double != null)
-        {
-            return a.Double == b.Double;
-        }
+    public static bool operator >(Number a, Number b) => a.CompareTo(b) > 0;
 
-        throw new NotImplementedException();
-    }
+    public static bool operator <=(Number a, Number b) => a < b || a.Equals(b);
 
-    public static bool operator !=(Number a, Number b)
-    {
-        if (a.Int != null && b.Int != null)
-        {
-            return a.Int != b.Int;
-        }
-
-        if (a.Int != null && b.Double != null)
-        {
-            return a.Int != b.Double;
-        }
-
-        if (a.Double != null && b.Int != null)
-        {
-            return a.Double != b.Int;
-        }
-
-        if (a.Double != null && b.Double != null)
-        {
-            return a.Double != b.Double;
-        }
-
-        throw new NotImplementedException();
-    }
-
-    public static bool operator <(Number a, Number b)
-    {
-        if (a.Int != null && b.Int != null)
-        {
-            return a.Int < b.Int;
-        }
-
-        if (a.Int != null && b.Double != null)
-        {
-            return a.Int < b.Double;
-        }
-
-        if (a.Double != null && b.Int != null)
-        {
-            return a.Double < b.Int;
-        }
-
-        if (a.Double != null && b.Double != null)
-        {
-            return a.Double < b.Double;
-        }
-
-        throw new NotImplementedException();
-    }
-
-    public static bool operator >(Number a, Number b)
-    {
-        if (a.Int != null && b.Int != null)
-        {
-            return a.Int > b.Int;
-        }
-
-        if (a.Int != null && b.Double != null)
-        {
-            return a.Int > b.Double;
-        }
-
-        if (a.Double != null && b.Int != null)
-        {
-            return a.Double > b.Int;
-        }
-
-        if (a.Double != null && b.Double != null)
-        {
-            return a.Double > b.Double;
-        }
-
-        throw new NotImplementedException();
-    }
-
-    public static bool operator <=(Number a, Number b)
-    {
-        if (a.Int != null && b.Int != null)
-        {
-            return a.Int <= b.Int;
-        }
-
-        if (a.Int != null && b.Double != null)
-        {
-            return a.Int <= b.Double;
-        }
-
-        if (a.Double != null && b.Int != null)
-        {
-            return a.Double <= b.Int;
-        }
-
-        if (a.Double != null && b.Double != null)
-        {
-            return a.Double <= b.Double;
-        }
-
-        throw new NotImplementedException();
-    }
-
-    public static bool operator >=(Number a, Number b)
-    {
-        if (a.Int != null && b.Int != null)
-        {
-            return a.Int >= b.Int;
-        }
-
-        if (a.Int != null && b.Double != null)
-        {
-            return a.Int >= b.Double;
-        }
-
-        if (a.Double != null && b.Int != null)
-        {
-            return a.Double >= b.Int;
-        }
-
-        if (a.Double != null && b.Double != null)
-        {
-            return a.Double >= b.Double;
-        }
-
-        throw new NotImplementedException();
-    }
+    public static bool operator >=(Number a, Number b) => a > b || a.Equals(b);
 
     public override bool Equals(object? obj)
     {
         if (obj is Number other)
         {
-            return this == other;
+            if (Int != null && other.Int != null)
+            {
+                return Int == other.Int;
+            }
+
+            if (Int != null && other.Double != null)
+            {
+                return Int == other.Double;
+            }
+
+            if (Double != null && other.Int != null)
+            {
+                return Double == other.Int;
+            }
+
+            if (Double != null && other.Double != null)
+            {
+                return Double == other.Double;
+            }
         }
-        else
+
+        if (obj is int i)
         {
-            return false;
+            if (Int != null)
+            {
+                return Int == i;
+            }
+
+            if (Double != null)
+            {
+                return Convert.ToInt32(Double) == i;
+            }
         }
+
+        if (obj is double d)
+        {
+            if (Double != null)
+            {
+                return Double == d;
+            }
+
+            if (Int != null)
+            {
+                return Convert.ToDouble(Int) == d;
+            }
+        }
+
+        return false;
+    }
+
+    public bool Equals(Number other) => Equals((object)other);
+
+    public int CompareTo(Number other)
+    {
+        if (Int != null && other.Int != null)
+        {
+            return Int.Value - other.Int.Value;
+        }
+
+        if (Int != null && other.Double != null)
+        {
+            return Math.Sign(Int.Value - other.Double.Value);
+        }
+
+        if (Double != null && other.Int != null)
+        {
+            return Math.Sign(Double.Value - other.Int.Value);
+        }
+
+        if (Double != null && other.Double != null)
+        {
+            return Math.Sign(Double.Value - other.Double.Value);
+        }
+
+        throw new NotImplementedException();
     }
 
     public override string ToString()

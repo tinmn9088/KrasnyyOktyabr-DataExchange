@@ -269,6 +269,32 @@ public class JsonAbstractFactoryTests
         Assert.AreEqual(expected, actual);
     }
 
+    /// <summary>
+    /// Solve 42 == (20 + 22).
+    /// </summary>
+    [TestMethod]
+    public async Task Create_ShouldCreateComplexExpression4()
+    {
+        JsonConstIntExpressionFactory constIntExpressionFactory = new();
+        JsonAreEqualExpressionFactory areEqualExpressionFactory = new(_abstractFactory!);
+        JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
+
+        _abstractFactory!.ExpressionFactories =
+        [
+            constIntExpressionFactory,
+            areEqualExpressionFactory,
+            sumExpressionFactory,
+        ];
+
+        JToken input = await GetCurrentTestInputInstructionAsync();
+
+        AreEqualExpression expression = _abstractFactory.Create<AreEqualExpression>(input);
+
+        bool actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
+
+        Assert.IsTrue(actual);
+    }
+
     /// <exception cref="NullReferenceException"></exception>
     private async Task<JToken> GetCurrentTestInputInstructionAsync()
     {

@@ -1,5 +1,4 @@
-﻿
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
@@ -44,7 +43,7 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
         int groupNumber = _groupNumberExpression != null
             ? await _groupNumberExpression.InterpretAsync(context, cancellationToken)
             : 1;
-        
+
         Regex regex = new(regexString);
         Match match = regex.Match(input);
 
