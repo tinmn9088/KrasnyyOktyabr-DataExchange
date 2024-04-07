@@ -193,7 +193,7 @@ public class JsonAbstractFactoryTests
             castExpressionsFactory,
             sumExpressionFactory,
             substractExpressionFactory,
-            multiplyExpressionFactory
+            multiplyExpressionFactory,
         ];
 
         JToken input = await GetCurrentTestInputInstructionAsync();
@@ -225,7 +225,7 @@ public class JsonAbstractFactoryTests
             constDoubleExpressionFactory,
             sumExpressionFactory,
             divideExpressionFactory,
-            multiplyExpressionFactory
+            multiplyExpressionFactory,
         ];
 
         JToken input = await GetCurrentTestInputInstructionAsync();
@@ -235,6 +235,36 @@ public class JsonAbstractFactoryTests
         Number expected = new((12.5 * 2) + (34 / 2));
 
         Number actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    /// <summary>
+    /// Solve !((true || true) && (true || false)).
+    /// </summary>
+    [TestMethod]
+    public async Task Create_ShouldCreateComplexExpression3()
+    {
+        JsonConstBoolExpressionFactory constBoolExpressionFactory = new();
+        JsonAndExpressionFactory constAndExpressionFactory = new(_abstractFactory!);
+        JsonOrExpressionFactory constOrExpressionFactory = new(_abstractFactory!);
+        JsonNotExpressionFactory constNotExpressionFactory = new(_abstractFactory!);
+
+        _abstractFactory!.ExpressionFactories =
+        [
+            constBoolExpressionFactory,
+            constAndExpressionFactory,
+            constOrExpressionFactory,
+            constNotExpressionFactory,
+        ];
+
+        JToken input = await GetCurrentTestInputInstructionAsync();
+
+        NotExpression expression = _abstractFactory.Create<NotExpression>(input);
+
+        bool expected = !((true || true) && (true || false));
+
+        bool actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

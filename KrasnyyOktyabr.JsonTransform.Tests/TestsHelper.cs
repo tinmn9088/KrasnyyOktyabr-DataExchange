@@ -22,6 +22,9 @@ internal static class TestsHelper
         return new([]);
     }
 
+    /// <returns>
+    /// Content of file with name <c>$"{testClass.Name}__{testName}__InputInstruction.json"</c>.
+    /// </returns>
     /// <exception cref="FileNotFoundException"></exception>
     public static async Task<JToken> LoadTestInputInstructionAsync(Type testClass, string testName)
     {

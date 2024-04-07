@@ -1,0 +1,20 @@
+﻿{
+  "$not": {
+    "value": {
+      "$and": {
+        "left": {
+          "$or": {
+            "left": true,
+            "right": true
+          }
+        },
+        "right": {
+          "$or": {
+            "left": true,
+            "right": false
+          }
+        }
+      }
+    }
+  }
+}
