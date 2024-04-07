@@ -160,13 +160,6 @@ public class ContextTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void OutputAdd_WhenKeyEmpty_ShouldThrowArgumentNullException()
-    {
-        _context!.OutputAdd(string.Empty, null!, 0);
-    }
-
-    [TestMethod]
     [ExpectedException(typeof(IndexOutOfRangeException))]
     public void OutputAdd_WhenIndexNegative_ShouldThrowIndexOutOfRangeException()
     {

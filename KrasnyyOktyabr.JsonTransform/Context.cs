@@ -60,20 +60,20 @@ public sealed class Context : IContext
         }
     }
 
-    public void OutputAdd(string key, object value, int outputIndex)
+    public void OutputAdd(string key, object? value, int index)
     {
-        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(key);
 
-        if (outputIndex < 0)
+        if (index < 0)
         {
             throw new IndexOutOfRangeException();
         }
 
         JObject outputItem;
 
-        if (outputIndex >= _output.Count)
+        if (index >= _output.Count)
         {
-            int missingItemsCount = outputIndex + 1 - _output.Count;
+            int missingItemsCount = index + 1 - _output.Count;
             List<JObject> missingObjects = new List<JObject>(missingItemsCount);
 
             for (int i = 0; i < missingItemsCount; i++)
@@ -84,9 +84,9 @@ public sealed class Context : IContext
             _output.AddRange(missingObjects);
         }
 
-        outputItem = _output[outputIndex];
+        outputItem = _output[index];
 
-        outputItem.Add(key, JToken.FromObject(value));
+        outputItem.Add(key, value != null ? JToken.FromObject(value) : JValue.CreateNull());
     }
 
     public JObject[] OutputGet()

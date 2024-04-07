@@ -22,10 +22,9 @@ public interface IContext
     /// <exception cref="ArgumentNullException"></exception>
     JToken? InputSelect(string path);
 
-    /// <exception cref="ArgumentException"><paramref name="key"/> is empty.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="key"/> is <c>null</c>.</exception>
-    /// <exception cref="IndexOutOfRangeException"><paramref name="outputIndex"/> is negative.</exception>
-    void OutputAdd(string key, object value, int outputIndex);
+    /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> is negative.</exception>
+    void OutputAdd(string key, object? value, int index);
 
     /// <returns>Deep copy of transformations result.</returns>
     JObject[] OutputGet();
