@@ -15,7 +15,7 @@ public sealed class JsonMapExpressionFactory : AbstractJsonExpressionFactory<Map
               'additionalProperties': false,
               'properties': {
                 '" + JsonSchemaPropertyComment + @"': {
-                    'type': 'string'
+                  'type': 'string'
                 },
                 '" + JsonSchemaPropertyMap + @"': {
                   'type': 'object'

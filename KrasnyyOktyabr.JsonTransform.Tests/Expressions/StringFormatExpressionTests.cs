@@ -40,7 +40,6 @@ public class StringFormatExpressionTests
         formatExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(format));
-        IExpression<Task<string>> formatExpression = formatExpressionMock.Object;
 
         // Setting up arg0 expression
         Mock<IExpression<Task<object?>>> arg0ExpressionMock = new();
@@ -48,16 +47,15 @@ public class StringFormatExpressionTests
         arg0ExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult((object?)arg0));
-        IExpression<Task<object?>> arg0Expression = arg0ExpressionMock.Object;
 
         // Setting up string format expression
-        StringFormatExpression stringFormatExpression = new(formatExpression, [arg0Expression]);
+        StringFormatExpression stringFormatExpression = new(formatExpressionMock.Object, [arg0ExpressionMock.Object]);
 
         Context context = CreateEmptyExpressionContext();
 
         string expected = string.Format(format, [arg0]);
 
-        string actual = await stringFormatExpression.InterpretAsync(context, default);
+        string actual = await stringFormatExpression.InterpretAsync(context);
 
         formatExpressionMock.Verify(e => e.InterpretAsync(context, It.IsAny<CancellationToken>()), Times.Once());
         arg0ExpressionMock.Verify(e => e.InterpretAsync(context, It.IsAny<CancellationToken>()), Times.Once());
@@ -74,11 +72,10 @@ public class StringFormatExpressionTests
         nullFormatExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(format));
-        IExpression<Task<string>> nullFormatExpression = nullFormatExpressionMock.Object;
 
         // Setting up string format expression
-        StringFormatExpression stringFormatExpression = new(nullFormatExpression, []);
+        StringFormatExpression stringFormatExpression = new(nullFormatExpressionMock.Object, []);
 
-        await stringFormatExpression.InterpretAsync(CreateEmptyExpressionContext(), default);
+        await stringFormatExpression.InterpretAsync(CreateEmptyExpressionContext());
     }
 }
