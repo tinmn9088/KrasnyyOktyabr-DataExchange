@@ -51,18 +51,18 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
         }
         else if (typeof(TOut) == typeof(IExpression<Task<Number>>))
         {
-            if (uncheckedExpression is IExpression<Task<int>> intExpression)
+            if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
             {
-                return (TOut)(object)new NumberCastExpression(intExpression);
-            }
-
-            if (uncheckedExpression is IExpression<Task<double>> doubleExpression)
-            {
-                return (TOut)(object)new NumberCastExpression(doubleExpression);
+                return (TOut)(object)numberCastExpression!;
             }
         }
         else if (typeof(TOut) == typeof(IExpression<Task<object?>>))
         {
+            if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
+            {
+                uncheckedExpression = numberCastExpression!;
+            }
+
             return (TOut)(object)new ObjectCastExpression(uncheckedExpression);
         }
 
@@ -84,6 +84,26 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
         }
 
         throw new UnknownInstructionException(instruction);
+    }
+
+    /// <param name="numberCastExpression"><paramref name="uncheckedExpression"/> wrapped in <see cref="NumberCastExpression"/> or <c>null</c>.</param>
+    private static bool TryWrapInNumberCastExpression(IExpression<Task> uncheckedExpression, out NumberCastExpression? numberCastExpression)
+    {
+        numberCastExpression = null;
+
+        if (uncheckedExpression is IExpression<Task<int>> intExpression)
+        {
+            numberCastExpression = new NumberCastExpression(intExpression);
+            return true;
+        }
+
+        if (uncheckedExpression is IExpression<Task<double>> doubleExpression)
+        {
+            numberCastExpression = new NumberCastExpression(doubleExpression);
+            return true;
+        }
+
+        return false;
     }
 
     public class UnknownInstructionException : Exception

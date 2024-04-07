@@ -234,7 +234,7 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
     {
         if (Int != null && other.Int != null)
         {
-            return Int.Value - other.Int.Value;
+            return Math.Sign(Int.Value - other.Int.Value);
         }
 
         if (Int != null && other.Double != null)
