@@ -8,12 +8,12 @@ namespace KrasnyyOktyabr.JsonTransform;
 public interface IContext
 {
     /// <exception cref="ArgumentException"><paramref name="name"/> is <c>null</c> or empty.</exception>
-    void MemorySet(string name, object value);
+    void MemorySet(string name, object? value);
 
     /// <exception cref="ArgumentException"><paramref name="name"/> is empty.</exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="MemoryValueNotFoundException"></exception>
-    object MemoryGet(string name);
+    object? MemoryGet(string name);
 
     /// <returns>
     /// Result of JSONPath query or <c>null</c> if not found.

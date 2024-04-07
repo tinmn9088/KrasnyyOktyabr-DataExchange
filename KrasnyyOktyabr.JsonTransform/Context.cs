@@ -18,7 +18,7 @@ public sealed class Context : IContext
     /// <summary>
     /// Storage for variables. <c>null</c> or empty variable names are not allowed.
     /// </summary>
-    private readonly Dictionary<string, object> _memory;
+    private readonly Dictionary<string, object?> _memory;
 
     /// <exception cref="ArgumentNullException"></exception>
     public Context(JObject input)
@@ -30,14 +30,14 @@ public sealed class Context : IContext
         _output = [];
     }
 
-    public void MemorySet(string name, object value)
+    public void MemorySet(string name, object? value)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
         _memory[name] = value;
     }
 
-    public object MemoryGet(string name)
+    public object? MemoryGet(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 

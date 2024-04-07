@@ -7,8 +7,6 @@ public sealed class JsonAddExpressionFactory : AbstractJsonExpressionFactory<Add
 {
     public static string JsonSchemaPropertyAdd => "$add";
 
-    public static string JsonSchemaPropertyKey => "key";
-
     public static string JsonSchemaPropertyIndex => "index";
 
     private readonly IJsonAbstractExpressionFactory _factory;

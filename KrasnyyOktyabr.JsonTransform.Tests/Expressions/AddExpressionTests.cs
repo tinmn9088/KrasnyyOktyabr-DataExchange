@@ -117,7 +117,7 @@ public class AddExpressionTests
 
         // Setting up value expression
         Mock<IExpression<Task<object?>>> valueExpressionMock = new();
-        string expectedValue = "TestValue";
+        object? expectedValue = "TestValue";
         valueExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult((object?)expectedValue));
