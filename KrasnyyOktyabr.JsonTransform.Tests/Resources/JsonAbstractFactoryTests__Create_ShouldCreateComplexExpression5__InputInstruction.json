@@ -1,0 +1,29 @@
+﻿[
+  {
+    "$mset": {
+      "name": "three",
+      "value": 3
+    }
+  },
+  {
+    "$add": {
+      "key": "answer",
+      "value": {
+        "comment": "3 + 39",
+        "$sum": {
+          "left": {
+            "$cast": {
+              "type": "int",
+              "value": {
+                "$mget": {
+                  "name": "three"
+                }
+              }
+            }
+          },
+          "right": 39
+        }
+      }
+    }
+  }
+]

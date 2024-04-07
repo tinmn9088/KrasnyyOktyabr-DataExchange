@@ -1,10 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using KrasnyyOktyabr.JsonTransform.Numerics;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace KrasnyyOktyabr.JsonTransform;
 
 public sealed class Context : IContext
 {
+    /// <summary>
+    /// Supports proper serialization of <see cref="Number"/>.
+    /// </summary>
+    private static readonly JsonSerializer s_jsonSerializer = JsonSerializer.Create(new() { Converters = [new NumberJsonConverter()] });
+
     /// <summary>
     /// JSON to be transformed.
     /// </summary>
@@ -86,7 +92,7 @@ public sealed class Context : IContext
 
         outputItem = _output[index];
 
-        outputItem.Add(key, value != null ? JToken.FromObject(value) : JValue.CreateNull());
+        outputItem.Add(key, value != null ? JToken.FromObject(value, s_jsonSerializer) : JValue.CreateNull());
     }
 
     public JObject[] OutputGet()

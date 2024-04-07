@@ -295,6 +295,48 @@ public class JsonAbstractFactoryTests
         Assert.IsTrue(actual);
     }
 
+    /// <summary>
+    /// Solve mset('three', 3), 'answer' = mget('three') + 39.
+    /// </summary>
+    [TestMethod]
+    public async Task Create_ShouldCreateComplexExpression5()
+    {
+        JsonExpressionsBlockFactory expressionsBlockExpressionFactory = new(_abstractFactory!);
+        JsonConstIntExpressionFactory constIntExpressionFactory = new();
+        JsonConstStringExpressionFactory constStringExpressionFactory = new();
+        JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
+        JsonMemorySetExpressionFactory memorySetExpressionFactory = new(_abstractFactory!);
+        JsonMemoryGetExpressionFactory memoryGetExpressionFactory = new(_abstractFactory!);
+        JsonAddExpressionFactory addExpressionFactory = new(_abstractFactory!);
+        JsonCastExpressionsFactory castExpressionFactory = new(_abstractFactory!);
+
+        _abstractFactory!.ExpressionFactories =
+        [
+            expressionsBlockExpressionFactory,
+            constIntExpressionFactory,
+            constStringExpressionFactory,
+            sumExpressionFactory,
+            memorySetExpressionFactory,
+            memoryGetExpressionFactory,
+            addExpressionFactory,
+            castExpressionFactory,
+        ];
+
+        JToken input = await GetCurrentTestInputInstructionAsync();
+
+        ExpressionsBlock expression = _abstractFactory.Create<ExpressionsBlock>(input);
+
+        Context context = CreateEmptyExpressionContext();
+
+        await expression.InterpretAsync(context);
+
+        JObject[] output = context.OutputGet();
+
+        Assert.AreEqual(1, output.Length);
+        Assert.IsTrue(output[0].ContainsKey("answer"));
+        Assert.AreEqual(42, output[0]["answer"]);
+    }
+
     /// <exception cref="NullReferenceException"></exception>
     private async Task<JToken> GetCurrentTestInputInstructionAsync()
     {
