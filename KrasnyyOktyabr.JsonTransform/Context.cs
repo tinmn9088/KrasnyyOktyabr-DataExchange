@@ -80,7 +80,7 @@ public sealed class Context : IContext
         if (index >= _output.Count)
         {
             int missingItemsCount = index + 1 - _output.Count;
-            List<JObject> missingObjects = new List<JObject>(missingItemsCount);
+            List<JObject> missingObjects = new(missingItemsCount);
 
             for (int i = 0; i < missingItemsCount; i++)
             {
