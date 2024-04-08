@@ -1,0 +1,56 @@
+﻿[
+  {
+    "$mset": {
+      "name": "answer",
+      "value": 1
+    }
+  },
+  {
+    "$foreach": {
+      "name": "foreach1",
+      "items": [
+        20,
+        21
+      ],
+      "instructions": {
+        "$mset": {
+          "name": "answer",
+          "value": {
+            "$sum": {
+              "left": {
+                "$cast": {
+                  "value": {
+                    "$mget": {
+                      "name": "answer"
+                    }
+                  },
+                  "type": "int"
+                }
+              },
+              "right": {
+                "$cast": {
+                  "value": {
+                    "$cur": {
+                      "name": "foreach1"
+                    }
+                  },
+                  "type": "int"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "$add": {
+      "key": "answer",
+      "value": {
+        "$mget": {
+          "name": "answer"
+        }
+      }
+    }
+  }
+]

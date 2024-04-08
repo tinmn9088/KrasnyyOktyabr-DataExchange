@@ -337,6 +337,49 @@ public class JsonAbstractFactoryTests
         Assert.AreEqual(42, output[0]["answer"]);
     }
 
+    [TestMethod]
+    public async Task Create_ShouldCreateComplexExpression6()
+    {
+        JsonConstIntExpressionFactory constIntExpressionFactory = new();
+        JsonConstStringExpressionFactory constStringExpressionFactory = new();
+        JsonMemorySetExpressionFactory memorySetExpressionFactory = new(_abstractFactory!);
+        JsonMemoryGetExpressionFactory memoryGetExpressionFactory = new(_abstractFactory!);
+        JsonForeachExpressionFactory foreachExpressionFactory = new(_abstractFactory!);
+        JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
+        JsonExpressionsBlockFactory expressionsBlockFactory = new(_abstractFactory!);
+        JsonCastExpressionsFactory castExpressionsFactory = new(_abstractFactory!);
+        JsonCursorExpressionFactory cursorExpressionFactory = new(_abstractFactory!);
+        JsonAddExpressionFactory addExpressionFactory = new(_abstractFactory!);
+
+        _abstractFactory!.ExpressionFactories =
+        [
+            constIntExpressionFactory,
+            constStringExpressionFactory,
+            memorySetExpressionFactory,
+            memoryGetExpressionFactory,
+            foreachExpressionFactory,
+            sumExpressionFactory,
+            expressionsBlockFactory,
+            castExpressionsFactory,
+            cursorExpressionFactory,
+            addExpressionFactory,
+        ];
+
+        JToken input = await GetCurrentTestInputInstructionAsync();
+
+        ExpressionsBlock expression = _abstractFactory.Create<ExpressionsBlock>(input);
+
+        Context context = CreateEmptyExpressionContext();
+
+        await expression.InterpretAsync(context);
+
+        JObject[] output = context.OutputGet();
+
+        Assert.AreEqual(1, output.Length);
+        Assert.IsTrue(output[0].ContainsKey("answer"));
+        Assert.AreEqual(42, output[0]["answer"]);
+    }
+
     /// <exception cref="NullReferenceException"></exception>
     private async Task<JToken> GetCurrentTestInputInstructionAsync()
     {

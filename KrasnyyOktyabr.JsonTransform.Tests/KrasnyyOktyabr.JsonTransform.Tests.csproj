@@ -30,6 +30,9 @@
     <None Update="Resources\JsonAbstractFactoryTests__Create_ShouldCreateComplexExpression2__InputInstruction.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\JsonAbstractFactoryTests__Create_ShouldCreateComplexExpression6__InputInstruction.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\JsonAbstractFactoryTests__Create_ShouldCreateComplexExpression5__InputInstruction.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
