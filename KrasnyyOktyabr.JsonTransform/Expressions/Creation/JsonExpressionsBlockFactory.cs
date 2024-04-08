@@ -24,8 +24,8 @@ public sealed class JsonExpressionsBlockFactory : AbstractJsonExpressionFactory<
 
         if (input is JArray instructions)
         {
-            List<IExpression<Task>> expressions = instructions
-                .Select(_factory.Create<IExpression<Task>>)
+            List<IExpression<Task<object?>>> expressions = instructions
+                .Select(_factory.Create<IExpression<Task<object?>>>)
                 .ToList();
 
             return new ExpressionsBlock(expressions);

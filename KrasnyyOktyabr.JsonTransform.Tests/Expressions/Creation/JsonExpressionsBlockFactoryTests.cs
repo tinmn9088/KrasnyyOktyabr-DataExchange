@@ -20,8 +20,8 @@ public class JsonExpressionsBlockFactoryTests
     [TestMethod]
     public void Create_ShouldCreateExpressionsBlock()
     {
-        Mock<IExpression<Task>> expressionMock = new();
-        _abstractFactoryMock!.Setup(f => f.Create<IExpression<Task>>(It.IsAny<JToken>())).Returns(expressionMock.Object);
+        Mock<IExpression<Task<object?>>> expressionMock = new();
+        _abstractFactoryMock!.Setup(f => f.Create<IExpression<Task<object?>>>(It.IsAny<JToken>())).Returns(expressionMock.Object);
         JObject fakeInstruction = new();
         JArray input = [fakeInstruction];
 

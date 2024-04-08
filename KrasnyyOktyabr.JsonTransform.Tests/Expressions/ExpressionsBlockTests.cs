@@ -23,18 +23,22 @@ public class ExpressionsBlockTests
     [TestMethod]
     public async Task InterpretAsync_ShouldRunExpressions()
     {
+        string testValue = "TestValue";
+
         // Setting up expression mock
-        Mock<IExpression<Task>> expressionMock = new();
+        Mock<IExpression<Task<object?>>> expressionMock = new();
         expressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .Returns(Task.FromResult((object?)testValue));
 
         // Setting up ExpressionsBlock with its content
-        List<IExpression<Task>> expressions = [expressionMock.Object];
+        List<IExpression<Task<object?>>> expressions = [expressionMock.Object];
         ExpressionsBlock expressionsBlock = new(expressions);
 
-        await expressionsBlock.InterpretAsync(CreateEmptyExpressionContext());
+        object?[] actual = await expressionsBlock.InterpretAsync(CreateEmptyExpressionContext());
 
+        Assert.AreEqual(1, actual.Length);
+        Assert.AreEqual(testValue, actual[0]);
         expressionMock.Verify(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()), Times.Once());
         expressionMock.VerifyNoOtherCalls();
     }

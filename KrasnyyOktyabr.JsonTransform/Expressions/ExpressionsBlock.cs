@@ -3,12 +3,12 @@
 /// <summary>
 /// Sequence of expressions.
 /// </summary>
-public sealed class ExpressionsBlock : AbstractExpression<Task>
+public sealed class ExpressionsBlock : AbstractExpression<Task<object?[]>>
 {
-    private readonly IReadOnlyList<IExpression<Task>> _expressions;
+    private readonly IReadOnlyList<IExpression<Task<object?>>> _expressions;
 
     /// <exception cref="ArgumentNullException"></exception>
-    public ExpressionsBlock(IReadOnlyList<IExpression<Task>> expressions)
+    public ExpressionsBlock(IReadOnlyList<IExpression<Task<object?>>> expressions)
     {
         ArgumentNullException.ThrowIfNull(expressions);
 
@@ -20,13 +20,19 @@ public sealed class ExpressionsBlock : AbstractExpression<Task>
         _expressions = expressions;
     }
 
-    protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    protected override async Task<object?[]> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
     {
-        foreach (IExpression<Task> expression in _expressions)
+        cancellationToken.ThrowIfCancellationRequested();
+
+        object?[] result = new object?[_expressions.Count];
+
+        for (int i = 0; i < _expressions.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await expression.InterpretAsync(context, cancellationToken);
+            result[i] = await _expressions[i].InterpretAsync(context, cancellationToken);
         }
+
+        return result;
     }
 }
