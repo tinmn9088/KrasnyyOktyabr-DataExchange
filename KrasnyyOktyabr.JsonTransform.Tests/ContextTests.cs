@@ -36,20 +36,13 @@ public class ContextTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void MemorySet_WhenNameEmpty_ShouldThrowArgumentException()
-    {
-        _context!.MemorySet(string.Empty, null!);
-    }
-
-    [TestMethod]
     public void MemorySet_ShouldAddValueToMemory()
     {
         string name = "TestName";
         string value = "TestValue";
 
         _context!.MemorySet(name, value);
-        string actual = (string)_context.MemoryGet(name);
+        string actual = (string)(_context.MemoryGet(name) ?? throw new NullReferenceException());
 
         Assert.AreEqual(value, actual);
     }
@@ -59,13 +52,6 @@ public class ContextTests
     public void MemoryGet_WhenNameNull_ShouldThrowArgumentNullException()
     {
         _context!.MemoryGet(null!);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void MemoryGet_WhenNameEmpty_ShouldThrowArgumentException()
-    {
-        _context!.MemoryGet(string.Empty);
     }
 
     [TestMethod]

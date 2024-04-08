@@ -3,13 +3,16 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonWhileExpressionFactory : AbstractJsonExpressionFactory<WhileExpression>
+public sealed class JsonForeachExpressionFactory : AbstractJsonExpressionFactory<ForeachExpression>
 {
-    public static string JsonSchemaPropertyWhile => "$while";
+    public static string JsonSchemaPropertyForeach => "$foreach";
+
+    public static string JsonSchemaPropertyItems => "items";
+
 
     private readonly IJsonAbstractExpressionFactory _factory;
 
-    public JsonWhileExpressionFactory(IJsonAbstractExpressionFactory factory)
+    public JsonForeachExpressionFactory(IJsonAbstractExpressionFactory factory)
         : base(@"{
               'type': 'object',
               'additionalProperties': false,
@@ -17,21 +20,21 @@ public sealed class JsonWhileExpressionFactory : AbstractJsonExpressionFactory<W
                 '" + JsonSchemaPropertyComment + @"': {
                   'type': 'string'
                 },
-                '" + JsonSchemaPropertyWhile + @"': {
+                '" + JsonSchemaPropertyForeach + @"': {
                   'type': 'object',
                   'additionalProperties': false,
                   'properties': {
-                    '" + JsonSchemaPropertyCondition + @"': {},
+                    '" + JsonSchemaPropertyItems + @"': {},
                     '" + JsonSchemaPropertyInstructions + @"': {}
                   },
                   'required': [
-                    '" + JsonSchemaPropertyCondition + @"',
+                    '" + JsonSchemaPropertyItems + @"',
                     '" + JsonSchemaPropertyInstructions + @"'
                   ]
                 }
               },
               'required': [
-                '" + JsonSchemaPropertyWhile + @"'
+                '" + JsonSchemaPropertyForeach + @"'
               ]
             }")
     {
@@ -41,17 +44,17 @@ public sealed class JsonWhileExpressionFactory : AbstractJsonExpressionFactory<W
     }
 
     /// <exception cref="ArgumentNullException"></exception>
-    public override WhileExpression Create(JToken input)
+    public override ForeachExpression Create(JToken input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        JObject instruction = (JObject)input[JsonSchemaPropertyWhile]!;
-        JToken conditionInstruction = instruction[JsonSchemaPropertyCondition]!;
+        JObject instruction = (JObject)input[JsonSchemaPropertyForeach]!;
+        JToken itemsInstruction = instruction[JsonSchemaPropertyItems]!;
         JToken instructionsInstruction = instruction[JsonSchemaPropertyInstructions]!;
 
-        IExpression<Task<bool>> conditionExpression = _factory.Create<IExpression<Task<bool>>>(conditionInstruction);
+        IExpression<Task<object?[]>> itemsExpression = _factory.Create<IExpression<Task<object?[]>>>(itemsInstruction);
         IExpression<Task> innerExpression = _factory.Create<IExpression<Task>>(instructionsInstruction);
 
-        return new WhileExpression(conditionExpression, innerExpression);
+        return new ForeachExpression(itemsExpression, innerExpression);
     }
 }

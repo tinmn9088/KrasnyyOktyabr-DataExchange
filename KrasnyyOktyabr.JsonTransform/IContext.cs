@@ -7,10 +7,9 @@ namespace KrasnyyOktyabr.JsonTransform;
 /// </summary>
 public interface IContext
 {
-    /// <exception cref="ArgumentException"><paramref name="name"/> is <c>null</c> or empty.</exception>
+    /// <exception cref="ArgumentNullException"></exception>
     void MemorySet(string name, object? value);
 
-    /// <exception cref="ArgumentException"><paramref name="name"/> is empty.</exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="MemoryValueNotFoundException"></exception>
     object? MemoryGet(string name);
@@ -28,6 +27,12 @@ public interface IContext
 
     /// <returns>Deep copy of transformations result.</returns>
     JObject[] OutputGet();
+
+    /// <exception cref="ArgumentNullException"></exception>
+    void UpdateForeachCursor(string name, object? cursor, int index);
+
+    /// <exception cref="ArgumentNullException"></exception>
+    void ClearForeachCursor(string name);
 
     public class MemoryValueNotFoundException(string name) : Exception(name)
     {

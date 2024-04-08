@@ -26,6 +26,11 @@ public sealed class Context : IContext
     /// </summary>
     private readonly Dictionary<string, object?> _memory;
 
+    /// <summary>
+    /// Stores <see cref="Expressions.ForeachExpression"/> cursor and index.
+    /// </summary>
+    private readonly Dictionary<string, (object?, int)> _foreachCursors;
+
     /// <exception cref="ArgumentNullException"></exception>
     public Context(JObject input)
     {
@@ -34,18 +39,19 @@ public sealed class Context : IContext
         _input = input;
         _memory = [];
         _output = [];
+        _foreachCursors = [];
     }
 
     public void MemorySet(string name, object? value)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNull(name);
 
         _memory[name] = value;
     }
 
     public object? MemoryGet(string name)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNull(name);
 
         return _memory.TryGetValue(name, out object? value)
             ? value
@@ -98,5 +104,17 @@ public sealed class Context : IContext
     public JObject[] OutputGet()
     {
         return _output.Select(outputItem => (JObject)outputItem.DeepClone()).ToArray();
+    }
+
+    public void UpdateForeachCursor(string name, object? cursor, int index)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        _foreachCursors[name] = (cursor, index);
+    }
+
+    public void ClearForeachCursor(string name)
+    {
+        _foreachCursors.Remove(name);
     }
 }

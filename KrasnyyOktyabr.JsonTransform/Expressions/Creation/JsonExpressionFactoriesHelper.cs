@@ -15,4 +15,6 @@ public static class JsonExpressionFactoriesHelper
     public static string JsonSchemaPropertyRight => "right";
 
     public static string JsonSchemaPropertyCondition => "condition";
+
+    public static string JsonSchemaPropertyInstructions => "instructions";
 }
