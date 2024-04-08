@@ -24,6 +24,9 @@ public sealed class JsonForeachExpressionFactory : AbstractJsonExpressionFactory
                   'type': 'object',
                   'additionalProperties': false,
                   'properties': {
+                    '" + JsonSchemaPropertyName + @"': {
+                      'type': 'string'
+                    },
                     '" + JsonSchemaPropertyItems + @"': {},
                     '" + JsonSchemaPropertyInstructions + @"': {}
                   },
@@ -51,10 +54,18 @@ public sealed class JsonForeachExpressionFactory : AbstractJsonExpressionFactory
         JObject instruction = (JObject)input[JsonSchemaPropertyForeach]!;
         JToken itemsInstruction = instruction[JsonSchemaPropertyItems]!;
         JToken instructionsInstruction = instruction[JsonSchemaPropertyInstructions]!;
+        string? name = instruction[JsonSchemaPropertyName]?.Value<string>();
 
         IExpression<Task<object?[]>> itemsExpression = _factory.Create<IExpression<Task<object?[]>>>(itemsInstruction);
         IExpression<Task> innerExpression = _factory.Create<IExpression<Task>>(instructionsInstruction);
 
-        return new ForeachExpression(itemsExpression, innerExpression);
+        if (name != null)
+        {
+            return new ForeachExpression(itemsExpression, innerExpression, name);
+        }
+        else
+        {
+            return new ForeachExpression(itemsExpression, innerExpression);
+        }
     }
 }

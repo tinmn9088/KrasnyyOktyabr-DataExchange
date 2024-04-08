@@ -28,6 +28,7 @@ public class JsonForeachExpressionFactoryTests
                 JsonSchemaPropertyForeach,
                 new JObject()
                 {
+                    { JsonSchemaPropertyName, "TestName" },
                     { JsonSchemaPropertyItems, null },
                     { JsonSchemaPropertyInstructions, null },
                 }
@@ -118,6 +119,7 @@ public class JsonForeachExpressionFactoryTests
                 JsonSchemaPropertyForeach,
                 new JObject()
                 {
+                    { JsonSchemaPropertyName, "TestName" },
                     { JsonSchemaPropertyItems, fakeItemsInstruction },
                     { JsonSchemaPropertyInstructions, fakeInstructions },
                 }

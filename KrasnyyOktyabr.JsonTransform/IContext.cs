@@ -7,6 +7,10 @@ namespace KrasnyyOktyabr.JsonTransform;
 /// </summary>
 public interface IContext
 {
+    public static object? CursorNotFound => null;
+
+    public static int CursorIndexNotFound => -1;
+
     /// <exception cref="ArgumentNullException"></exception>
     void MemorySet(string name, object? value);
 
@@ -29,10 +33,24 @@ public interface IContext
     JObject[] OutputGet();
 
     /// <exception cref="ArgumentNullException"></exception>
-    void UpdateForeachCursor(string name, object? cursor, int index);
+    void UpdateCursor(string name, object? cursor, int index);
+
+    /// <returns>Cursor value or <see cref="CursorNotFound"/>.</returns>
+    object? GetCursor();
 
     /// <exception cref="ArgumentNullException"></exception>
-    void ClearForeachCursor(string name);
+    /// <returns>Cursor value or <see cref="CursorNotFound"/>.</returns>
+    object? GetCursor(string name);
+
+    /// <returns>Cursor index or <see cref="CursorIndexNotFound"/>.</returns>
+    int GetCursorIndex();
+
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <returns>Cursor index or <see cref="CursorIndexNotFound"/>.</returns>
+    int GetCursorIndex(string name);
+
+    /// <exception cref="ArgumentNullException"></exception>
+    void RemoveCursor(string name);
 
     public class MemoryValueNotFoundException(string name) : Exception(name)
     {

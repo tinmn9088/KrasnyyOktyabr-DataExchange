@@ -47,7 +47,7 @@ public class ForeachExpressionTests
 
         itemsExpressionMock.Verify(e => e.InterpretAsync(contextMock.Object, It.IsAny<CancellationToken>()), Times.Once);
         innerExpressionMock.Verify(e => e.InterpretAsync(contextMock.Object, It.IsAny<CancellationToken>()), Times.Exactly(items.Length));
-        contextMock.Verify(c => c.UpdateForeachCursor(It.IsAny<string>(), It.IsAny<object?>(), It.IsAny<int>()), Times.Exactly(items.Length));
-        contextMock.Verify(c => c.ClearForeachCursor(It.IsAny<string>()), Times.Once);
+        contextMock.Verify(c => c.UpdateCursor(It.IsAny<string>(), It.IsAny<object?>(), It.IsAny<int>()), Times.Exactly(items.Length));
+        contextMock.Verify(c => c.RemoveCursor(It.IsAny<string>()), Times.Once);
     }
 }

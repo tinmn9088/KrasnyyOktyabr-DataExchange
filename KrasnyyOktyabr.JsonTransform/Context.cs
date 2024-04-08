@@ -1,6 +1,7 @@
 ﻿using KrasnyyOktyabr.JsonTransform.Numerics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.JsonTransform.IContext;
 
 namespace KrasnyyOktyabr.JsonTransform;
 
@@ -26,10 +27,9 @@ public sealed class Context : IContext
     /// </summary>
     private readonly Dictionary<string, object?> _memory;
 
-    /// <summary>
-    /// Stores <see cref="Expressions.ForeachExpression"/> cursor and index.
-    /// </summary>
-    private readonly Dictionary<string, (object?, int)> _foreachCursors;
+    private readonly Dictionary<string, (object?, int)> _cursors;
+
+    private readonly List<string> _cursorNames;
 
     /// <exception cref="ArgumentNullException"></exception>
     public Context(JObject input)
@@ -39,7 +39,8 @@ public sealed class Context : IContext
         _input = input;
         _memory = [];
         _output = [];
-        _foreachCursors = [];
+        _cursors = [];
+        _cursorNames = [];
     }
 
     public void MemorySet(string name, object? value)
@@ -106,15 +107,85 @@ public sealed class Context : IContext
         return _output.Select(outputItem => (JObject)outputItem.DeepClone()).ToArray();
     }
 
-    public void UpdateForeachCursor(string name, object? cursor, int index)
+    public void UpdateCursor(string name, object? cursor, int index)
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        _foreachCursors[name] = (cursor, index);
+        if (!_cursors.ContainsKey(name))
+        {
+            _cursorNames.Add(name);
+        }
+
+        _cursors[name] = (cursor, index);
     }
 
-    public void ClearForeachCursor(string name)
+    public object? GetCursor()
     {
-        _foreachCursors.Remove(name);
+        if (!TryGetLastAddedCursorName(out string? name))
+        {
+            return CursorNotFound;
+        }
+
+        bool isPresent = _cursors.TryGetValue(name!, out (object?, int) cursorIndex);
+
+        return isPresent
+            ? cursorIndex.Item1
+            : CursorNotFound;
+    }
+
+    public object? GetCursor(string name)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        bool isPresent = _cursors.TryGetValue(name, out (object?, int) cursorIndex);
+
+        return isPresent
+            ? cursorIndex.Item1
+            : CursorNotFound;
+    }
+
+    public int GetCursorIndex()
+    {
+        if (!TryGetLastAddedCursorName(out string? name))
+        {
+            return CursorIndexNotFound;
+        }
+
+        bool isPresent = _cursors.TryGetValue(name!, out (object?, int) cursorIndex);
+
+        return isPresent
+            ? cursorIndex.Item2
+            : CursorIndexNotFound;
+    }
+
+    public int GetCursorIndex(string name)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        bool isPresent = _cursors.TryGetValue(name, out (object?, int) cursorIndex);
+
+        return isPresent
+            ? cursorIndex.Item2
+            : CursorIndexNotFound;
+    }
+
+    public void RemoveCursor(string name)
+    {
+        _cursorNames.Remove(name);
+        _cursors.Remove(name);
+    }
+
+    private bool TryGetLastAddedCursorName(out string? name)
+    {
+        name = null;
+
+        if (!_cursorNames.Any())
+        {
+            return false;
+        }
+
+        name = _cursorNames[_cursorNames.Count - 1];
+
+        return true;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.JsonTransform.IContext;
 using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Tests;
@@ -169,5 +170,77 @@ public class ContextTests
         Assert.IsTrue(JToken.DeepEquals(output[1], s_emptyJsonObject));
         Assert.AreEqual(1, output[2].Count);
         Assert.AreEqual(value, output[2][key]);
+    }
+
+    [TestMethod]
+    public void UpdateCursor_ShoudSaveCursor()
+    {
+        string cursor1Name = "Cursor1";
+        string cursor1LastValue = "LastValue1";
+        int cursor1LastIndex = 1;
+        string cursor2Name = "Cursor2";
+        string cursor2LastValue = "LastValue2";
+        int cursor2LastIndex = 0;
+
+        Assert.AreEqual(CursorNotFound, _context!.GetCursor());
+        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex());
+
+        // 1 start
+        _context!.UpdateCursor(cursor1Name, "TestValue1", 0);
+        _context!.UpdateCursor(cursor1Name, cursor1LastValue, cursor1LastIndex);
+
+        Assert.AreEqual(cursor1LastValue, _context.GetCursor());
+        Assert.AreEqual(cursor1LastIndex, _context.GetCursorIndex());
+
+        // 2 start
+        _context!.UpdateCursor(cursor2Name, cursor2LastValue, cursor2LastIndex);
+
+        Assert.AreEqual(cursor2LastValue, _context.GetCursor());
+        Assert.AreEqual(cursor2LastIndex, _context.GetCursorIndex());
+
+        // 2 end
+        _context.RemoveCursor(cursor2Name);
+
+        // 2 start again
+        _context!.UpdateCursor(cursor2Name, cursor2LastValue, cursor2LastIndex);
+
+        Assert.AreEqual(cursor2LastValue, _context.GetCursor());
+        Assert.AreEqual(cursor2LastIndex, _context.GetCursorIndex());
+
+        // 2 end
+        _context.RemoveCursor(cursor2Name);
+
+        Assert.AreEqual(cursor1LastValue, _context.GetCursor());
+        Assert.AreEqual(cursor1LastIndex, _context.GetCursorIndex());
+
+        // 1 end
+        _context.RemoveCursor(cursor1Name);
+
+        Assert.AreEqual(CursorNotFound, _context!.GetCursor());
+        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex());
+    }
+
+    [TestMethod]
+    public void GetCursor_WhenNoName_ShoudReturnNull()
+    {
+        Assert.AreEqual(CursorNotFound, _context!.GetCursor());
+    }
+
+    [TestMethod]
+    public void GetCursor_WhenNameInvalid_ShoudReturnNull()
+    {
+        Assert.AreEqual(CursorNotFound, _context!.GetCursor("InvalidName"));
+    }
+
+    [TestMethod]
+    public void GetCursorIndex_WhenNoName_ShoudReturnMinus1()
+    {
+        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex());
+    }
+
+    [TestMethod]
+    public void GetCursorIndex_WhenNameInvalid_ShoudReturnMinus1()
+    {
+        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex("InvalidName"));
     }
 }
