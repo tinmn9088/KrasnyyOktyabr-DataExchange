@@ -1,5 +1,4 @@
-﻿
-namespace KrasnyyOktyabr.JsonTransform.Expressions;
+﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 public class WhileExpression : AbstractExpression<Task>
 {
@@ -21,11 +20,11 @@ public class WhileExpression : AbstractExpression<Task>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        while (await _conditionExpression.InterpretAsync(context, cancellationToken))
+        while (await _conditionExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _innerExpression.InterpretAsync(context, cancellationToken);
+            await _innerExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -20,7 +20,7 @@ public sealed class CursorExpression : AbstractExpression<Task<object?>>
 
         if (_cursorNameExpression != null)
         {
-            string name = await _cursorNameExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
+            string name = await _cursorNameExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
             return context.GetCursor(name);
         }

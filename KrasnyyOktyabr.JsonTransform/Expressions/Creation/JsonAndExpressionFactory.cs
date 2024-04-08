@@ -1,5 +1,4 @@
-﻿
-namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+﻿namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
 public sealed class JsonAndExpressionFactory(IJsonAbstractExpressionFactory factory)
     : AbstractJsonBinaryBoolExpressionFactory<AndExpression>(JsonSchemaPropertyAnd, factory)

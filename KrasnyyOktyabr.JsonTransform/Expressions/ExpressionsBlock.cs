@@ -30,7 +30,7 @@ public sealed class ExpressionsBlock : AbstractExpression<Task<object?[]>>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            result[i] = await _expressions[i].InterpretAsync(context, cancellationToken);
+            result[i] = await _expressions[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
         }
 
         return result;

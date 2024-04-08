@@ -14,7 +14,7 @@ public abstract class AbstractCastExpression<T> : AbstractExpression<Task<T>>
 
     protected override async Task<T> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        object? innerExpressionTaskResult = await ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken));
+        object? innerExpressionTaskResult = await ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken)).ConfigureAwait(false);
 
         return Cast(innerExpressionTaskResult);
     }
@@ -28,7 +28,7 @@ public abstract class AbstractCastExpression<T> : AbstractExpression<Task<T>>
 
     private static async Task<object?> ExtractTaskResultAsync(Task task)
     {
-        await task;
+        await task.ConfigureAwait(false);
 
         return task.GetType()
             .GetProperty("Result")

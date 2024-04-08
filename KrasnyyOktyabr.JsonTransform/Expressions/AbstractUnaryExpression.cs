@@ -14,9 +14,9 @@ public abstract class AbstractUnaryExpression<TValue, TResult> : AbstractExpress
 
     protected override async Task<TResult> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        async Task<TValue> getValue() => await _valueExpression.InterpretAsync(context, cancellationToken);
+        async Task<TValue> getValue() => await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-        return await CalculateAsync(getValue);
+        return await CalculateAsync(getValue).ConfigureAwait(false);
     }
 
     protected abstract ValueTask<TResult> CalculateAsync(Func<Task<TValue>> value);

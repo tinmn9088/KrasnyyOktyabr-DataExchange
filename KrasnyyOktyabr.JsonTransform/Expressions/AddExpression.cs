@@ -32,11 +32,11 @@ public sealed class AddExpression : AbstractExpression<Task>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        string key = await _keyExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
-        object? value = await _valueExpression.InterpretAsync(context, cancellationToken);
+        string key = await _keyExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+        object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
         int index = _indexExpression != null
-            ? await _indexExpression.InterpretAsync(context, cancellationToken)
+            ? await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
             : 0;
 
         context.OutputAdd(key, value, index);

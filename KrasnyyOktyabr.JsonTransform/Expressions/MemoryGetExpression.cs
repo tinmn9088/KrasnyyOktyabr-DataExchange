@@ -1,5 +1,4 @@
-﻿
-namespace KrasnyyOktyabr.JsonTransform.Expressions;
+﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 public sealed class MemoryGetExpression : AbstractExpression<Task<object?>>
 {
@@ -16,7 +15,7 @@ public sealed class MemoryGetExpression : AbstractExpression<Task<object?>>
     /// <exception cref="NullReferenceException"></exception>
     protected override async Task<object?> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
     {
-        string name = await _nameExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
+        string name = await _nameExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
         return context.MemoryGet(name);
     }

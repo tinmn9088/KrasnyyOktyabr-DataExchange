@@ -29,7 +29,7 @@ public class ForeachExpression : AbstractExpression<Task>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        object?[] items = await _itemsExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
+        object?[] items = await _itemsExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
         string cursorName = _name ?? Mark ?? string.Empty;
 
@@ -39,7 +39,7 @@ public class ForeachExpression : AbstractExpression<Task>
 
             context.UpdateCursor(cursorName, items[i], i);
 
-            await _innerExpression.InterpretAsync(context, cancellationToken);
+            await _innerExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
         }
 
         context.RemoveCursor(cursorName);

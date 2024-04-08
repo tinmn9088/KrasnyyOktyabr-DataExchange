@@ -7,8 +7,8 @@ public class AreNotEqualExpression(IExpression<Task<object?>> leftExpression, IE
 {
     protected override async ValueTask<bool> CalculateAsync(Func<Task<object?>> getLeft, Func<Task<object?>> getRight)
     {
-        object? left = await getLeft();
-        object? right = await getRight();
+        object? left = await getLeft().ConfigureAwait(false);
+        object? right = await getRight().ConfigureAwait(false);
 
         if (left == right)
         {

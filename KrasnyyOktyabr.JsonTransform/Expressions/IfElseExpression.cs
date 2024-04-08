@@ -1,5 +1,4 @@
-﻿
-namespace KrasnyyOktyabr.JsonTransform.Expressions;
+﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 public sealed class IfElseExpression : AbstractExpression<Task>
 {
@@ -29,17 +28,17 @@ public sealed class IfElseExpression : AbstractExpression<Task>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (await _conditionExpression.InterpretAsync(context, cancellationToken))
+        if (await _conditionExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _thenExpression.InterpretAsync(context, cancellationToken);
+            await _thenExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
         }
         else if (_elseExpression != null)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _elseExpression.InterpretAsync(context, cancellationToken);
+            await _elseExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -29,7 +29,7 @@ public sealed class StringFormatExpression : AbstractExpression<Task<string>>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        string format = await _formatExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
+        string format = await _formatExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
         int argsCount = _argsExpression.Count;
 
@@ -39,7 +39,7 @@ public sealed class StringFormatExpression : AbstractExpression<Task<string>>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            args[i] = await _argsExpression[i].InterpretAsync(context, cancellationToken);
+            args[i] = await _argsExpression[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
         }
 
         return string.Format(format, args);

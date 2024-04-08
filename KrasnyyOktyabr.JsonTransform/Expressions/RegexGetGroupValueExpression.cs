@@ -37,11 +37,11 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        string regexString = await _regexExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
-        string input = await _inputExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
+        string regexString = await _regexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+        string input = await _inputExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
         int groupNumber = _groupNumberExpression != null
-            ? await _groupNumberExpression.InterpretAsync(context, cancellationToken)
+            ? await _groupNumberExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
             : 1;
 
         Regex regex = new(regexString);

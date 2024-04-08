@@ -27,10 +27,10 @@ public sealed class SelectExpression : AbstractExpression<Task<JToken?>>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        string path = await _pathExpression.InterpretAsync(context, cancellationToken) ?? throw new NullReferenceException();
+        string path = await _pathExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
         bool isOptional = _isOptionalExpression != null
-            && await _isOptionalExpression.InterpretAsync(context, cancellationToken);
+            && await _isOptionalExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
         return context.InputSelect(path) ?? (isOptional ? null : throw new PathReturnedNothingException(path, Mark));
     }

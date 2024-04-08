@@ -10,8 +10,6 @@ public sealed class DivideExpression(IExpression<Task<Number>> leftExpression, I
     : AbstractBinaryExpression<Number>(leftExpression, rightExpression)
 {
     /// <exception cref="DivideByZeroException"></exception>
-    protected override async ValueTask<Number> CalculateAsync(Func<Task<Number>> getLeft, Func<Task<Number>> getRight)
-    {
-        return await getLeft() / await getRight();
-    }
+    protected override async ValueTask<Number> CalculateAsync(Func<Task<Number>> getLeft, Func<Task<Number>> getRight) =>
+        await getLeft().ConfigureAwait(false) / await getRight().ConfigureAwait(false);
 }

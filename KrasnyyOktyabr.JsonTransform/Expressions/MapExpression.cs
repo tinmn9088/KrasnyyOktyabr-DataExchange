@@ -25,7 +25,7 @@ public sealed class MapExpression : AbstractExpression<Task<Dictionary<string, o
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            object? result = await keyAndExpression.Value.InterpretAsync(context, cancellationToken);
+            object? result = await keyAndExpression.Value.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
             keysAndResults.Add(keyAndExpression.Key, result);
         }
