@@ -7,8 +7,6 @@ public sealed class JsonWhileExpressionFactory : AbstractJsonExpressionFactory<W
 {
     public static string JsonSchemaPropertyWhile => "$while";
 
-    public static string JsonSchemaPropertyCondition => "condition";
-
     public static string JsonSchemaPropertyInstructions => "instructions";
 
     private readonly IJsonAbstractExpressionFactory _factory;

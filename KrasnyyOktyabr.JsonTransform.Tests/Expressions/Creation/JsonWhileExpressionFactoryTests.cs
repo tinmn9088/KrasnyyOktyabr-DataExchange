@@ -98,7 +98,7 @@ public class JsonWhileExpressionFactoryTests
     [TestMethod]
     public void Create_ShouldCreateWhileExpression()
     {
-        // Setting up name instruction mock
+        // Setting up condition instruction mock
         JObject fakeConditionInstruction = new();
         Mock<IExpression<Task<bool>>> conditionExpressionMock = new();
         _abstractFactoryMock!
