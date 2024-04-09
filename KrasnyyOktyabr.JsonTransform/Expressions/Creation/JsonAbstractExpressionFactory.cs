@@ -38,52 +38,138 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     /// <exception cref="UnknownInstructionException"></exception>
     public TOut Create<TOut>(JToken instruction) where TOut : IExpression<Task>
     {
-        IJsonExpressionFactory<IExpression<Task>> expressionFactory = GetJsonExpressionFactory(instruction);
+        List<IExpression<Task>> uncheckedExpressions = CreateMatchingExpressions<TOut>(instruction);
 
-        IExpression<Task> uncheckedExpression = expressionFactory.Create(instruction);
+        IExpression<Task>? resultExpression = null;
+
+        foreach (IExpression<Task> uncheckedExpression in uncheckedExpressions)
+        {
+            if (uncheckedExpression is TOut checkedExpression)
+            {
+                resultExpression = checkedExpression;
+            }
+            else if (ExpressionReturnsValue(uncheckedExpression))
+            {
+                if (typeof(TOut) == typeof(IExpression<Task<Number>>))
+                {
+                    if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
+                    {
+                        resultExpression = numberCastExpression!;
+                    }
+                }
+                else if (typeof(TOut) == typeof(IExpression<Task<object?>>))
+                {
+                    if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
+                    {
+                        resultExpression = numberCastExpression!;
+                    }
+
+                    resultExpression = new ObjectCastExpression(resultExpression ?? uncheckedExpression);
+                }
+            }
+        }
+
+        if (resultExpression == null)
+        {
+            throw new InvalidExpressionReturnTypeException(instruction, typeof(TOut), uncheckedExpressions[0].GetType());
+        }
 
         // Mark expression before return
-        uncheckedExpression.Mark = instruction.Path;
+        resultExpression.Mark = instruction.Path;
 
-        if (uncheckedExpression is TOut checkedExpression)
-        {
-            return checkedExpression;
-        }
-        else if (typeof(TOut) == typeof(IExpression<Task<Number>>))
-        {
-            if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
-            {
-                return (TOut)(object)numberCastExpression!;
-            }
-        }
-        else if (typeof(TOut) == typeof(IExpression<Task<object?>>))
-        {
-            if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
-            {
-                uncheckedExpression = numberCastExpression!;
-            }
-
-            return (TOut)(object)new ObjectCastExpression(uncheckedExpression);
-        }
-
-        throw new InvalidExpressionReturnTypeException(instruction, typeof(TOut), uncheckedExpression.GetType());
+        return (TOut)resultExpression;
     }
 
+    /// <returns>
+    /// <see cref="List{T}"/> where the last exression has the highest priority (always contains at least one item).
+    /// </returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="UnknownInstructionException"></exception>
-    private IJsonExpressionFactory<IExpression<Task>> GetJsonExpressionFactory(JToken instruction)
+    /// <exception cref="CannotCreateExpressionException"></exception>
+    private List<IExpression<Task>> CreateMatchingExpressions<TOut>(JToken instruction)
+    {
+        List<IJsonExpressionFactory<IExpression<Task>>> expressionFactories = GetMatchingJsonExpressionFactories(instruction);
+
+        List<IExpression<Task>> matchingExpressions = [];
+
+        for (int i = expressionFactories.Count - 1; i >= 0; i--)
+        {
+            try
+            {
+                matchingExpressions.Add(expressionFactories[i].Create(instruction));
+            }
+            catch (Exception)
+            {
+                if (typeof(TOut) == GetExpressionFactoryReturnType(expressionFactories[i])) // When factory return type is exactly what is asked to create, but creation failed
+                {
+                    throw;
+                }
+
+                if (matchingExpressions.Count == 0 && i == 0) // When tried all factories but the first and all they failed
+                {
+                    throw;
+                }
+            }
+        }
+
+        if (matchingExpressions.Count == 0)
+        {
+            throw new CannotCreateExpressionException(instruction, typeof(TOut), expressionFactories.Count);
+        }
+
+        return matchingExpressions;
+    }
+
+    /// <returns>
+    /// <see cref="List{T}"/> where the first factory has the highest priority (always contains at least one item).
+    /// </returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="UnknownInstructionException"></exception>
+    private List<IJsonExpressionFactory<IExpression<Task>>> GetMatchingJsonExpressionFactories(JToken instruction)
     {
         ArgumentNullException.ThrowIfNull(instruction);
+
+        List<IJsonExpressionFactory<IExpression<Task>>> matchingExpressionFactories = [];
 
         foreach (IJsonExpressionFactory<IExpression<Task>> expressionFactory in _expressionFactories)
         {
             if (expressionFactory.Match(instruction))
             {
-                return expressionFactory;
+                matchingExpressionFactories.Add(expressionFactory);
             }
         }
 
-        throw new UnknownInstructionException(instruction);
+        if (matchingExpressionFactories.Count == 0)
+        {
+            throw new UnknownInstructionException(instruction);
+        }
+
+        return matchingExpressionFactories;
+    }
+
+    /// <summary>
+    /// Determines <see cref="IJsonExpressionFactory{TOut}"/> parameter type.
+    /// </summary>
+    private static Type GetExpressionFactoryReturnType(IJsonExpressionFactory<IExpression<Task>> factory)
+    {
+        return factory.GetType()
+            .GetInterfaces()
+            .Where(i => i.IsAssignableTo(typeof(IJsonExpressionFactory<IExpression<Task>>))) // Is guaranteed to match one interface 
+            .First()
+            .GetGenericArguments()
+            .First();
+    }
+
+    /// <summary>
+    /// Determines if expression returns parameterized <see cref="Task"/> i.e. returns value.
+    /// </summary>
+    private static bool ExpressionReturnsValue(IExpression<Task> expression)
+    {
+        return expression.GetType()
+            .GetInterfaces()
+            .Where(i => i.IsAssignableTo(typeof(IExpression<Task>))) // Is guaranteed to match one interface 
+            .First()
+            .GetGenericArguments()[0].IsGenericType;
     }
 
     /// <param name="numberCastExpression"><paramref name="uncheckedExpression"/> wrapped in <see cref="NumberCastExpression"/> or <c>null</c>.</param>
@@ -116,6 +202,13 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     public class InvalidExpressionReturnTypeException : Exception
     {
         internal InvalidExpressionReturnTypeException(JToken value, Type expected, Type actual) : base($"At '{value.Path}' got '{BuildTypeNameWithParameters(actual)}' instead of '{BuildTypeNameWithParameters(expected)}'")
+        {
+        }
+    }
+
+    public class CannotCreateExpressionException : Exception
+    {
+        internal CannotCreateExpressionException(JToken value, Type expected, int factoriesCount) : base($"At '{value.Path}' cannot create expression '{BuildTypeNameWithParameters(expected)}' ({factoriesCount} failed)")
         {
         }
     }

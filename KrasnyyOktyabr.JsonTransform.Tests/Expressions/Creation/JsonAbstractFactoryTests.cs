@@ -158,7 +158,7 @@ public class JsonAbstractFactoryTests
     {
         // Setting up expression factory mock
         Mock<IJsonExpressionFactory<IExpression<Task>>> factoryMock = new();
-        Mock<IExpression<Task>> createdExpressionMock = new();
+        Mock<IExpression<Task<string>>> createdExpressionMock = new();
         factoryMock
             .Setup(mf => mf.Match(It.IsAny<JToken>()))
             .Returns(true);
@@ -346,6 +346,7 @@ public class JsonAbstractFactoryTests
         JsonMemoryGetExpressionFactory memoryGetExpressionFactory = new(_abstractFactory!);
         JsonForeachExpressionFactory foreachExpressionFactory = new(_abstractFactory!);
         JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
+        JsonArrayExpressionFactory arrayExpressioFactory = new(_abstractFactory!);
         JsonExpressionsBlockFactory expressionsBlockFactory = new(_abstractFactory!);
         JsonCastExpressionsFactory castExpressionsFactory = new(_abstractFactory!);
         JsonCursorExpressionFactory cursorExpressionFactory = new(_abstractFactory!);
@@ -358,8 +359,9 @@ public class JsonAbstractFactoryTests
             memorySetExpressionFactory,
             memoryGetExpressionFactory,
             foreachExpressionFactory,
-            sumExpressionFactory,
+            arrayExpressioFactory,
             expressionsBlockFactory,
+            sumExpressionFactory,
             castExpressionsFactory,
             cursorExpressionFactory,
             addExpressionFactory,

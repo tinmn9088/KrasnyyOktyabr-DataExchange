@@ -2,14 +2,11 @@
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-/// <remarks>
-/// Overlaps JSON Schema of <see cref="JsonArrayExpressionFactory"/>!
-/// </remarks>
-public sealed class JsonExpressionsBlockFactory : AbstractJsonExpressionFactory<ExpressionsBlock>
+public sealed class JsonArrayExpressionFactory : AbstractJsonExpressionFactory<ArrayExpression>
 {
     private readonly IJsonAbstractExpressionFactory _factory;
 
-    public JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory factory)
+    public JsonArrayExpressionFactory(IJsonAbstractExpressionFactory factory)
         : base(@"{
               'type': 'array'
             }")
@@ -21,17 +18,17 @@ public sealed class JsonExpressionsBlockFactory : AbstractJsonExpressionFactory<
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"><paramref name="input"/> is not <see cref="JArray"/>.</exception>
-    public override ExpressionsBlock Create(JToken input)
+    public override ArrayExpression Create(JToken input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
         if (input is JArray instructions)
         {
-            List<IExpression<Task>> expressions = instructions
-                .Select(_factory.Create<IExpression<Task>>)
+            List<IExpression<Task<object?>>> expressions = instructions
+                .Select(_factory.Create<IExpression<Task<object?>>>)
                 .ToList();
 
-            return new ExpressionsBlock(expressions);
+            return new ArrayExpression(expressions);
         }
         else
         {
