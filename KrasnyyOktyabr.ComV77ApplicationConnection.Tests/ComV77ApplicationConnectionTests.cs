@@ -1,6 +1,10 @@
-﻿namespace KrasnyyOktyabr.ComV77ApplicationConnection.Tests;
+﻿using System.Runtime.Versioning;
+using KrasnyyOktyabr.ComV77ApplicationConnection.Contracts.Configuration;
+
+namespace KrasnyyOktyabr.ComV77ApplicationConnection.Tests;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public class ComV77ApplicationConnectionTests
 {
     [TestMethod]
@@ -10,8 +14,8 @@ public class ComV77ApplicationConnectionTests
         string username = "TestUsername";
         string password = "TestPassword";
 
-        IComV77ApplicationConnection.Properties properties = new(infobasePath, username, password);
-        IComV77ApplicationConnection.Properties propertiesCopy = properties with { };
+        ConnectionProperties properties = new(infobasePath, username, password);
+        ConnectionProperties propertiesCopy = properties with { };
 
         Assert.AreNotSame(properties, propertiesCopy);
         Assert.AreEqual(properties, propertiesCopy);
@@ -25,11 +29,11 @@ public class ComV77ApplicationConnectionTests
         string username = "TestUsername";
         string password = "TestPassword";
 
-        Dictionary<IComV77ApplicationConnection.Properties, object?> properties = [];
+        Dictionary<ConnectionProperties, object?> properties = [];
 
-        IComV77ApplicationConnection.Properties properties1 = new(infobasePath1, username, password);
-        IComV77ApplicationConnection.Properties properties1Copy = properties1 with { };
-        IComV77ApplicationConnection.Properties properties2 = new(infobasePath2, username, password);
+        ConnectionProperties properties1 = new(infobasePath1, username, password);
+        ConnectionProperties properties1Copy = properties1 with { };
+        ConnectionProperties properties2 = new(infobasePath2, username, password);
 
         Assert.IsTrue(properties.TryAdd(properties1, null));
         Assert.IsFalse(properties.TryAdd(properties1Copy, null));

@@ -1,8 +1,14 @@
-﻿namespace KrasnyyOktyabr.ComV77ApplicationConnection;
+﻿using System.Runtime.Versioning;
 
+namespace KrasnyyOktyabr.ComV77ApplicationConnection;
+
+/// <summary>
+/// Represents connection to <c>V77.Application</c> COM object.
+/// </summary>
+[SupportedOSPlatform("windows")]
 public interface IComV77ApplicationConnection : IAsyncDisposable
 {
-    Task ConnectAsync(Properties properties, CancellationToken cancellationToken);
+    Task ConnectAsync(CancellationToken cancellationToken);
 
-    public record Properties(string InfobasePath, string Username, string Password);
+    Task<object?> RunErtAsync(string ertName, Dictionary<string, string>? ertContext, string? resultName, CancellationToken cancellationToken);
 }
