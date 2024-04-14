@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KrasnyyOktyabr.ComV77ApplicationConnection\KrasnyyOktyabr.ComV77ApplicationConnection.csproj" />
+    <ProjectReference Include="..\KrasnyyOktyabr.ComV77Application\KrasnyyOktyabr.ComV77Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

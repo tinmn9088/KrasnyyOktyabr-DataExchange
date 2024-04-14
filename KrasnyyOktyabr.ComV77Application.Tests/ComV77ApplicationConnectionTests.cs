@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Versioning;
-using KrasnyyOktyabr.ComV77ApplicationConnection.Contracts.Configuration;
+using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 
-namespace KrasnyyOktyabr.ComV77ApplicationConnection.Tests;
+namespace KrasnyyOktyabr.ComV77Application.Tests;
 
 [TestClass]
 [SupportedOSPlatform("windows")]

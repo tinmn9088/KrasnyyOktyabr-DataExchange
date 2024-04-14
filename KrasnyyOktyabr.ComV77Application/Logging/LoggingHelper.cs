@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace KrasnyyOktyabr.ComV77ApplicationConnection.Logging;
+namespace KrasnyyOktyabr.ComV77Application.Logging;
 
 public static partial class LoggingHelper
 {

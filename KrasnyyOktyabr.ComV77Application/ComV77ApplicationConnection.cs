@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using KrasnyyOktyabr.ComV77ApplicationConnection.Contracts.Configuration;
+using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ComV77ApplicationConnection.Logging.LoggingHelper;
+using static KrasnyyOktyabr.ComV77Application.Logging.LoggingHelper;
 
-namespace KrasnyyOktyabr.ComV77ApplicationConnection;
+namespace KrasnyyOktyabr.ComV77Application;
 
 [SupportedOSPlatform("windows")]
 public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection

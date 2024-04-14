@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Versioning;
 
-namespace KrasnyyOktyabr.ComV77ApplicationConnection;
+namespace KrasnyyOktyabr.ComV77Application;
 
 /// <summary>
 /// Represents connection to <c>V77.Application</c> COM object.
