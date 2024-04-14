@@ -6,4 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KrasnyyOktyabr.ComV77Application\KrasnyyOktyabr.ComV77Application.csproj" />
+    <ProjectReference Include="..\KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj" />
+  </ItemGroup>
+
 </Project>
