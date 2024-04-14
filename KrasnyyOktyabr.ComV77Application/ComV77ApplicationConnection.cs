@@ -242,7 +242,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     }
 
     /// <exception cref="OperationCanceledException"></exception>
-    public async Task<object?> RunErtAsync(string ertName, Dictionary<string, string>? ertContext, string? resultName, CancellationToken cancellationToken = default)
+    public async Task<object?> RunErtAsync(string ertRelativePath, Dictionary<string, object?>? ertContext, string? resultName, CancellationToken cancellationToken = default)
     {
         await _connectionLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -250,7 +250,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         {
             CheckCurrentState(isInitializing: false);
 
-            string ertFullPath = Path.Combine(_properties.InfobasePath, ertName);
+            string ertFullPath = Path.Combine(_properties.InfobasePath, ertRelativePath);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -264,7 +264,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 
             if (ertContext != null)
             {
-                foreach (KeyValuePair<string, string> nameValue in ertContext)
+                foreach (KeyValuePair<string, object?> nameValue in ertContext)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

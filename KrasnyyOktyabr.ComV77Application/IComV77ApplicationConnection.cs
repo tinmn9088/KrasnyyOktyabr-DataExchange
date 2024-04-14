@@ -10,5 +10,5 @@ public interface IComV77ApplicationConnection : IAsyncDisposable
 {
     Task ConnectAsync(CancellationToken cancellationToken);
 
-    Task<object?> RunErtAsync(string ertName, Dictionary<string, string>? ertContext, string? resultName, CancellationToken cancellationToken);
+    Task<object?> RunErtAsync(string ertRelativePath, Dictionary<string, object?>? ertContext, string? resultName, CancellationToken cancellationToken);
 }
