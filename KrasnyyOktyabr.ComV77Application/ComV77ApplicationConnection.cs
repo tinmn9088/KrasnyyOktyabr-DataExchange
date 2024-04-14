@@ -408,7 +408,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         GC.WaitForPendingFinalizers();
     }
 
-    public sealed class Factory(ILogger<ComV77ApplicationConnection> logger) : IComV77ApplicationConnectionFactory<ComV77ApplicationConnection>
+    public sealed class Factory(ILogger<ComV77ApplicationConnection> logger) : IComV77ApplicationConnectionFactory
     {
         private readonly SemaphoreSlim _factoryLock = new(1);
 
@@ -417,7 +417,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         private bool _isDisposed = false;
 
         /// <exception cref="ObjectDisposedException"></exception>
-        public async Task<ComV77ApplicationConnection> GetConnectionAsync(ConnectionProperties connectionProperties, CancellationToken cancellationToken = default)
+        public async Task<IComV77ApplicationConnection> GetConnectionAsync(ConnectionProperties connectionProperties, CancellationToken cancellationToken = default)
         {
             await _factoryLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 

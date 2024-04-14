@@ -2,7 +2,7 @@
 
 namespace KrasnyyOktyabr.ComV77Application;
 
-public interface IComV77ApplicationConnectionFactory<TOut> : IAsyncDisposable where TOut : IComV77ApplicationConnection
+public interface IComV77ApplicationConnectionFactory : IAsyncDisposable
 {
-    Task<TOut> GetConnectionAsync(ConnectionProperties connectionProperties, CancellationToken cancellationToken = default);
+    Task<IComV77ApplicationConnection> GetConnectionAsync(ConnectionProperties connectionProperties, CancellationToken cancellationToken = default);
 }
