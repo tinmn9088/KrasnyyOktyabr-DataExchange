@@ -417,9 +417,9 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         private bool _isDisposed = false;
 
         /// <exception cref="ObjectDisposedException"></exception>
-        public async Task<ComV77ApplicationConnection> GetConnectionAsync(ConnectionProperties connectionProperties)
+        public async Task<ComV77ApplicationConnection> GetConnectionAsync(ConnectionProperties connectionProperties, CancellationToken cancellationToken = default)
         {
-            await _factoryLock.WaitAsync().ConfigureAwait(false);
+            await _factoryLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -427,7 +427,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 
                 if (_propertiesConnections.TryGetValue(connectionProperties, out ComV77ApplicationConnection? connection))
                 {
-                    await connection._connectionLock.WaitAsync().ConfigureAwait(false);
+                    await connection._connectionLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
                     try
                     {
