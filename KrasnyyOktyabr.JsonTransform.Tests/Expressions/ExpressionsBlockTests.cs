@@ -23,8 +23,6 @@ public class ExpressionsBlockTests
     [TestMethod]
     public async Task InterpretAsync_ShouldRunExpressions()
     {
-        string testValue = "TestValue";
-
         // Setting up expression mock
         Mock<IExpression<Task>> expressionMock = new();
         expressionMock

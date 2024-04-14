@@ -169,7 +169,9 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
             .GetInterfaces()
             .Where(i => i.IsAssignableTo(typeof(IExpression<Task>))) // Is guaranteed to match one interface 
             .First()
-            .GetGenericArguments()[0].IsGenericType;
+            .GetGenericArguments()
+            .First()
+            .IsGenericType;
     }
 
     /// <param name="numberCastExpression"><paramref name="uncheckedExpression"/> wrapped in <see cref="NumberCastExpression"/> or <c>null</c>.</param>
