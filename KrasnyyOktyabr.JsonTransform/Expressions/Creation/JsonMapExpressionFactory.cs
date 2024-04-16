@@ -20,7 +20,10 @@ public sealed class JsonMapExpressionFactory : AbstractJsonExpressionFactory<Map
                 '" + JsonSchemaPropertyMap + @"': {
                   'type': 'object'
                 }
-              }
+              },
+              'required': [
+                '" + JsonSchemaPropertyMap + @"'
+              ]
             }")
     {
         ArgumentNullException.ThrowIfNull(factory);
@@ -35,7 +38,6 @@ public sealed class JsonMapExpressionFactory : AbstractJsonExpressionFactory<Map
         JObject instruction = (JObject)input[JsonSchemaPropertyMap]!;
 
         Dictionary<string, IExpression<Task<object?>>> keysAndExpressions = [];
-
 
         foreach (KeyValuePair<string, JToken?> keyAndInstruction in instruction)
         {
