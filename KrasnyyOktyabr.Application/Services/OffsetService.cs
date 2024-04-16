@@ -2,9 +2,15 @@
 
 namespace KrasnyyOktyabr.Application.Services;
 
-public class OffsetService : IOffsetService
+public sealed class OffsetService : IOffsetService
 {
     public static string OffsetsFilePath => "offsets.json";
+
+    private static readonly JsonSerializerOptions s_jsonSerializedOptions = new()
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // To print cyrillic letters
+    };
 
     /// <summary>
     /// Prevents race conditions.
@@ -51,7 +57,7 @@ public class OffsetService : IOffsetService
 
             stream.SetLength(0); // Truncate file
 
-            await JsonSerializer.SerializeAsync(stream, offsets, new JsonSerializerOptions { WriteIndented = true }, cancellationToken);
+            await JsonSerializer.SerializeAsync(stream, offsets, s_jsonSerializedOptions, cancellationToken);
         }
         finally
         {

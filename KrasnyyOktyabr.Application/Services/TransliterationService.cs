@@ -2,7 +2,7 @@
 
 namespace KrasnyyOktyabr.Application.Services;
 
-public class TransliterationService : ITransliterationService
+public sealed class TransliterationService : ITransliterationService
 {
     private static readonly Dictionary<char, string> s_cyrillicCharacterMappings = new()
     {

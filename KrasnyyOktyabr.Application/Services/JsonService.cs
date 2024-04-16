@@ -1,26 +1,42 @@
 ﻿using KrasnyyOktyabr.JsonTransform;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.Application.Services.IJsonService;
 
 namespace KrasnyyOktyabr.Application.Services;
 
-public class JsonService : IJsonService
+public sealed class JsonService : IJsonService
 {
-    public string RemoveEmptyPropertiesAndAdd(string jsonObject, Dictionary<string, object?> propertiesToAdd)
+    public V77ApplicationProducerMessageData BuildV77ApplicationProducerMessageData(
+        string objectJson,
+        Dictionary<string, object?> propertiesToAdd,
+        string dataTypePropertyName)
     {
-        ArgumentNullException.ThrowIfNull(jsonObject);
+        ArgumentNullException.ThrowIfNull(objectJson);
         ArgumentNullException.ThrowIfNull(propertiesToAdd);
+        ArgumentNullException.ThrowIfNull(dataTypePropertyName);
 
-        JObject jObject = ParseJsonObject(jsonObject);
+        JObject jObject = ParseJsonObject(objectJson);
 
         JsonHelper.RemoveEmptyProperties(jObject);
 
-        return AddPropertiesAndSerialize(jObject, propertiesToAdd);
+        AddProperties(jObject, propertiesToAdd);
+
+        string dataType = (jObject[dataTypePropertyName] ?? throw new FailedToGetDataTypeException(dataTypePropertyName))
+            .Value<string>() ?? throw new FailedToGetDataTypeException(dataTypePropertyName);
+
+        return new()
+        {
+            ObjectJson = jObject.ToString(Formatting.None),
+            DataType = dataType,
+        };
     }
 
     /// <exception cref="ArgumentException"></exception>
     private static JObject ParseJsonObject(string jsonObject)
     {
+        ArgumentNullException.ThrowIfNull(jsonObject);
+
         try
         {
             return JObject.Parse(jsonObject);
@@ -31,13 +47,11 @@ public class JsonService : IJsonService
         }
     }
 
-    private static string AddPropertiesAndSerialize(JObject jObject, Dictionary<string, object?> propertiesToAdd)
+    private static void AddProperties(JObject jObject, Dictionary<string, object?> propertiesToAdd)
     {
         foreach (KeyValuePair<string, object?> property in propertiesToAdd)
         {
             jObject[property.Key] = JToken.FromObject(property.Value ?? JValue.CreateNull());
         }
-
-        return jObject.ToString(Formatting.None);
     }
 }
