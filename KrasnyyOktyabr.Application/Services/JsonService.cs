@@ -1,11 +1,13 @@
 ﻿using KrasnyyOktyabr.JsonTransform;
+using KrasnyyOktyabr.JsonTransform.Expressions;
+using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
 
 namespace KrasnyyOktyabr.Application.Services;
 
-public sealed class JsonService : IJsonService
+public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonService
 {
     public V77ApplicationProducerMessageData BuildV77ApplicationProducerMessageData(
         string objectJson,
@@ -30,6 +32,37 @@ public sealed class JsonService : IJsonService
             ObjectJson = jObject.ToString(Formatting.None),
             DataType = dataType,
         };
+    }
+
+    public async Task RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
+    {
+        JObject? request = null;
+
+        using (StreamReader inputStreamReader = new(inputStream))
+        {
+            request = await JObject.LoadAsync(new JsonTextReader(inputStreamReader), cancellationToken);
+        }
+
+        if (!request.ContainsKey(InstructionsPropertyName))
+        {
+            throw new ArgumentException($"'{InstructionsPropertyName}' property missing");
+        }
+
+        if (!request.ContainsKey(InputPropertyName))
+        {
+            throw new ArgumentException($"'{InputPropertyName}' property missing");
+        }
+
+        IExpression<Task> expression = factory.Create<IExpression<Task>>(request[InstructionsPropertyName]!);
+
+        JObject input = JObject.FromObject(request[InputPropertyName] ?? throw new ArgumentException($"'{InputPropertyName}' is empty"));
+
+        Context context = new(input);
+
+        await expression.InterpretAsync(context, cancellationToken);
+
+        await using StreamWriter streamWriter = new(outputStream);
+        JsonSerializer.CreateDefault().Serialize(streamWriter, new JArray(context.OutputGet()));
     }
 
     /// <exception cref="ArgumentException"></exception>

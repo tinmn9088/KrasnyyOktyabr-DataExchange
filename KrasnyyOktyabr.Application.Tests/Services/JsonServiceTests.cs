@@ -1,11 +1,15 @@
-﻿using static KrasnyyOktyabr.Application.Services.IJsonService;
+﻿using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+using Moq;
+using static KrasnyyOktyabr.Application.Services.IJsonService;
 
 namespace KrasnyyOktyabr.Application.Services.Tests;
 
 [TestClass]
 public class JsonServiceTests
 {
-    private static readonly JsonService s_jsonService = new();
+    private static readonly Mock<IJsonAbstractExpressionFactory> s_factoryMock = new();
+
+    private static readonly JsonService s_jsonService = new(s_factoryMock.Object);
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]

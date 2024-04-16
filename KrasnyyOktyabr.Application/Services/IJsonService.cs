@@ -9,6 +9,10 @@ public interface IJsonService
         public required string DataType { get; init; }
     }
 
+    public static string InstructionsPropertyName => "instructions";
+
+    public static string InputPropertyName => "input";
+
     /// <summary>
     /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,
     /// add properties from <paramref name="propertiesToAdd"/>
@@ -17,6 +21,9 @@ public interface IJsonService
     /// <param name="dataType"></param>
     /// <exception cref="FailedToGetDataTypeException"></exception>
     V77ApplicationProducerMessageData BuildV77ApplicationProducerMessageData(string objectJson, Dictionary<string, object?> propertiesToAdd, string dataTypePropertyName);
+
+    /// <exception cref="Exception"></exception>
+    Task RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken);
 
     public class FailedToGetDataTypeException : Exception
     {
