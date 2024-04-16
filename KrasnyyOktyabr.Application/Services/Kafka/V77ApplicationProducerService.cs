@@ -7,6 +7,7 @@ using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
 using static KrasnyyOktyabr.Application.Services.IV77ApplicationLogService;
+using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
@@ -44,7 +45,8 @@ public sealed partial class V77ApplicationProducerService(
         ILogger logger,
         CancellationToken cancellationToken);
 
-    public delegate Task SendObjectJsonsAsync(
+    /// <returns>Sent objects count.</returns>
+    public delegate Task<int> SendObjectJsonsAsync(
         V77ApplicationProducerSettings settings,
         List<LogTransaction> logTransactions,
         List<string> objectJsons,
@@ -75,6 +77,36 @@ public sealed partial class V77ApplicationProducerService(
     /// </para>
     /// </summary>
     private Dictionary<string, V77ApplicationProducer>? _producers;
+
+    public List<V77ApplicationProducerStatus> GetStatus()
+    {
+        if (_producers == null || _producers.Count == 0)
+        {
+            return [];
+        }
+
+        List<V77ApplicationProducerStatus> producerStatuses = new(_producers.Count);
+
+        foreach (V77ApplicationProducer producer in _producers.Values)
+        {
+            producerStatuses.Add(new()
+            {
+                Active = producer.Active,
+                LastActivity = producer.LastActivity,
+                ErrorMessage = producer.Error?.Message,
+                ObjectFilters = producer.ObjectFilters,
+                TransactionTypes = producer.TransactionTypes,
+                GotLogTransactions = producer.GotFromLog,
+                Fetched = producer.Fetched,
+                Produced = producer.Produced,
+                InfobasePath = producer.InfobaseFullPath,
+                Username = producer.Username,
+                DataTypeJsonPropertyName = producer.DataTypeJsonPropertyName,
+            });
+        }
+
+        return producerStatuses;
+    }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -237,6 +269,8 @@ public sealed partial class V77ApplicationProducerService(
 
         string infobasePubName = GetInfobasePubName(settings.InfobasePath);
 
+        int sentObjectsCount = 0;
+
         foreach (V77ApplicationProducerMessageData messageData in messagesData)
         {
             Message<string, string> kafkaMessage = new()
@@ -248,7 +282,11 @@ public sealed partial class V77ApplicationProducerService(
             string topicName = kafkaService.BuildTopicName(infobasePubName, messageData.DataType);
 
             await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken);
+
+            sentObjectsCount++;
         }
+
+        return sentObjectsCount;
     };
 
     /// <summary>
@@ -356,12 +394,12 @@ public sealed partial class V77ApplicationProducerService(
 
         private readonly SendObjectJsonsAsync _sendObjectJsonsTask;
 
+        private bool _isDisposed;
+
         /// <remarks>
         /// Has to be disposed.
         /// </remarks>
         private readonly CancellationTokenSource _cancellationTokenSource;
-
-        private Task? _currentProcessingTask;
 
         public V77ApplicationProducer(
             V77ApplicationProducerSettings settings,
@@ -408,31 +446,73 @@ public sealed partial class V77ApplicationProducerService(
             _getObjectJsonsTask = getObjectJsonsTask;
             _sendObjectJsonsTask = sendObjectJsonsTask;
 
-            _currentProcessingTask = null;
+            CurrentProcessing = null;
             _cancellationTokenSource = new();
+
+            _isDisposed = false;
         }
 
         public string Key => _infobaseFullPath;
 
-        public Task? CurrentProcessing => _currentProcessingTask;
+        public bool Active => _watcher.EnableRaisingEvents;
+
+        public string InfobaseFullPath => _infobaseFullPath;
+
+        public string Username => _settings.Username;
+
+        public DateTimeOffset LastActivity { get; private set; }
+
+        public int GotFromLog { get; private set; }
+
+        public int Fetched { get; private set; }
+
+        public int Produced { get; private set; }
+
+        public string DataTypeJsonPropertyName => _settings.DataTypeJsonPropertyName;
+
+        public IReadOnlyList<ObjectFilter> ObjectFilters => _objectFilters.AsReadOnly();
+
+        public IReadOnlyList<string> TransactionTypes => _settings.TransactionTypeFilters;
+
+        public Task? CurrentProcessing { get; private set; }
+
+        public Exception? Error { get; private set; }
 
         public async ValueTask DisposeAsync()
         {
-            _watcher.EnableRaisingEvents = false;
-            _watcher.Dispose();
-
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource.Dispose();
-
-            if (_currentProcessingTask != null)
+            if (!_isDisposed)
             {
-                await _currentProcessingTask.WaitAsync(CancellationToken.None);
+                _logger.Disposing(_infobaseFullPath);
+
+                _watcher.EnableRaisingEvents = false;
+                _watcher.Dispose();
+
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+
+                if (CurrentProcessing != null)
+                {
+                    await CurrentProcessing.WaitAsync(CancellationToken.None);
+                }
+
+                _isDisposed = true;
+            }
+            else
+            {
+                _logger.AlreadyDisposed(_infobaseFullPath);
             }
         }
 
         private void OnInfobaseChange(object sender, FileSystemEventArgs e)
         {
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
+
+            if (Error != null)
+            {
+                _logger.ErrorsExceeded(_infobaseFullPath);
+
+                return;
+            }
 
             if (_watcherHandlersLock.Wait(0))
             {
@@ -448,9 +528,9 @@ public sealed partial class V77ApplicationProducerService(
 
                             await Task.Delay(MinChangesInterval, cancellationToken).ConfigureAwait(false);
 
-                            _currentProcessingTask = ProcessChanges(cancellationToken);
+                            CurrentProcessing = ProcessChanges(cancellationToken);
 
-                            await _currentProcessingTask.ConfigureAwait(false);
+                            await CurrentProcessing.ConfigureAwait(false);
                         }
                         finally
                         {
@@ -463,7 +543,11 @@ public sealed partial class V77ApplicationProducerService(
                     }
                     catch (Exception ex)
                     {
-                        _logger.ErrorOnInfobaseChanges(ex, ex);
+                        Error = ex;
+
+                        _logger.ErrorOnInfobaseChange(ex, ex);
+
+                        await DisposeAsync().ConfigureAwait(false);
                     }
                     finally
                     {
@@ -490,6 +574,8 @@ public sealed partial class V77ApplicationProducerService(
                 return;
             }
 
+            GotFromLog += getLogTransactionsResult.Transactions.Count;
+
             List<string> objectJsons = await _getObjectJsonsTask(
                 _settings,
                 getLogTransactionsResult.Transactions,
@@ -498,13 +584,17 @@ public sealed partial class V77ApplicationProducerService(
                 _logger,
                 cancellationToken);
 
-            await _sendObjectJsonsTask(
+            Fetched += objectJsons.Count;
+
+            int sentObjectsCount = await _sendObjectJsonsTask(
                 _settings,
                 getLogTransactionsResult.Transactions,
                 objectJsons,
                 _jsonService,
                 _kafkaService,
                 cancellationToken);
+
+            Produced += sentObjectsCount;
 
             await CommitOffset(
                 _offsetService,

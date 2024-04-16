@@ -1,8 +1,11 @@
 using System.Runtime.InteropServices;
 using System.Text;
+using KrasnyyOktyabr.Application.DependencyInjection;
+using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
 using KrasnyyOktyabr.Application.Services.Kafka;
-using KrasnyyOktyabr.ComV77Application;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -15,7 +18,8 @@ builder.Services.Configure<HostOptions>(options =>
     options.ServicesStopConcurrently = true;
 });
 
-builder.Services.AddHealthChecks();
+IHealthChecksBuilder healthChecksBuilder = builder.Services.AddHealthChecks();
+
 builder.Services.AddSingleton<IOffsetService, OffsetService>();
 builder.Services.AddSingleton<IJsonService, JsonService>();
 builder.Services.AddSingleton<ITransliterationService, TransliterationService>();
@@ -23,13 +27,14 @@ builder.Services.AddSingleton<IKafkaService, KafkaService>();
 
 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 {
-    builder.Services.AddSingleton<IV77ApplicationLogService, V77ApplicationLogService>();
-    builder.Services.AddHostedService<V77ApplicationProducerService>();
-    builder.Services.AddSingleton<IComV77ApplicationConnectionFactory, ComV77ApplicationConnection.Factory>();
+    builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
 }
 
 WebApplication app = builder.Build();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new HealthCheckOptions()
+{
+    ResponseWriter = HealthCheckHelper.WebServiceRESTResponseWriter,
+});
 
 app.Run();

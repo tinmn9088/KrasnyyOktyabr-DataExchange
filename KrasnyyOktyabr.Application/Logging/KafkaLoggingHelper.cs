@@ -16,6 +16,9 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4010, Level = LogLevel.Trace, Message = "Processing infobase '{infobaseAddress}' change")]
     public static partial void ProcessingInfobaseChange(this ILogger logger, string infobaseAddress);
 
+    [LoggerMessage(EventId = 4011, Level = LogLevel.Trace, Message = "'{infobaseAddress}' producer errors exceeded")]
+    public static partial void ErrorsExceeded(this ILogger logger, string infobaseAddress);
+
     [LoggerMessage(EventId = 4020, Level = LogLevel.Trace, Message = "Getting new transactions from infobase '{infobaseAddress}'")]
     public static partial void GettingNewTransactions(this ILogger logger, string infobaseAddress);
 
@@ -38,10 +41,16 @@ public static partial class KafkaLoggingHelper
     public static partial void StoppingProducers(this ILogger logger, int producersCount);
 
     [LoggerMessage(EventId = 5001, Level = LogLevel.Error, Message = "Error on infobase changes: {exception}")]
-    public static partial void ErrorOnInfobaseChanges(this ILogger logger, Exception exceptionForSourceGenerator, Exception exception);
+    public static partial void ErrorOnInfobaseChange(this ILogger logger, Exception exceptionForSourceGenerator, Exception exception);
 
     [LoggerMessage(EventId = 5002, Level = LogLevel.Warning, Message = "Operation cancelled")]
     public static partial void OperationCancelled(this ILogger logger);
+
+    [LoggerMessage(EventId = 5003, Level = LogLevel.Trace, Message = "Disposing '{infobaseAddress}'")]
+    public static partial void Disposing(this ILogger logger, string infobaseAddress);
+
+    [LoggerMessage(EventId = 5004, Level = LogLevel.Warning, Message = "Already disposed '{infobaseAddress}'")]
+    public static partial void AlreadyDisposed(this ILogger logger, string infobaseAddress);
 
     [LoggerMessage(EventId = 7001, Level = LogLevel.Warning, Message = "Invalid offset format: '{offset}'")]
     public static partial void InvalidOffsetFormat(this ILogger logger, string offset);
