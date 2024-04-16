@@ -102,9 +102,9 @@ public sealed class Context : IContext
         outputItem.Add(key, value != null ? JToken.FromObject(value, s_jsonSerializer) : JValue.CreateNull());
     }
 
-    public JObject[] OutputGet()
+    public List<JObject> OutputGet()
     {
-        return _output.Select(outputItem => (JObject)outputItem.DeepClone()).ToArray();
+        return _output;
     }
 
     public void UpdateCursor(string name, object? cursor, int index)

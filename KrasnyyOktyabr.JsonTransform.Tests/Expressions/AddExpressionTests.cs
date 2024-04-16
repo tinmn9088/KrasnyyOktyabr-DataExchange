@@ -56,9 +56,9 @@ public class AddExpressionTests
 
         await addExpression.InterpretAsync(context);
 
-        JObject[] output = context.OutputGet();
+        List<JObject> output = context.OutputGet();
 
-        Assert.AreEqual(1, output.Length);
+        Assert.AreEqual(1, output.Count);
         Assert.IsTrue(output[0].ContainsKey(keyString));
         Assert.AreEqual(expectedValue, output[0][keyString]);
         keyExpressionMock.Verify(e => e.InterpretAsync(context, It.IsAny<CancellationToken>()), Times.Once());
@@ -96,9 +96,9 @@ public class AddExpressionTests
 
         await addExpression.InterpretAsync(context);
 
-        JObject[] output = context.OutputGet();
+        List<JObject> output = context.OutputGet();
 
-        Assert.AreEqual(index + 1, output.Length);
+        Assert.AreEqual(index + 1, output.Count);
         Assert.IsTrue(output[index].ContainsKey(keyString));
         Assert.AreEqual(expectedValue, output[index][keyString]);
         keyExpressionMock.Verify(e => e.InterpretAsync(context, It.IsAny<CancellationToken>()), Times.Once());

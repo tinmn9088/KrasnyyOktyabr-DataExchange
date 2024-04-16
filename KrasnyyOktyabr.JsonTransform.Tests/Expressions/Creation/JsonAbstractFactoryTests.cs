@@ -330,9 +330,9 @@ public class JsonAbstractFactoryTests
 
         await expression.InterpretAsync(context);
 
-        JObject[] output = context.OutputGet();
+        List<JObject> output = context.OutputGet();
 
-        Assert.AreEqual(1, output.Length);
+        Assert.AreEqual(1, output.Count);
         Assert.IsTrue(output[0].ContainsKey("answer"));
         Assert.AreEqual(42, output[0]["answer"]);
     }
@@ -375,9 +375,9 @@ public class JsonAbstractFactoryTests
 
         await expression.InterpretAsync(context);
 
-        JObject[] output = context.OutputGet();
+        List<JObject> output = context.OutputGet();
 
-        Assert.AreEqual(1, output.Length);
+        Assert.AreEqual(1, output.Count);
         Assert.IsTrue(output[0].ContainsKey("answer"));
         Assert.AreEqual(42, output[0]["answer"]);
     }

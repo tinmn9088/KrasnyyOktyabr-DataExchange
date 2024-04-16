@@ -29,8 +29,7 @@ public interface IContext
     /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> is negative.</exception>
     void OutputAdd(string key, object? value, int index);
 
-    /// <returns>Deep copy of transformations result.</returns>
-    JObject[] OutputGet();
+    List<JObject> OutputGet();
 
     /// <exception cref="ArgumentNullException"></exception>
     void UpdateCursor(string name, object? cursor, int index);

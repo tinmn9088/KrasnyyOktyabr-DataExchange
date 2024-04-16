@@ -163,9 +163,9 @@ public class ContextTests
         int index = 2;
 
         _context!.OutputAdd(key, value, index);
-        JObject[] output = _context.OutputGet();
+        List<JObject> output = _context.OutputGet();
 
-        Assert.AreEqual(3, output.Length);
+        Assert.AreEqual(3, output.Count);
         Assert.IsTrue(JToken.DeepEquals(output[0], s_emptyJsonObject));
         Assert.IsTrue(JToken.DeepEquals(output[1], s_emptyJsonObject));
         Assert.AreEqual(1, output[2].Count);
