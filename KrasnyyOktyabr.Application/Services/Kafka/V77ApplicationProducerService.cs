@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
@@ -88,11 +87,11 @@ public sealed partial class V77ApplicationProducerService(
                 return [];
             }
 
-            List<V77ApplicationProducerStatus> producerStatuses = new(_producers.Count);
+            List<V77ApplicationProducerStatus> statuses = new(_producers.Count);
 
             foreach (V77ApplicationProducer producer in _producers.Values)
             {
-                producerStatuses.Add(new()
+                statuses.Add(new()
                 {
                     Active = producer.Active,
                     LastActivity = producer.LastActivity,
@@ -108,7 +107,7 @@ public sealed partial class V77ApplicationProducerService(
                 });
             }
 
-            return producerStatuses;
+            return statuses;
         }
     }
 
@@ -250,7 +249,7 @@ public sealed partial class V77ApplicationProducerService(
             throw new ArgumentException($"Transactions count ({logTransactions.Count}) != Object JSONs count ({objectJsons.Count})");
         }
 
-        List<V77ApplicationProducerMessageData> messagesData = new(objectJsons.Count);
+        List<KafkaProducerMessageData> messagesData = new(objectJsons.Count);
 
         for (int i = 0, count = objectJsons.Count; i < count; i++)
         {
@@ -262,7 +261,7 @@ public sealed partial class V77ApplicationProducerService(
                 { ObjectDatePropertyName, objectDateString },
             };
 
-            V77ApplicationProducerMessageData messageData = jsonService.BuildV77ApplicationProducerMessageData(objectJsons[i], propertiesToAdd, settings.DataTypePropertyName);
+            KafkaProducerMessageData messageData = jsonService.BuildKafkaProducerMessageData(objectJsons[i], propertiesToAdd, settings.DataTypePropertyName);
 
             messagesData.Add(messageData);
         }
@@ -275,7 +274,7 @@ public sealed partial class V77ApplicationProducerService(
 
         int sentObjectsCount = 0;
 
-        foreach (V77ApplicationProducerMessageData messageData in messagesData)
+        foreach (KafkaProducerMessageData messageData in messagesData)
         {
             Message<string, string> kafkaMessage = new()
             {
@@ -318,32 +317,7 @@ public sealed partial class V77ApplicationProducerService(
     }
 
     private V77ApplicationProducerSettings[]? GetProducersSettings()
-    {
-        V77ApplicationProducerSettings[]? settings = configuration
-            .GetSection(V77ApplicationProducerSettings.Position)
-            .Get<V77ApplicationProducerSettings[]>();
-
-        if (settings == null)
-        {
-            return null;
-        }
-
-        try
-        {
-            foreach (V77ApplicationProducerSettings setting in settings)
-            {
-                ValidationHelper.ValidateObject(setting);
-            }
-
-            return settings;
-        }
-        catch (ValidationException ex)
-        {
-            logger.InvalidConfiguration(ex, V77ApplicationProducerSettings.Position);
-        }
-
-        return null;
-    }
+        => ValidationHelper.GetAndValidateKafkaClientSettings<V77ApplicationProducerSettings>(configuration, V77ApplicationProducerSettings.Position, logger);
 
     /// <summary>
     /// Creates new <see cref="V77ApplicationProducer"/> and saves it to <see cref="_producers"/>.
@@ -378,11 +352,11 @@ public sealed partial class V77ApplicationProducerService(
                 await producer.DisposeAsync();
             }
 
-            _producers?.Clear();
+            _producers.Clear();
         }
     }
 
-    private partial class V77ApplicationProducer : IAsyncDisposable
+    private sealed class V77ApplicationProducer : IAsyncDisposable
     {
         private static TimeSpan MinChangesInterval => TimeSpan.FromSeconds(2);
 
@@ -405,7 +379,7 @@ public sealed partial class V77ApplicationProducerService(
         private readonly List<ObjectFilter> _objectFilters;
 
         /// <remarks>
-        /// Has to be disposed.
+        /// Need to be disposed.
         /// </remarks>
         private readonly FileSystemWatcher _watcher;
 
@@ -423,11 +397,11 @@ public sealed partial class V77ApplicationProducerService(
         private bool _isDisposed;
 
         /// <remarks>
-        /// Has to be disposed.
+        /// Need to be disposed.
         /// </remarks>
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public V77ApplicationProducer(
+        internal V77ApplicationProducer(
             V77ApplicationProducerSettings settings,
             ILogger<V77ApplicationProducer> logger,
             IV77ApplicationLogService logService,
@@ -484,11 +458,11 @@ public sealed partial class V77ApplicationProducerService(
 
         public bool Active => _watcher.EnableRaisingEvents;
 
+        public DateTimeOffset LastActivity { get; private set; }
+
         public string InfobaseFullPath => _infobaseFullPath;
 
         public string Username => _settings.Username;
-
-        public DateTimeOffset LastActivity { get; private set; }
 
         public int GotFromLog { get; private set; }
 

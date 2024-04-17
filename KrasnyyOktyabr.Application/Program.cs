@@ -35,11 +35,15 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 {
     builder.Services.AddSingleton<IComV77ApplicationConnectionFactory, ComV77ApplicationConnection.Factory>();
 
-    builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
+    builder.Services.AddSingleton<IMsSqlService, MsSqlService>();
+
+    //builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
+
+    builder.Services.AddMsSqlConsumerService(healthChecksBuilder);
 
 }
 
-builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
+//builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
 
 WebApplication app = builder.Build();
 
@@ -58,7 +62,11 @@ app.MapPost("/test-json-transform", async (
 
     try
     {
-        await jsonService.RunJsonTransformAsync(httpContext.Request.Body, httpContext.Response.Body, cancellationToken).ConfigureAwait(false);
+        await jsonService.RunJsonTransformAsync(
+            inputStream: httpContext.Request.Body,
+            outputStream: httpContext.Response.Body,
+            cancellationToken)
+        .ConfigureAwait(false);
     }
     catch (Exception ex)
     {

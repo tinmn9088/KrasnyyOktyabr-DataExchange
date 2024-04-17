@@ -2,7 +2,7 @@
 
 namespace KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 
-public class ConsumerMsSqlSettings : AbstractConsumerSettings
+public class MsSqlConsumerSettings : AbstractConsumerSettings
 {
     public static string Position => "Kafka:Clients:Consumers:MsSql";
 
@@ -10,5 +10,5 @@ public class ConsumerMsSqlSettings : AbstractConsumerSettings
     public required string ConnectionString { get; init; }
 
     [Required]
-    public required string TableJsonPropertyName { get; init; }
+    public required string TablePropertyName { get; init; }
 }

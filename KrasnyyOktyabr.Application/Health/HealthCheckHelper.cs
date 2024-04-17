@@ -4,6 +4,7 @@ using System.Runtime.Versioning;
 using System.Text.Json.Serialization;
 using KrasnyyOktyabr.Application.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 
@@ -18,26 +19,40 @@ public static class HealthCheckHelper
     /// </summary>
     public static async Task WebServiceRESTResponseWriter(HttpContext context, HealthReport healthReport)
     {
-        List<OldProducerHealthStatus>? statuses = [];
+        List<OldProducerHealthStatus>? producerStatuses = [];
+        List<OldConsumerHealthStatus>? consumerStatuses = [];
+
+        AddProducerStatuses(GetV83ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            AddStatuses(GetV77ApplicationProducerStatuses, healthReport, ref statuses);
-        }
+            AddProducerStatuses(GetV77ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
-        AddStatuses(GetV83ApplicationProducerStatuses, healthReport, ref statuses);
+            AddConsumerStatuses(GetMsSqlConsumerStatuses, healthReport, ref consumerStatuses);
+        }
 
         OldHealthStatus healthStatus = new()
         {
-            Producers = statuses,
+            Producers = producerStatuses.Count > 0 ? producerStatuses : null,
+            Consumers = consumerStatuses.Count > 0 ? consumerStatuses : null,
         };
 
         await context.Response.WriteAsJsonAsync(healthStatus).ConfigureAwait(false);
     }
 
-    private static void AddStatuses(StatusGatherer gatherer, HealthReport healthReport, ref List<OldProducerHealthStatus> statuses)
+    private static void AddProducerStatuses(ProducerStatusesGatherer gatherer, HealthReport healthReport, ref List<OldProducerHealthStatus> statuses)
     {
         List<OldProducerHealthStatus>? gatheredStatuses = gatherer(healthReport);
+
+        if (gatheredStatuses != null)
+        {
+            statuses.AddRange(gatheredStatuses);
+        }
+    }
+
+    private static void AddConsumerStatuses(ConsumerStatusesGatherer gatherer, HealthReport healthReport, ref List<OldConsumerHealthStatus> statuses)
+    {
+        List<OldConsumerHealthStatus>? gatheredStatuses = gatherer(healthReport);
 
         if (gatheredStatuses != null)
         {
@@ -57,11 +72,11 @@ public static class HealthCheckHelper
             return null;
         }
 
-        List<OldProducerHealthStatus> producers = [];
+        List<OldProducerHealthStatus> oldStatuses = [];
 
         foreach (V77ApplicationProducerStatus status in statuses)
         {
-            producers.Add(new OldProducerHealthStatus()
+            oldStatuses.Add(new OldProducerHealthStatus()
             {
                 Type = nameof(V77ApplicationProducerService),
                 Active = status.Active,
@@ -78,7 +93,7 @@ public static class HealthCheckHelper
             });
         }
 
-        return producers;
+        return oldStatuses;
     }
 
     private static List<OldProducerHealthStatus>? GetV83ApplicationProducerStatuses(HealthReport healthReport)
@@ -106,12 +121,45 @@ public static class HealthCheckHelper
                 TransactionTypes = [.. status.TransactionTypes],
                 Fetched = status.Fetched,
                 Produced = status.Produced,
-                InfobasePath = status.InfobasePath,
+                InfobasePath = status.InfobaseUrl,
                 Username = status.Username,
                 DataTypeJsonPropertyName = status.DataTypeJsonPropertyName,
 
                 // Unused
                 ReadFromLogFile = null,
+            });
+        }
+
+        return oldStatuses;
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static List<OldConsumerHealthStatus>? GetMsSqlConsumerStatuses(HealthReport healthReport)
+    {
+        List<MsSqlProducerStatus>? statuses = GetStatusFromHealthReport<MsSqlProducerStatus>(
+            healthReport,
+            dataKey: MsSqlConsumerServiceHealthChecker.DataKey);
+
+        if (statuses == null)
+        {
+            return null;
+        }
+
+        List<OldConsumerHealthStatus> oldStatuses = [];
+
+        foreach (MsSqlProducerStatus status in statuses)
+        {
+            oldStatuses.Add(new OldConsumerHealthStatus()
+            {
+                Type = nameof(V77ApplicationProducerService),
+                Active = status.Active,
+                LastActivity = status.LastActivity,
+                ErrorMessage = status.ErrorMessage,
+                Consumed = status.Consumed,
+                Saved = status.Saved,
+                TableJsonPropertyName = status.TablePropertyName,
+                Topics = [.. status.Topics],
+                ConsumerGroup = status.ConsumerGroup,
             });
         }
 
@@ -215,7 +263,33 @@ public static class HealthCheckHelper
 
     public readonly struct OldConsumerHealthStatus
     {
+        [JsonPropertyName("__type")]
+        public required string Type { get; init; }
 
+        [JsonPropertyName("active")]
+        public required bool Active { get; init; }
+
+        [JsonPropertyName("lastActivity")]
+        public required DateTimeOffset LastActivity { get; init; }
+
+        [JsonPropertyName("errorMessage")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public required string? ErrorMessage { get; init; }
+
+        [JsonPropertyName("topics")]
+        public required string[] Topics { get; init; }
+
+        [JsonPropertyName("consumerGroup")]
+        public required string ConsumerGroup { get; init; }
+
+        [JsonPropertyName("consumed")]
+        public required int Consumed { get; init; }
+
+        [JsonPropertyName("saved")]
+        public required int Saved { get; init; }
+
+        [JsonPropertyName("tableJsonPropertyName")]
+        public required string TableJsonPropertyName { get; init; }
     }
 
     public readonly struct OldComV77ApplicationConnectionHealthStatus
@@ -223,5 +297,7 @@ public static class HealthCheckHelper
 
     }
 
-    private delegate List<OldProducerHealthStatus>? StatusGatherer(HealthReport healthReport);
+    private delegate List<OldProducerHealthStatus>? ProducerStatusesGatherer(HealthReport healthReport);
+
+    private delegate List<OldConsumerHealthStatus>? ConsumerStatusesGatherer(HealthReport healthReport);
 }

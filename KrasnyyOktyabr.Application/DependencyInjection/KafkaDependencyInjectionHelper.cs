@@ -3,6 +3,7 @@ using System.Runtime.Versioning;
 using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
 using KrasnyyOktyabr.Application.Services.Kafka;
+using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 
@@ -47,5 +48,29 @@ public static class KafkaDependencyInjectionHelper
         });
 
         healthChecksBuilder.AddCheck<V83ApplicationProducerServiceHealthChecker>(nameof(V83ApplicationProducerStatus));
+    }
+
+    /// <summary>
+    /// Register singleton <see cref="IMsSqlConsumerService"/>, start <see cref="MsSqlConsumerService"/>
+    /// as hosted service and add health check for it.
+    /// </summary>
+    [SupportedOSPlatform("windows")]
+    public static void AddMsSqlConsumerService(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
+    {
+        services.AddSingleton<IMsSqlConsumerService, MsSqlConsumerService>();
+
+        // To make it possible to inject this hosted service through DI
+        services.AddSingleton<IMsSqlConsumerService, MsSqlConsumerService>();
+        services.AddHostedService(p =>
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return p.GetRequiredService<IMsSqlConsumerService>();
+            }
+
+            throw new NotSupportedException();
+        });
+
+        healthChecksBuilder.AddCheck<MsSqlConsumerServiceHealthChecker>(nameof(MsSqlProducerStatus));
     }
 }

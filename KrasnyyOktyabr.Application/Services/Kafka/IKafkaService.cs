@@ -4,10 +4,14 @@ namespace KrasnyyOktyabr.Application.Services.Kafka;
 
 public interface IKafkaService : IRestartable
 {
-    public IProducer<TKey, TValue> GetProducer<TKey, TValue>();
+    IProducer<TKey, TValue> GetProducer<TKey, TValue>();
+
+    IConsumer<TKey, TValue> GetConsumer<TKey, TValue>(IEnumerable<string> topics, string consumerGroup);
 
     /// <summary>
     /// Concatenates all names and transliterates to latin.
     /// </summary>
-    public string BuildTopicName(params string[] names);
+    string BuildTopicName(params string[] names);
+
+    string ExtractConsumerGroupNameFromConnectionString(string connectionString);
 }

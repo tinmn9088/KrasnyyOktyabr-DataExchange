@@ -22,7 +22,7 @@ public interface IV83ApplicationProducerService : IRestartableHostedService<List
 
         public required string Username { get; init; }
 
-        public required string InfobasePath { get; init; }
+        public required string InfobaseUrl { get; init; }
 
         public required string DataTypeJsonPropertyName { get; init; }
     }

@@ -14,14 +14,20 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4003, Level = LogLevel.Trace, Message = "{count} configurations found")]
     public static partial void ConfigurationFound(this ILogger logger, int count);
 
+    [LoggerMessage(EventId = 4004, Level = LogLevel.Trace, Message = "Consumer group not specified")]
+    public static partial void ConsumerGroupNotPresent(this ILogger logger);
+
     [LoggerMessage(EventId = 4009, Level = LogLevel.Trace, Message = "Starting watching infobase '{infobaseAddress}' changes")]
     public static partial void StartingWatchingChanges(this ILogger logger, string infobaseAddress);
 
     [LoggerMessage(EventId = 4010, Level = LogLevel.Trace, Message = "Processing infobase '{infobaseAddress}' change")]
     public static partial void ProcessingInfobaseChange(this ILogger logger, string infobaseAddress);
 
-    [LoggerMessage(EventId = 4010, Level = LogLevel.Trace, Message = "Request infobase '{infobaseAddress}' changes")]
+    [LoggerMessage(EventId = 4011, Level = LogLevel.Trace, Message = "Request infobase '{infobaseAddress}' changes")]
     public static partial void RequestInfobaseChanges(this ILogger logger, string infobaseAddress);
+
+    [LoggerMessage(EventId = 4015, Level = LogLevel.Trace, Message = "'{consumerGroup}' consuming message from '{topicName}' (key: '{key}', length: {length}): {shortenedMessage}")]
+    public static partial void ConsumingMessage(this ILogger logger, string consumerGroup, string topicName, string key, int length, string shortenedMessage);
 
     [LoggerMessage(EventId = 4012, Level = LogLevel.Warning, Message = "'{infobaseAddress}' producer errors exceeded")]
     public static partial void ErrorsExceeded(this ILogger logger, string infobaseAddress);
@@ -46,6 +52,9 @@ public static partial class KafkaLoggingHelper
 
     [LoggerMessage(EventId = 4080, Level = LogLevel.Trace, Message = "Stopping {producersCount} producers")]
     public static partial void StoppingProducers(this ILogger logger, int producersCount);
+
+    [LoggerMessage(EventId = 4081, Level = LogLevel.Trace, Message = "Stopping {consumersCount} consumers")]
+    public static partial void StoppingConsumers(this ILogger logger, int consumersCount);
 
     [LoggerMessage(EventId = 5001, Level = LogLevel.Error, Message = "Error on infobase changes")]
     public static partial void ErrorOnInfobaseChange(this ILogger logger, Exception exception);

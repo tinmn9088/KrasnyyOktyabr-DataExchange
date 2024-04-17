@@ -9,7 +9,7 @@ namespace KrasnyyOktyabr.Application.Services;
 
 public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonService
 {
-    public V77ApplicationProducerMessageData BuildV77ApplicationProducerMessageData(
+    public KafkaProducerMessageData BuildKafkaProducerMessageData(
         string objectJson,
         Dictionary<string, object?> propertiesToAdd,
         string dataTypePropertyName)
@@ -64,6 +64,10 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
         await using StreamWriter streamWriter = new(outputStream);
         JsonSerializer.CreateDefault().Serialize(streamWriter, new JArray(context.OutputGet()));
     }
+
+    // TODO: implement (+ reading instructions from file)
+    public Task<RunJsonTransformMsSqlResult> RunJsonTransformOnConsumedMessageMsSqlAsync(string producerName, string consumerName, string message, CancellationToken cancellationToken)
+        => throw new NotImplementedException();
 
     /// <exception cref="ArgumentException"></exception>
     private static JObject ParseJsonObject(string jsonObject)

@@ -173,8 +173,8 @@ public class V77ApplicationProducerServiceTests
         // Setting up json service mock
         Mock<IJsonService> jsonServiceMock = new();
         jsonServiceMock
-            .Setup(s => s.BuildV77ApplicationProducerMessageData(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>(), It.IsAny<string>()))
-            .Returns(new V77ApplicationProducerMessageData() { ObjectJson = "{\"TestObject\":\"TestValue\"}", DataType = null! });
+            .Setup(s => s.BuildKafkaProducerMessageData(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>(), It.IsAny<string>()))
+            .Returns(new KafkaProducerMessageData() { ObjectJson = "{\"TestObject\":\"TestValue\"}", DataType = null! });
 
         // Setting up kafka producer
         Mock<IProducer<string, string>> kafkaProducerMock = new();
@@ -197,7 +197,7 @@ public class V77ApplicationProducerServiceTests
             kafkaServiceMock.Object,
             cancellationToken: default);
 
-        jsonServiceMock.Verify(s => s.BuildV77ApplicationProducerMessageData(
+        jsonServiceMock.Verify(s => s.BuildKafkaProducerMessageData(
             It.Is<string>(s => s == objectJson),
             It.Is<Dictionary<string, object?>>(d => d.ToString() == expectedPropertiesToAdd.ToString()),
             It.Is<string>(s => s == dataTypeJsonPropertyName)),

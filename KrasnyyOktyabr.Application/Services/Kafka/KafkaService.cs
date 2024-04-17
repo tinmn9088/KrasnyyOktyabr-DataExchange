@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Text.RegularExpressions;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using KrasnyyOktyabr.Application.Logging;
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public sealed class KafkaService : IKafkaService
+public sealed partial class KafkaService : IKafkaService
 {
     private readonly ILogger<KafkaService> _logger;
 
@@ -15,7 +16,10 @@ public sealed class KafkaService : IKafkaService
 
     private KafkaSettings? _settings;
 
-    public KafkaService(IConfiguration configuration, ITransliterationService transliterationService, ILogger<KafkaService> logger)
+    public KafkaService(
+        IConfiguration configuration,
+        ITransliterationService transliterationService,
+        ILogger<KafkaService> logger)
     {
         _logger = logger;
         _configuration = configuration;
@@ -31,22 +35,52 @@ public sealed class KafkaService : IKafkaService
         return Task.CompletedTask;
     }
 
+    /// <exception cref="NoKafkaSettingsException"></exception>
     public IProducer<TKey, TValue> GetProducer<TKey, TValue>()
     {
+        if (_settings == null)
+        {
+            throw new NoKafkaSettingsException();
+        }
+
         ProducerConfig config = new()
         {
-            BootstrapServers = _settings!.Socket,
+            BootstrapServers = _settings.Socket,
             MessageMaxBytes = _settings.MessageMaxBytes,
         };
 
         return new ProducerBuilder<TKey, TValue>(config).Build();
     }
 
+    /// <exception cref="NoKafkaSettingsException"></exception>
+    public IConsumer<TKey, TValue> GetConsumer<TKey, TValue>(IEnumerable<string> topics, string consumerGroup)
+    {
+        if (_settings == null)
+        {
+            throw new NoKafkaSettingsException();
+        }
+
+        ConsumerConfig config = new()
+        {
+            GroupId = consumerGroup,
+            BootstrapServers = _settings.Socket,
+            EnableAutoCommit = false,
+            MessageMaxBytes = _settings.MessageMaxBytes,
+            MaxPollIntervalMs = _settings.MaxPollIntervalMs,
+            AutoOffsetReset = AutoOffsetReset.Latest
+        };
+
+        IConsumer<TKey, TValue> consumer = new ConsumerBuilder<TKey, TValue>(config).Build();
+
+        consumer.Subscribe(topics);
+
+        return consumer;
+    }
+
     /// <summary>Updates <see cref="_settings"/>.</summary>
     /// <remarks>
     /// <see cref="_configuration"/> and <see cref="_logger"/> need to be initialized.
     /// </remarks>
-    /// <exception cref="ArgumentNullException"></exception>
     private void LoadKafkaSettings()
     {
         _settings = _configuration
@@ -86,4 +120,17 @@ public sealed class KafkaService : IKafkaService
 
         return _transliterationService.TransliterateToLatin(stringBuilder.ToString());
     }
+
+    public string ExtractConsumerGroupNameFromConnectionString(string connectionString)
+    {
+        return ConsumerGroupFromConnectionStringRegex()
+            .Match(connectionString)
+            .Groups[1]
+            .Value;
+    }
+
+    public class NoKafkaSettingsException : Exception { }
+
+    [GeneratedRegex(@"Database=(.+?);", RegexOptions.IgnoreCase, "ru-RU")]
+    private static partial Regex ConsumerGroupFromConnectionStringRegex();
 }

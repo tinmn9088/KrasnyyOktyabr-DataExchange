@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
+﻿using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using static KrasnyyOktyabr.Application.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducerService;
@@ -40,11 +39,11 @@ public sealed class V83ApplicationProducerService(
                 return [];
             }
 
-            List<V83ApplicationProducerStatus> producerStatuses = new(_producers.Count);
+            List<V83ApplicationProducerStatus> statuses = new(_producers.Count);
 
             foreach (V83ApplicationProducer producer in _producers.Values)
             {
-                producerStatuses.Add(new()
+                statuses.Add(new()
                 {
                     Active = producer.Active,
                     LastActivity = producer.LastActivity,
@@ -53,13 +52,13 @@ public sealed class V83ApplicationProducerService(
                     TransactionTypes = producer.TransactionTypes,
                     Fetched = producer.Fetched,
                     Produced = producer.Produced,
-                    InfobasePath = producer.InfobaseFullPath,
+                    InfobaseUrl = producer.InfobaseUrl,
                     Username = producer.Username,
                     DataTypeJsonPropertyName = producer.DataTypeJsonPropertyName,
                 });
             }
 
-            return producerStatuses;
+            return statuses;
         }
     }
 
@@ -127,35 +126,10 @@ public sealed class V83ApplicationProducerService(
     }
 
     private V83ApplicationProducerSettings[]? GetProducersSettings()
-    {
-        V83ApplicationProducerSettings[]? settings = configuration
-            .GetSection(V83ApplicationProducerSettings.Position)
-            .Get<V83ApplicationProducerSettings[]>();
-
-        if (settings == null)
-        {
-            return null;
-        }
-
-        try
-        {
-            foreach (V83ApplicationProducerSettings setting in settings)
-            {
-                ValidationHelper.ValidateObject(setting);
-            }
-
-            return settings;
-        }
-        catch (ValidationException ex)
-        {
-            logger.InvalidConfiguration(ex, V83ApplicationProducerSettings.Position);
-        }
-
-        return null;
-    }
+        => ValidationHelper.GetAndValidateKafkaClientSettings<V83ApplicationProducerSettings>(configuration, V83ApplicationProducerSettings.Position, logger);
 
     /// <summary>
-    /// Creates new <see cref="V77ApplicationProducer"/> and saves it to <see cref="_producers"/>.
+    /// Creates new <see cref="V83ApplicationProducer"/> and saves it to <see cref="_producers"/>.
     /// </summary>
     private void StartProducer(V83ApplicationProducerSettings settings)
     {
@@ -182,11 +156,11 @@ public sealed class V83ApplicationProducerService(
                 await producer.DisposeAsync();
             }
 
-            _producers?.Clear();
+            _producers.Clear();
         }
     }
 
-    public class V83ApplicationProducer : IAsyncDisposable
+    private sealed class V83ApplicationProducer : IAsyncDisposable
     {
         private static TimeSpan RequestInterval => TimeSpan.FromSeconds(3);
 
@@ -203,11 +177,11 @@ public sealed class V83ApplicationProducerService(
         private readonly Task _producerTask;
 
         /// <remarks>
-        /// Has to be disposed.
+        /// Need to be disposed.
         /// </remarks>
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public V83ApplicationProducer(
+        internal V83ApplicationProducer(
             ILogger<V83ApplicationProducer> logger,
             V83ApplicationProducerSettings settings,
             IOffsetService offsetService,
@@ -232,13 +206,13 @@ public sealed class V83ApplicationProducerService(
 
         public bool Active => Error == null;
 
+        public DateTimeOffset LastActivity { get; private set; }
+
         public bool CancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
-        public string InfobaseFullPath => _settings.InfobaseUrl;
+        public string InfobaseUrl => _settings.InfobaseUrl;
 
         public string Username => _settings.Username;
-
-        public DateTimeOffset LastActivity { get; private set; }
 
         public int Fetched { get; private set; }
 
@@ -291,6 +265,8 @@ public sealed class V83ApplicationProducerService(
         public async ValueTask DisposeAsync()
         {
             _logger.Disposing(_settings.InfobaseUrl);
+
+            _cancellationTokenSource.Cancel();
 
             await _producerTask.ConfigureAwait(false);
         }
