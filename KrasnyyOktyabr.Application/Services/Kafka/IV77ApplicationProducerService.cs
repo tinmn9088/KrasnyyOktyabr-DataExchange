@@ -1,8 +1,9 @@
-﻿using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducerService;
+﻿using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public interface IV77ApplicationProducerService : IRestartableHostedService, IAsyncDisposable
+public interface IV77ApplicationProducerService : IRestartableHostedService<List<V77ApplicationProducerStatus>>, IAsyncDisposable
 {
     public readonly struct V77ApplicationProducerStatus
     {
@@ -28,6 +29,4 @@ public interface IV77ApplicationProducerService : IRestartableHostedService, IAs
 
         public required string DataTypeJsonPropertyName { get; init; }
     }
-
-    List<V77ApplicationProducerStatus> GetStatus();
 }

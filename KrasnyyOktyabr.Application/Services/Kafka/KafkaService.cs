@@ -1,18 +1,32 @@
-﻿using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
-
+using KrasnyyOktyabr.Application.Logging;
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public sealed class KafkaService(IConfiguration configuration, ITransliterationService transliterationService) : IKafkaService
+public sealed class KafkaService : IKafkaService
 {
-    private readonly IConfiguration _configuration = configuration;
+    private readonly ILogger<KafkaService> _logger;
 
-    private KafkaSettings _settings = GetKafkaSettings(configuration);
+    private readonly IConfiguration _configuration;
+
+    private readonly ITransliterationService _transliterationService;
+
+    private KafkaSettings? _settings;
+
+    public KafkaService(IConfiguration configuration, ITransliterationService transliterationService, ILogger<KafkaService> logger)
+    {
+        _logger = logger;
+        _configuration = configuration;
+        _transliterationService = transliterationService;
+
+        LoadKafkaSettings();
+    }
 
     public Task RestartAsync(CancellationToken cancellationToken)
     {
-        _settings = GetKafkaSettings(_configuration);
+        LoadKafkaSettings();
 
         return Task.CompletedTask;
     }
@@ -21,23 +35,39 @@ public sealed class KafkaService(IConfiguration configuration, ITransliterationS
     {
         ProducerConfig config = new()
         {
-            BootstrapServers = _settings.Socket,
+            BootstrapServers = _settings!.Socket,
             MessageMaxBytes = _settings.MessageMaxBytes,
         };
 
         return new ProducerBuilder<TKey, TValue>(config).Build();
     }
 
+    /// <summary>Updates <see cref="_settings"/>.</summary>
+    /// <remarks>
+    /// <see cref="_configuration"/> and <see cref="_logger"/> need to be initialized.
+    /// </remarks>
     /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="KafkaSettingsNotFound"></exception>
-    private static KafkaSettings GetKafkaSettings(IConfiguration configuration)
+    private void LoadKafkaSettings()
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        _settings = _configuration
+                .GetSection(KafkaSettings.Position)
+                .Get<KafkaSettings>();
 
-        return configuration
-            .GetSection(KafkaSettings.Position)
-            .Get<KafkaSettings>()
-            ?? throw new KafkaSettingsNotFound(KafkaSettings.Position);
+        if (_settings == null)
+        {
+            _logger.ConfigurationNotFound();
+
+            return;
+        }
+
+        try
+        {
+            ValidationHelper.ValidateObject(_settings);
+        }
+        catch (ValidationException ex)
+        {
+            _logger.InvalidConfiguration(ex, KafkaSettings.Position);
+        }
     }
 
     public string BuildTopicName(params string[] names)
@@ -54,14 +84,6 @@ public sealed class KafkaService(IConfiguration configuration, ITransliterationS
             stringBuilder.Append(names[i]);
         }
 
-        return transliterationService.TransliterateToLatin(stringBuilder.ToString());
-    }
-
-    public class KafkaSettingsNotFound : Exception
-    {
-        internal KafkaSettingsNotFound(string position)
-            : base($"Position '{position}'")
-        {
-        }
+        return _transliterationService.TransliterateToLatin(stringBuilder.ToString());
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace KrasnyyOktyabr.Application.Logging;
 
@@ -7,7 +8,10 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4001, Level = LogLevel.Trace, Message = "Configuration not found")]
     public static partial void ConfigurationNotFound(this ILogger logger);
 
-    [LoggerMessage(EventId = 4002, Level = LogLevel.Trace, Message = "{count} configurations found")]
+    [LoggerMessage(EventId = 4002, Level = LogLevel.Error, Message = "Invalid configuration at '{position}'")]
+    public static partial void InvalidConfiguration(this ILogger logger, ValidationException exception, string position);
+
+    [LoggerMessage(EventId = 4003, Level = LogLevel.Trace, Message = "{count} configurations found")]
     public static partial void ConfigurationFound(this ILogger logger, int count);
 
     [LoggerMessage(EventId = 4009, Level = LogLevel.Trace, Message = "Starting watching infobase '{infobaseAddress}' changes")]
@@ -40,8 +44,8 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4080, Level = LogLevel.Trace, Message = "Stopping {producersCount} producers")]
     public static partial void StoppingProducers(this ILogger logger, int producersCount);
 
-    [LoggerMessage(EventId = 5001, Level = LogLevel.Error, Message = "Error on infobase changes: {exception}")]
-    public static partial void ErrorOnInfobaseChange(this ILogger logger, Exception exceptionForSourceGenerator, Exception exception);
+    [LoggerMessage(EventId = 5001, Level = LogLevel.Error, Message = "Error on infobase changes")]
+    public static partial void ErrorOnInfobaseChange(this ILogger logger, Exception exception);
 
     [LoggerMessage(EventId = 5002, Level = LogLevel.Warning, Message = "Operation cancelled")]
     public static partial void OperationCancelled(this ILogger logger);

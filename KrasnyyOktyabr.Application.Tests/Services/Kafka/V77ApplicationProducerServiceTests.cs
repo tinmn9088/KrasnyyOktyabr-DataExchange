@@ -49,7 +49,7 @@ public class V77ApplicationProducerServiceTests
         Password = "TestPassword",
         ObjectFilters = ["Id1:3", "Id2:2"],
         TransactionTypeFilters = ["Type1", "Type2"],
-        DataTypeJsonPropertyName = "TestDatatype",
+        DataTypePropertyName = "TestDatatype",
         ErtRelativePath = "Erts/test.ert",
     };
 
@@ -151,7 +151,7 @@ public class V77ApplicationProducerServiceTests
             Password = null!,
             ObjectFilters = null!,
             TransactionTypeFilters = null!,
-            DataTypeJsonPropertyName = dataTypeJsonPropertyName,
+            DataTypePropertyName = dataTypeJsonPropertyName,
             ErtRelativePath = null!,
         };
         string objectDate = "01.01.2024";

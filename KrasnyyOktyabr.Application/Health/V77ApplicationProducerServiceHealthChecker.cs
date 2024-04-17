@@ -14,7 +14,7 @@ public class V77ApplicationProducerServiceHealthChecker(IV77ApplicationProducerS
         return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy,
             data: new Dictionary<string, object>()
             {
-                { DataKey, v77ApplicationProducerService.GetStatus() }
+                { DataKey, v77ApplicationProducerService.Status }
             }));
     }
 }
