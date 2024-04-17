@@ -20,7 +20,6 @@ public static class KafkaDependencyInjectionHelper
     {
         services.AddSingleton<IV77ApplicationLogService, V77ApplicationLogService>();
 
-        // To make it possible to inject this hosted service through DI
         services.AddSingleton<IV77ApplicationProducerService, V77ApplicationProducerService>();
         services.AddHostedService(p =>
         {
@@ -57,9 +56,6 @@ public static class KafkaDependencyInjectionHelper
     [SupportedOSPlatform("windows")]
     public static void AddMsSqlConsumerService(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
     {
-        services.AddSingleton<IMsSqlConsumerService, MsSqlConsumerService>();
-
-        // To make it possible to inject this hosted service through DI
         services.AddSingleton<IMsSqlConsumerService, MsSqlConsumerService>();
         services.AddHostedService(p =>
         {

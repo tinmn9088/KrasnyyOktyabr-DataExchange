@@ -345,7 +345,10 @@ public sealed partial class V77ApplicationProducerService(
     {
         if (_producers != null)
         {
-            logger.StoppingProducers(_producers.Count);
+            if (_producers.Count > 0)
+            {
+                logger.StoppingProducers(_producers.Count);
+            }
 
             foreach (V77ApplicationProducer producer in _producers.Values)
             {

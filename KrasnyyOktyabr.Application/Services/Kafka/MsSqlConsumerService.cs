@@ -94,7 +94,7 @@ public sealed class MsSqlConsumerService(
 
     public async ValueTask DisposeAsync()
     {
-        logger.LogTrace("Stopping ...");
+        logger.LogTrace("Disposing ...");
 
         await StopConsumersAsync();
     }
@@ -157,7 +157,10 @@ public sealed class MsSqlConsumerService(
     {
         if (_consumers != null)
         {
-            logger.StoppingConsumers(_consumers.Count);
+            if (_consumers.Count > 0)
+            {
+                logger.StoppingConsumers(_consumers.Count);
+            }
 
             foreach (MsSqlConsumer consumer in _consumers.Values)
             {

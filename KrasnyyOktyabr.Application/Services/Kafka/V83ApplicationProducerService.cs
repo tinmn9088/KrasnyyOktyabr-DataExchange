@@ -149,7 +149,10 @@ public sealed class V83ApplicationProducerService(
     {
         if (_producers != null)
         {
-            logger.StoppingProducers(_producers.Count);
+            if (_producers.Count > 0)
+            {
+                logger.StoppingProducers(_producers.Count);
+            }
 
             foreach (V83ApplicationProducer producer in _producers.Values)
             {

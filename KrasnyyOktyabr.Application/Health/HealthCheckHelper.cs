@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Data;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json.Serialization;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
+using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 
 namespace KrasnyyOktyabr.Application.Health;
 
@@ -21,6 +23,7 @@ public static class HealthCheckHelper
     {
         List<OldProducerHealthStatus>? producerStatuses = [];
         List<OldConsumerHealthStatus>? consumerStatuses = [];
+        List<OldComV77ApplicationConnectionHealthStatus>? comV77ApplicationConnectionStatuses = null;
 
         AddProducerStatuses(GetV83ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
@@ -29,12 +32,15 @@ public static class HealthCheckHelper
             AddProducerStatuses(GetV77ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
             AddConsumerStatuses(GetMsSqlConsumerStatuses, healthReport, ref consumerStatuses);
+
+            comV77ApplicationConnectionStatuses = GetComV77ApplicationConnectionHealthStatuses(healthReport);
         }
 
         OldHealthStatus healthStatus = new()
         {
             Producers = producerStatuses.Count > 0 ? producerStatuses : null,
             Consumers = consumerStatuses.Count > 0 ? consumerStatuses : null,
+            ComV77ApplicationConnections = comV77ApplicationConnectionStatuses,
         };
 
         await context.Response.WriteAsJsonAsync(healthStatus).ConfigureAwait(false);
@@ -151,7 +157,7 @@ public static class HealthCheckHelper
         {
             oldStatuses.Add(new OldConsumerHealthStatus()
             {
-                Type = nameof(V77ApplicationProducerService),
+                Type = nameof(MsSqlConsumerService),
                 Active = status.Active,
                 LastActivity = status.LastActivity,
                 ErrorMessage = status.ErrorMessage,
@@ -195,6 +201,49 @@ public static class HealthCheckHelper
         }
 
         return statuses;
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static List<OldComV77ApplicationConnectionHealthStatus>? GetComV77ApplicationConnectionHealthStatuses(HealthReport healthReport)
+    {
+        bool isStatusPresent = healthReport.Entries.TryGetValue(
+            key: nameof(ComV77ApplicationConnectionFactoryStatus),
+            out HealthReportEntry status);
+
+        if (!isStatusPresent)
+        {
+            return null;
+        }
+
+        bool isDataPresent = status.Data.TryGetValue(ComV77ApplicationConnectionFactoryHealthChecker.DataKey, out object? data);
+
+        if (!isDataPresent)
+        {
+            return null;
+        }
+
+        if (data is not ComV77ApplicationConnectionFactoryStatus factoryStatus)
+        {
+            return null;
+        }
+
+        if (factoryStatus.Connections.Length == 0)
+        {
+            return null;
+        }
+
+        return factoryStatus.Connections
+            .Select(s => new OldComV77ApplicationConnectionHealthStatus()
+            {
+                InfobasePath = s.InfobasePath,
+                Username = s.Username,
+                ErrorsCount = s.ErrorsCount,
+                RetievedTimes = s.RetievedTimes,
+                IsInitialized = s.IsInitialized,
+                IsDisposed = s.IsDisposed,
+                LastTimeDisposed = s.LastTimeDisposed,
+            })
+            .ToList();
     }
 
     private readonly struct OldHealthStatus
@@ -294,7 +343,27 @@ public static class HealthCheckHelper
 
     public readonly struct OldComV77ApplicationConnectionHealthStatus
     {
+        [JsonPropertyName("path")]
+        public required string InfobasePath { get; init; }
 
+        [JsonPropertyName("username")]
+        public required string Username { get; init; }
+
+        [JsonPropertyName("lastTimeDisposed")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public required DateTimeOffset? LastTimeDisposed { get; init; }
+
+        [JsonPropertyName("initialized")]
+        public required bool IsInitialized { get; init; }
+
+        [JsonPropertyName("disposed")]
+        public required bool IsDisposed { get; init; }
+
+        [JsonPropertyName("retrieved")]
+        public required int RetievedTimes { get; init; }
+
+        [JsonPropertyName("errorsCount")]
+        public required int ErrorsCount { get; init; }
     }
 
     private delegate List<OldProducerHealthStatus>? ProducerStatusesGatherer(HealthReport healthReport);

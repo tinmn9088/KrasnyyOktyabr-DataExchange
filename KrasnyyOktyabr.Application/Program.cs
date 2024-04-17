@@ -37,13 +37,12 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 
     builder.Services.AddSingleton<IMsSqlService, MsSqlService>();
 
-    //builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
+    builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
 
     builder.Services.AddMsSqlConsumerService(healthChecksBuilder);
-
 }
 
-//builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
+builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
 
 WebApplication app = builder.Build();
 
