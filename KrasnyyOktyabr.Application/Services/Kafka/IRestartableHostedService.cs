@@ -1,6 +1,6 @@
 ﻿namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public interface IRestartableHostedService<T> : IHostedService, IRestartable
+public interface IRestartableHostedService<TStatus> : IHostedService, IRestartable
 {
-    T Status { get; }
+    TStatus Status { get; }
 }

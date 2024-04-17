@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using KrasnyyOktyabr.Application.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 
 namespace KrasnyyOktyabr.Application.Health;
 
@@ -17,72 +18,135 @@ public static class HealthCheckHelper
     /// </summary>
     public static async Task WebServiceRESTResponseWriter(HttpContext context, HealthReport healthReport)
     {
-        List<OldProducerHealthStatus>? producers = null;
+        List<OldProducerHealthStatus>? statuses = [];
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            producers = GetV77ApplicationProducerStatuses(healthReport);
+            AddStatuses(GetV77ApplicationProducerStatuses, healthReport, ref statuses);
         }
+
+        AddStatuses(GetV83ApplicationProducerStatuses, healthReport, ref statuses);
 
         OldHealthStatus healthStatus = new()
         {
-            Producers = producers,
+            Producers = statuses,
         };
 
         await context.Response.WriteAsJsonAsync(healthStatus).ConfigureAwait(false);
     }
 
+    private static void AddStatuses(StatusGatherer gatherer, HealthReport healthReport, ref List<OldProducerHealthStatus> statuses)
+    {
+        List<OldProducerHealthStatus>? gatheredStatuses = gatherer(healthReport);
+
+        if (gatheredStatuses != null)
+        {
+            statuses.AddRange(gatheredStatuses);
+        }
+    }
+
     [SupportedOSPlatform("windows")]
     private static List<OldProducerHealthStatus>? GetV77ApplicationProducerStatuses(HealthReport healthReport)
     {
-        bool isV77ApplicationProducersPresent = healthReport.Entries.TryGetValue(
-            key: nameof(V77ApplicationProducerService),
-            out HealthReportEntry v77ApplicationProducerHealthStatus);
+        List<V77ApplicationProducerStatus>? statuses = GetStatusFromHealthReport<V77ApplicationProducerStatus>(
+            healthReport,
+            dataKey: V77ApplicationProducerServiceHealthChecker.DataKey);
 
-        if (!isV77ApplicationProducersPresent)
-        {
-            return null;
-        }
-
-        bool isDataPresent = v77ApplicationProducerHealthStatus.Data.TryGetValue(V77ApplicationProducerServiceHealthChecker.DataKey, out object? data);
-
-        if (!isDataPresent)
-        {
-            return null;
-        }
-
-        if (data is not List<V77ApplicationProducerStatus> producerStatuses)
-        {
-            return null;
-        }
-
-        if (producerStatuses.Count == 0)
+        if (statuses == null)
         {
             return null;
         }
 
         List<OldProducerHealthStatus> producers = [];
 
-        foreach (V77ApplicationProducerStatus producerStatus in producerStatuses)
+        foreach (V77ApplicationProducerStatus status in statuses)
         {
             producers.Add(new OldProducerHealthStatus()
             {
                 Type = nameof(V77ApplicationProducerService),
-                Active = producerStatus.Active,
-                LastActivity = producerStatus.LastActivity,
-                ErrorMessage = producerStatus.ErrorMessage,
-                ObjectIds = [.. producerStatus.ObjectFilters.Select(f => f.Id)],
-                TransactionTypes = [.. producerStatus.TransactionTypes],
-                ReadFromLogFile = producerStatus.GotLogTransactions,
-                Fetched = producerStatus.Fetched,
-                Produced = producerStatus.Produced,
-                InfobasePath = producerStatus.InfobasePath,
-                Username = producerStatus.Username,
-                DataTypeJsonPropertyName = producerStatus.DataTypeJsonPropertyName,
+                Active = status.Active,
+                LastActivity = status.LastActivity,
+                ErrorMessage = status.ErrorMessage,
+                ObjectIds = [.. status.ObjectFilters.Select(f => f.Id)],
+                TransactionTypes = [.. status.TransactionTypes],
+                ReadFromLogFile = status.GotLogTransactions,
+                Fetched = status.Fetched,
+                Produced = status.Produced,
+                InfobasePath = status.InfobasePath,
+                Username = status.Username,
+                DataTypeJsonPropertyName = status.DataTypeJsonPropertyName,
             });
         }
 
         return producers;
+    }
+
+    private static List<OldProducerHealthStatus>? GetV83ApplicationProducerStatuses(HealthReport healthReport)
+    {
+        List<V83ApplicationProducerStatus>? statuses = GetStatusFromHealthReport<V83ApplicationProducerStatus>(
+            healthReport,
+            dataKey: V83ApplicationProducerServiceHealthChecker.DataKey);
+
+        if (statuses == null)
+        {
+            return null;
+        }
+
+        List<OldProducerHealthStatus> oldStatuses = [];
+
+        foreach (V83ApplicationProducerStatus status in statuses)
+        {
+            oldStatuses.Add(new OldProducerHealthStatus()
+            {
+                Type = nameof(V83ApplicationProducerService),
+                Active = status.Active,
+                LastActivity = status.LastActivity,
+                ErrorMessage = status.ErrorMessage,
+                ObjectIds = [.. status.ObjectFilters],
+                TransactionTypes = [.. status.TransactionTypes],
+                Fetched = status.Fetched,
+                Produced = status.Produced,
+                InfobasePath = status.InfobasePath,
+                Username = status.Username,
+                DataTypeJsonPropertyName = status.DataTypeJsonPropertyName,
+
+                // Unused
+                ReadFromLogFile = null,
+            });
+        }
+
+        return oldStatuses;
+    }
+
+    private static List<TStatus>? GetStatusFromHealthReport<TStatus>(HealthReport healthReport, string dataKey)
+    {
+        bool isStatusPresent = healthReport.Entries.TryGetValue(
+            key: typeof(TStatus).Name,
+            out HealthReportEntry status);
+
+        if (!isStatusPresent)
+        {
+            return null;
+        }
+
+        bool isDataPresent = status.Data.TryGetValue(dataKey, out object? data);
+
+        if (!isDataPresent)
+        {
+            return null;
+        }
+
+        if (data is not List<TStatus> statuses)
+        {
+            return null;
+        }
+
+        if (statuses.Count == 0)
+        {
+            return null;
+        }
+
+        return statuses;
     }
 
     private readonly struct OldHealthStatus
@@ -130,7 +194,8 @@ public static class HealthCheckHelper
         public required string[] TransactionTypes { get; init; }
 
         [JsonPropertyName("readFromLogFile")]
-        public required int ReadFromLogFile { get; init; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public required int? ReadFromLogFile { get; init; }
 
         [JsonPropertyName("fetched")]
         public required int Fetched { get; init; }
@@ -157,4 +222,6 @@ public static class HealthCheckHelper
     {
 
     }
+
+    private delegate List<OldProducerHealthStatus>? StatusGatherer(HealthReport healthReport);
 }

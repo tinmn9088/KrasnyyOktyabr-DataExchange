@@ -20,7 +20,10 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4010, Level = LogLevel.Trace, Message = "Processing infobase '{infobaseAddress}' change")]
     public static partial void ProcessingInfobaseChange(this ILogger logger, string infobaseAddress);
 
-    [LoggerMessage(EventId = 4011, Level = LogLevel.Trace, Message = "'{infobaseAddress}' producer errors exceeded")]
+    [LoggerMessage(EventId = 4010, Level = LogLevel.Trace, Message = "Request infobase '{infobaseAddress}' changes")]
+    public static partial void RequestInfobaseChanges(this ILogger logger, string infobaseAddress);
+
+    [LoggerMessage(EventId = 4012, Level = LogLevel.Warning, Message = "'{infobaseAddress}' producer errors exceeded")]
     public static partial void ErrorsExceeded(this ILogger logger, string infobaseAddress);
 
     [LoggerMessage(EventId = 4020, Level = LogLevel.Trace, Message = "Getting new transactions from infobase '{infobaseAddress}'")]

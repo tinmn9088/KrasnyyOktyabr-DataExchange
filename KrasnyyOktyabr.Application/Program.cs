@@ -5,6 +5,7 @@ using KrasnyyOktyabr.Application.DependencyInjection;
 using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
 using KrasnyyOktyabr.Application.Services.Kafka;
+using KrasnyyOktyabr.ComV77Application;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,8 @@ builder.Services.Configure<HostOptions>(options =>
 
 IHealthChecksBuilder healthChecksBuilder = builder.Services.AddHealthChecks();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddSingleton<IOffsetService, OffsetService>();
 builder.Services.AddSingleton<IJsonService, JsonService>();
 builder.Services.AddSingleton<ITransliterationService, TransliterationService>();
@@ -30,8 +33,13 @@ builder.Services.AddJsonTransform();
 
 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 {
+    builder.Services.AddSingleton<IComV77ApplicationConnectionFactory, ComV77ApplicationConnection.Factory>();
+
     builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
+
 }
+
+builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
 
 WebApplication app = builder.Build();
 

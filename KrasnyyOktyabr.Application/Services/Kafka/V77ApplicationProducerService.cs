@@ -476,6 +476,8 @@ public sealed partial class V77ApplicationProducerService(
             _cancellationTokenSource = new();
 
             _isDisposed = false;
+
+            LastActivity = DateTimeOffset.Now;
         }
 
         public string Key => _infobaseFullPath;
@@ -586,6 +588,8 @@ public sealed partial class V77ApplicationProducerService(
         /// </remarks>
         private async Task ProcessChanges(CancellationToken cancellationToken)
         {
+            LastActivity = DateTimeOffset.Now;
+
             GetLogTransactionsResult getLogTransactionsResult = await _getLogTransactionsTask(
                 _settings,
                 _offsetService,
@@ -600,6 +604,8 @@ public sealed partial class V77ApplicationProducerService(
 
             GotFromLog += getLogTransactionsResult.Transactions.Count;
 
+            LastActivity = DateTimeOffset.Now;
+
             List<string> objectJsons = await _getObjectJsonsTask(
                 _settings,
                 getLogTransactionsResult.Transactions,
@@ -609,6 +615,8 @@ public sealed partial class V77ApplicationProducerService(
                 cancellationToken);
 
             Fetched += objectJsons.Count;
+
+            LastActivity = DateTimeOffset.Now;
 
             int sentObjectsCount = await _sendObjectJsonsTask(
                 _settings,
@@ -620,12 +628,16 @@ public sealed partial class V77ApplicationProducerService(
 
             Produced += sentObjectsCount;
 
+            LastActivity = DateTimeOffset.Now;
+
             await CommitOffset(
                 _offsetService,
                 _infobaseFullPath,
                 position: getLogTransactionsResult.LastReadOffset.Position,
                 lastReadLine: getLogTransactionsResult.LastReadOffset.LastReadLine,
                 cancellationToken);
+
+            LastActivity = DateTimeOffset.Now;
         }
     }
 
