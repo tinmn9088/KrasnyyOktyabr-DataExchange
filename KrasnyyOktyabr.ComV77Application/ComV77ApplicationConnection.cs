@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Logging;
+using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnection;
+using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 using static KrasnyyOktyabr.ComV77Application.Logging.LoggingHelper;
 
 namespace KrasnyyOktyabr.ComV77Application;
@@ -36,6 +38,8 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 
     private int _errorsCount;
 
+    private DateTimeOffset? _lastTimeDisposed;
+
     private readonly Action _removeFromFactoryCallback;
 
     /// <remarks>
@@ -61,6 +65,8 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         _errorsCount = 0;
 
         _removeFromFactoryCallback = removeFromFactoryCallback;
+
+        _lastTimeDisposed = null;
 
         _actualDisposeTimer = new(Timeout.InfiniteTimeSpan); // Turned off timer
 
@@ -91,6 +97,23 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
                 }
             }
         });
+    }
+
+    public ComV77ApplicationConnectionStatus Status
+    {
+        get
+        {
+            return new ComV77ApplicationConnectionStatus()
+            {
+                InfobasePath = _properties.InfobasePath,
+                Username = _properties.Username,
+                RetievedTimes = _retrievedTimes,
+                ErrorsCount = _errorsCount,
+                IsInitialized = _isInitialized,
+                IsDisposed = _isDisposed,
+                LastTimeDisposed = _lastTimeDisposed,
+            };
+        }
     }
 
     /// <exception cref="FailedToCreateTypeException"></exception>
@@ -367,6 +390,8 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     /// </summary>
     public async ValueTask DisposeAsync()
     {
+        _lastTimeDisposed = DateTimeOffset.Now;
+
         await _connectionLock.WaitAsync().ConfigureAwait(false);
 
         try
@@ -415,6 +440,17 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         private readonly Dictionary<ConnectionProperties, ComV77ApplicationConnection> _propertiesConnections = [];
 
         private bool _isDisposed = false;
+
+        public ComV77ApplicationConnectionFactoryStatus Status
+        {
+            get
+            {
+                return new()
+                {
+                    Connections = _propertiesConnections.Values.Select(c => c.Status).ToArray(),
+                };
+            }
+        }
 
         /// <exception cref="ObjectDisposedException"></exception>
         public async Task<IComV77ApplicationConnection> GetConnectionAsync(ConnectionProperties connectionProperties, CancellationToken cancellationToken = default)
