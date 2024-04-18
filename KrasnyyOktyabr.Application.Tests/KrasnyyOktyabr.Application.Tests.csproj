@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Properties\ConsumerInstructions\TestConsumerInstruction.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\V77ApplicationLogFile.mlg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

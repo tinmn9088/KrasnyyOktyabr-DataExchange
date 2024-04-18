@@ -44,6 +44,12 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4031, Level = LogLevel.Trace, Message = "{objectsCount} objects retrieved")]
     public static partial void GotObjects(this ILogger logger, int objectsCount);
 
+    [LoggerMessage(EventId = 4036, Level = LogLevel.Trace, Message = "Interpreter result is {objectsCount} object")]
+    public static partial void JsonTransformResult(this ILogger logger, int objectsCount);
+
+    [LoggerMessage(EventId = 4037, Level = LogLevel.Error, Message = "Interpreter error")]
+    public static partial void JsonTransformError(this ILogger logger, Exception exception);
+
     [LoggerMessage(EventId = 4041, Level = LogLevel.Trace, Message = "Sending {objectsCount} objects")]
     public static partial void SendingObjectJsons(this ILogger logger, int objectsCount);
 

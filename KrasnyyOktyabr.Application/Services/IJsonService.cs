@@ -2,7 +2,7 @@
 
 public interface IJsonService
 {
-    public readonly struct RunJsonTransformMsSqlResult
+    public readonly struct JsonTransformMsSqlResult
     {
         public required string Table { get; init; }
 
@@ -20,6 +20,8 @@ public interface IJsonService
 
     public static string InputPropertyName => "input";
 
+    void ClearCachedExpressions();
+
     /// <summary>
     /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,
     /// add properties from <paramref name="propertiesToAdd"/>
@@ -33,10 +35,14 @@ public interface IJsonService
     /// Must contain JSON: <c>"{'instructions': ... ,'input': { ... } }"</c>
     /// </param>
     /// <exception cref="Exception"></exception>
-    Task RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken);
+    ValueTask RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken);
 
     /// <exception cref="Exception"></exception>
-    Task<RunJsonTransformMsSqlResult> RunJsonTransformOnConsumedMessageMsSqlAsync(string producerName, string consumerName, string message, CancellationToken cancellationToken);
+    ValueTask<List<JsonTransformMsSqlResult>> RunJsonTransformOnConsumedMessageMsSqlAsync(
+        string instructionName,
+        string message,
+        string tablePropertyName,
+        CancellationToken cancellationToken);
 
     public class FailedToGetDataTypeException : Exception
     {

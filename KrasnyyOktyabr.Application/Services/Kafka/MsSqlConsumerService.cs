@@ -17,14 +17,18 @@ public sealed class MsSqlConsumerService(
     ILoggerFactory loggerFactory)
     : IMsSqlConsumerService
 {
-    public delegate ValueTask<RunJsonTransformMsSqlResult> ProcessMessageAsync(
-        string producerName,
-        string consumerName,
+    public delegate ValueTask<List<JsonTransformMsSqlResult>?> TransformMessageAsync(
+        string topic,
         string message,
         MsSqlConsumerSettings settings,
         IJsonService jsonService,
-        IMsSqlService msSqlService,
         ILogger logger,
+        CancellationToken cancellationToken);
+
+    public delegate ValueTask SqlInsertAsync(
+        List<JsonTransformMsSqlResult> jsonTransformResults,
+        MsSqlConsumerSettings settings,
+        IMsSqlService msSqlService,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -99,17 +103,51 @@ public sealed class MsSqlConsumerService(
         await StopConsumersAsync();
     }
 
-    public ProcessMessageAsync ProcessMessageTask => async (
-        string producerName,
-        string consumerName,
+    public TransformMessageAsync TransformMessageTask => async (
+        string topic,
         string message,
         MsSqlConsumerSettings settings,
         IJsonService jsonService,
-        IMsSqlService msSqlService,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        return default; // TODO: implement 
+        List<JsonTransformMsSqlResult> jsonTransformResults;
+
+        try
+        {
+            if (!settings.TopicsInstructionNames.TryGetValue(topic, out string? instructionName))
+            {
+                throw new InstructionNotSpecifiedException(topic);
+            }
+
+            jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageMsSqlAsync(
+                instructionName,
+                message,
+                settings.TablePropertyName,
+                cancellationToken);
+
+            logger.JsonTransformResult(jsonTransformResults.Count);
+        }
+        catch (Exception ex)
+        {
+            logger.JsonTransformError(ex);
+
+            return null;
+        }
+
+        return jsonTransformResults;
+    };
+
+    public SqlInsertAsync SqlInsertTask => async (
+        List<JsonTransformMsSqlResult> jsonTransformResults,
+        MsSqlConsumerSettings settings,
+        IMsSqlService msSqlService,
+        CancellationToken cancellationToken) =>
+    {
+        foreach (JsonTransformMsSqlResult result in jsonTransformResults)
+        {
+            await msSqlService.InsertAsync(settings.ConnectionString, result.Table, result.ColumnValues);
+        }
     };
 
     private void StartConsumers()
@@ -148,7 +186,8 @@ public sealed class MsSqlConsumerService(
             kafkaService,
             jsonService,
             msSqlService,
-            ProcessMessageTask);
+            TransformMessageTask,
+            SqlInsertTask);
 
         _consumers.Add(consumer.Key, consumer);
     }
@@ -183,7 +222,9 @@ public sealed class MsSqlConsumerService(
 
         private readonly IMsSqlService _msSqlService;
 
-        private readonly ProcessMessageAsync _processMessageTask;
+        private readonly TransformMessageAsync _transformMessageTask;
+
+        private readonly SqlInsertAsync _sqlInsertTask;
 
         private readonly Task _consumerTask;
 
@@ -198,7 +239,8 @@ public sealed class MsSqlConsumerService(
             IKafkaService kafkaService,
             IJsonService jsonService,
             IMsSqlService msSqlService,
-            ProcessMessageAsync processMessageTask)
+            TransformMessageAsync transformMessageTask,
+            SqlInsertAsync sqlInsertTask)
         {
             _logger = logger;
             _settings = settings;
@@ -222,7 +264,8 @@ public sealed class MsSqlConsumerService(
             _cancellationTokenSource = new();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
-            _processMessageTask = processMessageTask;
+            _transformMessageTask = transformMessageTask;
+            _sqlInsertTask = sqlInsertTask;
             _consumerTask = Task.Run(() => RunConsumerAsync(cancellationToken), cancellationToken);
 
             LastActivity = DateTimeOffset.Now;
@@ -271,14 +314,23 @@ public sealed class MsSqlConsumerService(
 
                     LastActivity = DateTimeOffset.Now;
 
-                    await _processMessageTask(
-                        producerName: consumeResult.Message.Key,
-                        consumerName: DatabaseName,
+                    List<JsonTransformMsSqlResult>? jsonTransformResults = await _transformMessageTask(
+                        topic: consumeResult.Topic,
                         message: consumeResult.Message.Value,
                         _settings,
                         _jsonService,
-                        _msSqlService,
                         _logger,
+                        cancellationToken);
+
+                    if (jsonTransformResults == null || jsonTransformResults.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    await _sqlInsertTask(
+                        jsonTransformResults,
+                        _settings,
+                        _msSqlService,
                         cancellationToken);
                 }
             }
@@ -301,6 +353,13 @@ public sealed class MsSqlConsumerService(
             _cancellationTokenSource.Cancel();
 
             await _consumerTask.ConfigureAwait(false);
+        }
+    }
+
+    public class InstructionNotSpecifiedException : Exception
+    {
+        internal InstructionNotSpecifiedException(string topic) : base($"Instruction not specified for '{topic}'")
+        {
         }
     }
 }
