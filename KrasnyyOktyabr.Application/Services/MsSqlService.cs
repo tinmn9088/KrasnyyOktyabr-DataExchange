@@ -115,7 +115,7 @@ public partial class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
         {
             if (illegalSequenceRegex.IsMatch(selectQuery))
             {
-                throw new ArgumentException($"Illegal select query: \"{selectQuery}\"");
+                throw new ArgumentException($"Illegal select query: '{selectQuery}'");
             }
         }
     }
@@ -154,15 +154,15 @@ public partial class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
         }
     }
 
-    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s+(INSERT)\s+", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s*(INSERT)\s*", RegexOptions.IgnoreCase)]
     private static partial Regex InsertCommandRegex();
 
-    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s+(UPDATE)\s+", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s*(UPDATE)\s*", RegexOptions.IgnoreCase)]
     private static partial Regex UpdateCommandRegex();
 
-    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s+(DELETE)\s+", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s*(DELETE)\s*", RegexOptions.IgnoreCase)]
     private static partial Regex DeleteCommandRegex();
 
-    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s+(DROP)\s+", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"^([^']*'[^']*')*[^']*\s*(DROP)\s*", RegexOptions.IgnoreCase)]
     private static partial Regex DropCommandRegex();
 }

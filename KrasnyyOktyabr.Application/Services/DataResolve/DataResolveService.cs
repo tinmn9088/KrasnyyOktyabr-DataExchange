@@ -9,11 +9,12 @@ public class DataResolveService : IDataResolveService
 {
     private readonly Dictionary<string, Func<Dictionary<string, object?>, IDataResolver>> _resolverFactories;
 
-    public DataResolveService(HttpClient httpClient)
+    public DataResolveService(HttpClient httpClient, IMsSqlService msSqlService)
     {
         _resolverFactories = new()
         {
             { nameof(HttpDataResolver), args => CreateHttpDataResolver(args, httpClient) },
+            { nameof(MsSqlSingleValueDataResolver), args => CreateMsSqlSingleValueDataResolver(args, msSqlService) },
         };
     }
 
@@ -28,7 +29,7 @@ public class DataResolveService : IDataResolveService
     }
 
     /// <exception cref="ArgumentException"></exception>
-    private HttpDataResolver CreateHttpDataResolver(Dictionary<string, object?> args, HttpClient httpClient)
+    private static HttpDataResolver CreateHttpDataResolver(Dictionary<string, object?> args, HttpClient httpClient)
     {
         string url = GetRequired<string>(args, "url");
         string method = GetRequired<string>(args, "method");
@@ -49,6 +50,15 @@ public class DataResolveService : IDataResolveService
         }
 
         return new(httpClient, request);
+    }
+
+    /// <exception cref="ArgumentException"></exception>
+    private static MsSqlSingleValueDataResolver CreateMsSqlSingleValueDataResolver(Dictionary<string, object?> args, IMsSqlService msSqlService)
+    {
+        string connectionString = GetRequired<string>(args, "connectionString");
+        string query = GetRequired<string>(args, "query");
+
+        return new(msSqlService, connectionString, query);
     }
 
     private static T GetRequired<T>(Dictionary<string, object?> args, string name)
