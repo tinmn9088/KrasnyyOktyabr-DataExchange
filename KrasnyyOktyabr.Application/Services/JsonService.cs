@@ -84,7 +84,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
             jsonObject,
             cancellationToken);
 
-        List<JsonTransformMsSqlResult> result = new(jsonTransformResults.Count);
+        List<JsonTransformMsSqlResult> results = new(jsonTransformResults.Count);
 
         foreach (JObject jsonTransformResult in jsonTransformResults)
         {
@@ -92,14 +92,32 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
             string tableName = jsonTransformResult[tablePropertyName]?.Value<string>() ?? throw new TablePropertyNotFoundException(tablePropertyName);
             jsonTransformResult.Remove(tablePropertyName);
 
-            result.Add(new JsonTransformMsSqlResult()
+            results.Add(new JsonTransformMsSqlResult()
             {
                 Table = tableName,
                 ColumnValues = jsonTransformResult.ToObject<Dictionary<string, dynamic>>()!,
             });
         }
 
-        return result;
+        return results;
+    }
+
+    /// <exception cref="ArgumentNullException"></exception>
+    public async ValueTask<List<string>> RunJsonTransformOnConsumedMessageV77ApplicationAsync(
+        string instructionName,
+        string jsonObject,
+        CancellationToken cancellationToken = default)
+    {
+        List<JObject> jsonTransformResults = await RunJsonTransformOnConsumedMessageAsync(
+            instructionName,
+            jsonObject,
+            cancellationToken);
+
+        List<string> results = jsonTransformResults
+            .Select(r => r.ToString(Formatting.None))
+            .ToList();
+
+        return results;
     }
 
     /// <exception cref="ArgumentNullException"></exception>

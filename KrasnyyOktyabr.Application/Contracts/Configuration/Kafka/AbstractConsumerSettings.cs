@@ -8,9 +8,6 @@ public class AbstractConsumerSettings
     public required string[] Topics { get; init; }
 
     [Required]
-    public required string DataTypePropertyName { get; init; }
-
-    [Required]
     [ConfigurationKeyName("Instructions")]
     public required Dictionary<string, string> TopicsInstructionNames { get; init; }
 

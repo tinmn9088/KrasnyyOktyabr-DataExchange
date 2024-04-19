@@ -8,4 +8,6 @@ public class V77ApplicationConsumerSettings : AbstractVApplicationConsumerSettin
 
     [Required]
     public required string InfobasePath { get; init; }
+
+    public string? ErtRelativePath { get; init; }
 }

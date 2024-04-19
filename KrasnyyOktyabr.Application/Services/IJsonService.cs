@@ -44,6 +44,12 @@ public interface IJsonService
         string tablePropertyName,
         CancellationToken cancellationToken);
 
+    /// <exception cref="Exception"></exception>
+    ValueTask<List<string>> RunJsonTransformOnConsumedMessageV77ApplicationAsync(
+        string instructionName,
+        string message,
+        CancellationToken cancellationToken);
+
     public class FailedToGetDataTypeException : Exception
     {
         internal FailedToGetDataTypeException(string dataTypePropertyName)

@@ -94,14 +94,14 @@ public sealed class V83ApplicationProducerService(
         await StopProducersAsync();
     }
 
-    public GetLogTransactionsAsync GetLogTransactionsTask => async (
+    public GetLogTransactionsAsync GetLogTransactionsTask => (
         V83ApplicationProducerSettings settings,
         IOffsetService offsetService,
         IHttpClientFactory httpClientFactory,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        return await Task.FromResult(string.Empty); // TODO: get log transactions
+        throw new NotImplementedException(); // TODO: get log transactions
     };
 
     private void StartProducers()
@@ -267,7 +267,7 @@ public sealed class V83ApplicationProducerService(
 
         public async ValueTask DisposeAsync()
         {
-            _logger.Disposing(_settings.InfobaseUrl);
+            _logger.Disposing(Key);
 
             _cancellationTokenSource.Cancel();
 

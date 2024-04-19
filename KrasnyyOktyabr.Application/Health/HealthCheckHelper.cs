@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using KrasnyyOktyabr.Application.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
@@ -32,6 +33,8 @@ public static class HealthCheckHelper
             AddProducerStatuses(GetV77ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
             AddConsumerStatuses(GetMsSqlConsumerStatuses, healthReport, ref consumerStatuses);
+
+            AddConsumerStatuses(GetV77ApplicationConsumerStatuses, healthReport, ref consumerStatuses);
 
             comV77ApplicationConnectionStatuses = GetComV77ApplicationConnectionHealthStatuses(healthReport);
         }
@@ -142,7 +145,7 @@ public static class HealthCheckHelper
     [SupportedOSPlatform("windows")]
     private static List<OldConsumerHealthStatus>? GetMsSqlConsumerStatuses(HealthReport healthReport)
     {
-        List<MsSqlProducerStatus>? statuses = GetStatusFromHealthReport<MsSqlProducerStatus>(
+        List<MsSqlConsumerStatus>? statuses = GetStatusFromHealthReport<MsSqlConsumerStatus>(
             healthReport,
             dataKey: MsSqlConsumerServiceHealthChecker.DataKey);
 
@@ -153,7 +156,7 @@ public static class HealthCheckHelper
 
         List<OldConsumerHealthStatus> oldStatuses = [];
 
-        foreach (MsSqlProducerStatus status in statuses)
+        foreach (MsSqlConsumerStatus status in statuses)
         {
             oldStatuses.Add(new OldConsumerHealthStatus()
             {
@@ -164,6 +167,39 @@ public static class HealthCheckHelper
                 Consumed = status.Consumed,
                 Saved = status.Saved,
                 TableJsonPropertyName = status.TablePropertyName,
+                Topics = [.. status.Topics],
+                ConsumerGroup = status.ConsumerGroup,
+            });
+        }
+
+        return oldStatuses;
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static List<OldConsumerHealthStatus>? GetV77ApplicationConsumerStatuses(HealthReport healthReport)
+    {
+        List<V77ApplicationConsumerStatus>? statuses = GetStatusFromHealthReport<V77ApplicationConsumerStatus>(
+            healthReport,
+            dataKey: V77ApplicationConsumerServiceHealthChecker.DataKey);
+
+        if (statuses == null)
+        {
+            return null;
+        }
+
+        List<OldConsumerHealthStatus> oldStatuses = [];
+
+        foreach (V77ApplicationConsumerStatus status in statuses)
+        {
+            oldStatuses.Add(new OldConsumerHealthStatus()
+            {
+                Type = nameof(V77ApplicationConsumerService),
+                Active = status.Active,
+                LastActivity = status.LastActivity,
+                ErrorMessage = status.ErrorMessage,
+                Consumed = status.Consumed,
+                Saved = status.Saved,
+                InfobaseName = status.InfobaseName,
                 Topics = [.. status.Topics],
                 ConsumerGroup = status.ConsumerGroup,
             });
@@ -328,6 +364,10 @@ public static class HealthCheckHelper
         [JsonPropertyName("topics")]
         public required string[] Topics { get; init; }
 
+        [JsonPropertyName("infobaseName")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? InfobaseName { get; init; }
+
         [JsonPropertyName("consumerGroup")]
         public required string ConsumerGroup { get; init; }
 
@@ -338,7 +378,8 @@ public static class HealthCheckHelper
         public required int Saved { get; init; }
 
         [JsonPropertyName("tableJsonPropertyName")]
-        public required string TableJsonPropertyName { get; init; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? TableJsonPropertyName { get; init; }
     }
 
     public readonly struct OldComV77ApplicationConnectionHealthStatus

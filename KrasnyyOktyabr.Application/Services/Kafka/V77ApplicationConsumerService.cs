@@ -2,34 +2,38 @@
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using KrasnyyOktyabr.Application.Logging;
-using static KrasnyyOktyabr.Application.Services.IJsonService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
+using KrasnyyOktyabr.ComV77Application;
+using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
 [SupportedOSPlatform("windows")]
-public sealed class MsSqlConsumerService(
+public sealed class V77ApplicationConsumerService(
     IConfiguration configuration,
     IJsonService jsonService,
-    IMsSqlService msSqlService,
+    IComV77ApplicationConnectionFactory connectionFactory,
     IKafkaService kafkaService,
+    ITransliterationService transliterationService,
     ILogger<MsSqlConsumerService> logger,
     ILoggerFactory loggerFactory)
-    : IMsSqlConsumerService
+    : IV77ApplicationConsumerService
 {
-    public delegate ValueTask<List<JsonTransformMsSqlResult>?> TransformMessageAsync(
+    public delegate ValueTask<List<string>?> TransformMessageAsync(
         string topic,
         string message,
-        MsSqlConsumerSettings settings,
+        V77ApplicationConsumerSettings settings,
         IJsonService jsonService,
         ILogger logger,
         CancellationToken cancellationToken);
 
-    public delegate ValueTask SqlInsertAsync(
-        List<JsonTransformMsSqlResult> jsonTransformResults,
-        MsSqlConsumerSettings settings,
-        IMsSqlService msSqlService,
+    public delegate ValueTask V77ApplicationSaveAsync(
+        List<string> jsonTransformResults,
+        V77ApplicationConsumerSettings settings,
+        IComV77ApplicationConnectionFactory connectionFactory,
         CancellationToken cancellationToken);
+
+    public static string DefaultErtRelativePath => @"ExtForms\EDO\Test\SaveObject.ert";
 
     /// <summary>
     /// <para>
@@ -39,9 +43,9 @@ public sealed class MsSqlConsumerService(
     /// Keys are results of <see cref="V77ApplicationProducer.Key"/>.
     /// </para>
     /// </summary>
-    private Dictionary<string, MsSqlConsumer>? _consumers;
+    private Dictionary<string, V77ApplicationConsumer>? _consumers;
 
-    public List<MsSqlConsumerStatus> Status
+    public List<V77ApplicationConsumerStatus> Status
     {
         get
         {
@@ -50,18 +54,18 @@ public sealed class MsSqlConsumerService(
                 return [];
             }
 
-            List<MsSqlConsumerStatus> statuses = new(_consumers.Count);
+            List<V77ApplicationConsumerStatus> statuses = new(_consumers.Count);
 
-            foreach (MsSqlConsumer consumer in _consumers.Values)
+            foreach (V77ApplicationConsumer consumer in _consumers.Values)
             {
                 statuses.Add(new()
                 {
                     Active = consumer.Active,
                     LastActivity = consumer.LastActivity,
                     ErrorMessage = consumer.Error?.Message,
+                    InfobaseName = consumer.InfobaseName,
                     Consumed = consumer.Consumed,
                     Saved = consumer.Saved,
-                    TablePropertyName = consumer.TablePropertyName,
                     Topics = consumer.Topics,
                     ConsumerGroup = consumer.ConsumerGroup,
                 });
@@ -106,12 +110,12 @@ public sealed class MsSqlConsumerService(
     public TransformMessageAsync TransformMessageTask => async (
         string topic,
         string message,
-        MsSqlConsumerSettings settings,
+        V77ApplicationConsumerSettings settings,
         IJsonService jsonService,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        List<JsonTransformMsSqlResult> jsonTransformResults;
+        List<string> jsonTransformResults;
 
         try
         {
@@ -120,10 +124,9 @@ public sealed class MsSqlConsumerService(
                 throw new InstructionNotSpecifiedException(topic);
             }
 
-            jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageMsSqlAsync(
+            jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageV77ApplicationAsync(
                 instructionName,
                 message,
-                settings.TablePropertyName,
                 cancellationToken);
 
             logger.JsonTransformResult(jsonTransformResults.Count);
@@ -138,21 +141,46 @@ public sealed class MsSqlConsumerService(
         return jsonTransformResults;
     };
 
-    public SqlInsertAsync SqlInsertTask => async (
-        List<JsonTransformMsSqlResult> jsonTransformResults,
-        MsSqlConsumerSettings settings,
-        IMsSqlService msSqlService,
+    public V77ApplicationSaveAsync V77ApplicationSaveTask => async (
+        List<string> jsonTransformResults,
+        V77ApplicationConsumerSettings settings,
+        IComV77ApplicationConnectionFactory connectionFactory,
         CancellationToken cancellationToken) =>
     {
-        foreach (JsonTransformMsSqlResult result in jsonTransformResults)
+        string infobaseFullPath = GetInfobaseFullPath(settings.InfobasePath);
+
+        logger.SavingObjects(jsonTransformResults.Count);
+
+        ConnectionProperties connectionProperties = new()
         {
-            await msSqlService.InsertAsync(settings.ConnectionString, result.Table, result.ColumnValues);
+            InfobasePath = infobaseFullPath,
+            Username = settings.Username,
+            Password = settings.Password,
+        };
+
+        await using (IComV77ApplicationConnection connection = await connectionFactory.GetConnectionAsync(connectionProperties, cancellationToken).ConfigureAwait(false))
+        {
+            await connection.ConnectAsync(cancellationToken).ConfigureAwait(false);
+
+            foreach (string result in jsonTransformResults)
+            {
+                Dictionary<string, object?> ertContext = new()
+                {
+                    { "ObjectJson", result },
+                };
+
+                await connection.RunErtAsync(
+                    ertRelativePath: GetErtRelativePath(settings),
+                    ertContext,
+                    resultName: null,
+                    cancellationToken).ConfigureAwait(false);
+            }
         }
     };
 
     private void StartConsumers()
     {
-        MsSqlConsumerSettings[]? producersSettings = GetConsumersSettings();
+        V77ApplicationConsumerSettings[]? producersSettings = GetConsumersSettings();
 
         if (producersSettings == null)
         {
@@ -165,29 +193,30 @@ public sealed class MsSqlConsumerService(
 
         logger.ConfigurationFound(producersSettings.Length);
 
-        foreach (MsSqlConsumerSettings settings in producersSettings)
+        foreach (V77ApplicationConsumerSettings settings in producersSettings)
         {
             StartConsumer(settings);
         }
     }
 
-    private MsSqlConsumerSettings[]? GetConsumersSettings()
-        => ValidationHelper.GetAndValidateKafkaClientSettings<MsSqlConsumerSettings>(configuration, MsSqlConsumerSettings.Position, logger);
+    private V77ApplicationConsumerSettings[]? GetConsumersSettings()
+        => ValidationHelper.GetAndValidateKafkaClientSettings<V77ApplicationConsumerSettings>(configuration, V77ApplicationConsumerSettings.Position, logger);
 
     /// <summary>
-    /// Creates new <see cref="MsSqlConsumer"/> and saves it to <see cref="_producers"/>.
+    /// Creates new <see cref="V77ApplicationConsumer"/> and saves it to <see cref="_producers"/>.
     /// </summary>
-    private void StartConsumer(MsSqlConsumerSettings settings)
+    private void StartConsumer(V77ApplicationConsumerSettings settings)
     {
         _consumers ??= [];
-        MsSqlConsumer consumer = new(
-            loggerFactory.CreateLogger<MsSqlConsumer>(),
+        V77ApplicationConsumer consumer = new(
+            loggerFactory.CreateLogger<V77ApplicationConsumer>(),
             settings,
             kafkaService,
             jsonService,
-            msSqlService,
+            connectionFactory,
+            transliterationService,
             TransformMessageTask,
-            SqlInsertTask);
+            V77ApplicationSaveTask);
 
         _consumers.Add(consumer.Key, consumer);
     }
@@ -201,7 +230,7 @@ public sealed class MsSqlConsumerService(
                 logger.StoppingConsumers(_consumers.Count);
             }
 
-            foreach (MsSqlConsumer consumer in _consumers.Values)
+            foreach (V77ApplicationConsumer consumer in _consumers.Values)
             {
                 await consumer.DisposeAsync();
             }
@@ -210,21 +239,21 @@ public sealed class MsSqlConsumerService(
         }
     }
 
-    private sealed class MsSqlConsumer : IAsyncDisposable
+    private sealed class V77ApplicationConsumer : IAsyncDisposable
     {
-        private readonly ILogger<MsSqlConsumer> _logger;
+        private readonly ILogger<V77ApplicationConsumer> _logger;
 
-        private readonly MsSqlConsumerSettings _settings;
+        private readonly V77ApplicationConsumerSettings _settings;
 
         private readonly IKafkaService _kafkaService;
 
         private readonly IJsonService _jsonService;
 
-        private readonly IMsSqlService _msSqlService;
+        private readonly IComV77ApplicationConnectionFactory _connectionFactory;
 
         private readonly TransformMessageAsync _transformMessageTask;
 
-        private readonly SqlInsertAsync _sqlInsertTask;
+        private readonly V77ApplicationSaveAsync _v77ApplicationSaveTask;
 
         private readonly Task _consumerTask;
 
@@ -233,22 +262,23 @@ public sealed class MsSqlConsumerService(
         /// </remarks>
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        internal MsSqlConsumer(
-            ILogger<MsSqlConsumer> logger,
-            MsSqlConsumerSettings settings,
+        internal V77ApplicationConsumer(
+            ILogger<V77ApplicationConsumer> logger,
+            V77ApplicationConsumerSettings settings,
             IKafkaService kafkaService,
             IJsonService jsonService,
-            IMsSqlService msSqlService,
+            IComV77ApplicationConnectionFactory connectionFactory,
+            ITransliterationService transliterationService,
             TransformMessageAsync transformMessageTask,
-            SqlInsertAsync sqlInsertTask)
+            V77ApplicationSaveAsync v77ApplicationSaveTask)
         {
             _logger = logger;
             _settings = settings;
             _kafkaService = kafkaService;
             _jsonService = jsonService;
-            _msSqlService = msSqlService;
+            _connectionFactory = connectionFactory;
 
-            DatabaseName = _kafkaService.ExtractConsumerGroupNameFromConnectionString(settings.ConnectionString);
+            InfobaseName = ExtractInfobaseName(settings.InfobasePath);
 
             if (settings.ConsumerGroup != null)
             {
@@ -258,20 +288,20 @@ public sealed class MsSqlConsumerService(
             {
                 logger.ConsumerGroupNotPresent();
 
-                ConsumerGroup = DatabaseName;
+                ConsumerGroup = transliterationService.TransliterateToLatin(InfobaseName);
             }
 
             _cancellationTokenSource = new();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             _transformMessageTask = transformMessageTask;
-            _sqlInsertTask = sqlInsertTask;
+            _v77ApplicationSaveTask = v77ApplicationSaveTask;
             _consumerTask = Task.Run(() => RunConsumerAsync(cancellationToken), cancellationToken);
 
             LastActivity = DateTimeOffset.Now;
         }
 
-        public string Key => _settings.ConnectionString;
+        public string Key => _settings.InfobasePath;
 
         public bool Active => Error == null;
 
@@ -281,15 +311,13 @@ public sealed class MsSqlConsumerService(
 
         public IReadOnlyList<string> Topics => _settings.Topics;
 
-        public string DatabaseName { get; init; }
+        public string InfobaseName { get; init; }
 
         public string ConsumerGroup { get; private set; }
 
         public int Consumed { get; private set; }
 
         public int Saved { get; private set; }
-
-        public string TablePropertyName => _settings.TablePropertyName;
 
         public Exception? Error { get; private set; }
 
@@ -314,7 +342,7 @@ public sealed class MsSqlConsumerService(
 
                     LastActivity = DateTimeOffset.Now;
 
-                    List<JsonTransformMsSqlResult>? jsonTransformResults = await _transformMessageTask(
+                    List<string>? jsonTransformResults = await _transformMessageTask(
                         topic: consumeResult.Topic,
                         message: consumeResult.Message.Value,
                         _settings,
@@ -327,10 +355,10 @@ public sealed class MsSqlConsumerService(
                         continue;
                     }
 
-                    await _sqlInsertTask(
+                    await _v77ApplicationSaveTask(
                         jsonTransformResults,
                         _settings,
-                        _msSqlService,
+                        _connectionFactory,
                         cancellationToken);
                 }
             }
@@ -354,7 +382,13 @@ public sealed class MsSqlConsumerService(
 
             await _consumerTask.ConfigureAwait(false);
         }
+
+        private static string ExtractInfobaseName(string infobasePath) => Path.GetFileName(infobasePath);
     }
+
+    private static string GetInfobaseFullPath(string infobasePath) => Path.GetFullPath(infobasePath);
+
+    private static string GetErtRelativePath(V77ApplicationConsumerSettings settings) => settings.ErtRelativePath ?? DefaultErtRelativePath;
 
     public class InstructionNotSpecifiedException : Exception
     {

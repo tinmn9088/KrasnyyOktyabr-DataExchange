@@ -485,7 +485,7 @@ public sealed partial class V77ApplicationProducerService(
         {
             if (!_isDisposed)
             {
-                _logger.Disposing(_infobaseFullPath);
+                _logger.Disposing(Key);
 
                 _watcher.EnableRaisingEvents = false;
                 _watcher.Dispose();

@@ -40,10 +40,13 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 
     builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
 
+    builder.Services.AddV77ApplicationConsumerService(healthChecksBuilder);
+
     builder.Services.AddMsSqlConsumerService(healthChecksBuilder);
 }
 
-builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
+// Not implemented yet
+// builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
 
 WebApplication app = builder.Build();
 

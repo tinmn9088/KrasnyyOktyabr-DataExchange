@@ -1,10 +1,10 @@
-﻿using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
+﻿using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public interface IMsSqlConsumerService : IRestartableHostedService<List<MsSqlConsumerStatus>>, IAsyncDisposable
+public interface IV77ApplicationConsumerService : IRestartableHostedService<List<V77ApplicationConsumerStatus>>, IAsyncDisposable
 {
-    public readonly struct MsSqlConsumerStatus
+    public readonly struct V77ApplicationConsumerStatus
     {
         public required bool Active { get; init; }
 
@@ -12,13 +12,13 @@ public interface IMsSqlConsumerService : IRestartableHostedService<List<MsSqlCon
 
         public required string? ErrorMessage { get; init; }
 
+        public required string InfobaseName { get; init; }
+
         public required int Consumed { get; init; }
 
         public required int Saved { get; init; }
 
         public required IReadOnlyList<string> Topics { get; init; }
-
-        public required string TablePropertyName { get; init; }
 
         public required string ConsumerGroup { get; init; }
     }

@@ -4,6 +4,7 @@ using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
 using KrasnyyOktyabr.Application.Services.Kafka;
 using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 
@@ -67,6 +68,27 @@ public static class KafkaDependencyInjectionHelper
             throw new NotSupportedException();
         });
 
-        healthChecksBuilder.AddCheck<MsSqlConsumerServiceHealthChecker>(nameof(MsSqlProducerStatus));
+        healthChecksBuilder.AddCheck<MsSqlConsumerServiceHealthChecker>(nameof(MsSqlConsumerStatus));
+    }
+
+    /// <summary>
+    /// Register singleton <see cref="IV77ApplicationConsumerService"/>, start <see cref="V77ApplicationConsumerService"/>
+    /// as hosted service and add health check for it.
+    /// </summary>
+    [SupportedOSPlatform("windows")]
+    public static void AddV77ApplicationConsumerService(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
+    {
+        services.AddSingleton<IV77ApplicationConsumerService, V77ApplicationConsumerService>();
+        services.AddHostedService(p =>
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return p.GetRequiredService<IV77ApplicationConsumerService>();
+            }
+
+            throw new NotSupportedException();
+        });
+
+        healthChecksBuilder.AddCheck<V77ApplicationConsumerServiceHealthChecker>(nameof(V77ApplicationConsumerStatus));
     }
 }
