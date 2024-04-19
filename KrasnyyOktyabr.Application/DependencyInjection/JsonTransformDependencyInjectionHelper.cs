@@ -1,4 +1,6 @@
-﻿using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+﻿using KrasnyyOktyabr.Application.Services.DataResolve;
+using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
 
 namespace KrasnyyOktyabr.Application.DependencyInjection;
 
@@ -9,11 +11,15 @@ public static class JsonTransformDependencyInjectionHelper
     /// </summary>
     public static void AddJsonTransform(this IServiceCollection services)
     {
-        services.AddSingleton<IJsonAbstractExpressionFactory, JsonAbstractExpressionFactory>(_ =>
+        services.AddSingleton<IDataResolveService, DataResolveService>();
+
+        services.AddSingleton<IJsonAbstractExpressionFactory, JsonAbstractExpressionFactory>(provider =>
         {
             JsonAbstractExpressionFactory factory = new();
 
             factory.ExpressionFactories = [
+
+                new JsonDataResolveExpressionFactory(factory, provider.GetRequiredService<IDataResolveService>()),
 
                 // Containers
                 new JsonArrayExpressionFactory(factory),

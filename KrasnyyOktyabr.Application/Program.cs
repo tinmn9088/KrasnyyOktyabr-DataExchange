@@ -4,6 +4,7 @@ using System.Text.Json;
 using KrasnyyOktyabr.Application.DependencyInjection;
 using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
+using KrasnyyOktyabr.Application.Services.DataResolve;
 using KrasnyyOktyabr.Application.Services.Kafka;
 using KrasnyyOktyabr.ComV77Application;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -22,7 +23,7 @@ builder.Services.Configure<HostOptions>(options =>
 
 IHealthChecksBuilder healthChecksBuilder = builder.Services.AddHealthChecks();
 
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<DataResolveService>();
 
 builder.Services.AddSingleton<IOffsetService, OffsetService>();
 builder.Services.AddSingleton<IJsonService, JsonService>();
