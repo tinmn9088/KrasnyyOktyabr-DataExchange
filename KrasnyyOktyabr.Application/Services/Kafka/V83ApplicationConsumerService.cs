@@ -12,7 +12,7 @@ public sealed partial class V83ApplicationConsumerService(
     IHttpClientFactory httpClientFactory,
     IKafkaService kafkaService,
     ITransliterationService transliterationService,
-    ILogger<MsSqlConsumerService> logger,
+    ILogger<V83ApplicationConsumerService> logger,
     ILoggerFactory loggerFactory)
     : IV83ApplicationConsumerService
 {
@@ -81,7 +81,7 @@ public sealed partial class V83ApplicationConsumerService(
         return Task.CompletedTask;
     }
 
-    public async Task RestartAsync(CancellationToken cancellationToken)
+    public async ValueTask RestartAsync(CancellationToken cancellationToken)
     {
         logger.LogTrace("Restarting ...");
 

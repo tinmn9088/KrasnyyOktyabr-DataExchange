@@ -91,4 +91,31 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     app.MapGet("/wmi/are-remote-desktop-sessions-allowed", (IWmiService wmiService) => wmiService.AreRdSessionsAllowed());
 }
 
+// TODO: return status
+app.MapGet("/restart", async (IServiceProvider provider, CancellationToken cancellationToken) =>
+{
+    async ValueTask Restart<T>() where T : IRestartable
+    {
+        T? service = provider.GetService<T>();
+
+        if (service != null)
+        {
+            await service.RestartAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
+        await Restart<IV77ApplicationProducerService>().ConfigureAwait(false);
+
+        await Restart<IV77ApplicationConsumerService>().ConfigureAwait(false);
+    }
+
+    await Restart<IMsSqlConsumerService>().ConfigureAwait(false);
+
+    // Not implemented yet
+    // await Restart<IV83ApplicationProducerService>().ConfigureAwait(false);
+    // await Restart<IV83ApplicationConsumerService>().ConfigureAwait(false);
+});
+
 app.Run();

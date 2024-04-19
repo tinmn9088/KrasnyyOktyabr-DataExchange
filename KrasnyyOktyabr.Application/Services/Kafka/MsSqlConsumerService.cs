@@ -80,7 +80,7 @@ public sealed class MsSqlConsumerService(
         return Task.CompletedTask;
     }
 
-    public async Task RestartAsync(CancellationToken cancellationToken)
+    public async ValueTask RestartAsync(CancellationToken cancellationToken)
     {
         logger.LogTrace("Restarting ...");
 

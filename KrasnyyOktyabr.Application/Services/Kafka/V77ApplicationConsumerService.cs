@@ -15,7 +15,7 @@ public sealed class V77ApplicationConsumerService(
     IComV77ApplicationConnectionFactory connectionFactory,
     IKafkaService kafkaService,
     ITransliterationService transliterationService,
-    ILogger<MsSqlConsumerService> logger,
+    ILogger<V77ApplicationConsumerService> logger,
     ILoggerFactory loggerFactory)
     : IV77ApplicationConsumerService
 {
@@ -84,7 +84,7 @@ public sealed class V77ApplicationConsumerService(
         return Task.CompletedTask;
     }
 
-    public async Task RestartAsync(CancellationToken cancellationToken)
+    public async ValueTask RestartAsync(CancellationToken cancellationToken)
     {
         logger.LogTrace("Restarting ...");
 

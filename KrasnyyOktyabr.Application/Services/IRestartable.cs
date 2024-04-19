@@ -2,5 +2,5 @@
 
 public interface IRestartable
 {
-    Task RestartAsync(CancellationToken cancellationToken);
+    ValueTask RestartAsync(CancellationToken cancellationToken);
 }
