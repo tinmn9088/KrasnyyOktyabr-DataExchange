@@ -1,21 +1,43 @@
 ﻿using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
+using KrasnyyOktyabr.ComV77Application;
+using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
+using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.JsonTransform.Expressions.DataResolve.IDataResolveService;
 
 namespace KrasnyyOktyabr.Application.Services.DataResolve;
 
 public class DataResolveService : IDataResolveService
 {
+    public static string DefaultErtRelativePathWithoutName => Path.Combine("EXTFORMS", "EDO", "Test");
+
     private readonly Dictionary<string, Func<Dictionary<string, object?>, IDataResolver>> _resolverFactories;
 
-    public DataResolveService(HttpClient httpClient, IMsSqlService msSqlService)
+    public DataResolveService(HttpClient httpClient, IMsSqlService msSqlService, IComV77ApplicationConnectionFactory connectionFactory)
     {
         _resolverFactories = new()
         {
             { nameof(HttpDataResolver), args => CreateHttpDataResolver(args, httpClient) },
             { nameof(MsSqlSingleValueDataResolver), args => CreateMsSqlSingleValueDataResolver(args, msSqlService) },
         };
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            _resolverFactories.Add(
+                key: nameof(ComV77ApplicationResolver),
+                value: args =>
+                {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        return CreateComV77ApplicationResolver(args, connectionFactory);
+                    }
+
+                    throw new NotSupportedException();
+                });
+        }
     }
 
     public async ValueTask<object?> ResolveAsync(string resolverName, Dictionary<string, object?> args, CancellationToken cancellationToken)
@@ -61,6 +83,28 @@ public class DataResolveService : IDataResolveService
         return new(msSqlService, connectionString, query);
     }
 
+    /// <exception cref="ArgumentException"></exception>
+    [SupportedOSPlatform("windows")]
+    private static ComV77ApplicationResolver CreateComV77ApplicationResolver(Dictionary<string, object?> args, IComV77ApplicationConnectionFactory connectionFactory)
+    {
+        string infobasePath = GetRequired<string>(args, "infobasePath");
+        string username = GetRequired<string>(args, "username");
+        string password = GetRequired<string>(args, "password");
+        string ertName = GetRequired<string>(args, "ertName");
+
+        Dictionary<string, object?>? context = GetOptional<Dictionary<string, object?>?>(args, "formParams", null);
+        string? resultName = GetOptional<string?>(args, "resultName", null);
+
+        ConnectionProperties connectionProperties = new()
+        {
+            InfobasePath = infobasePath,
+            Username = username,
+            Password = password,
+        };
+
+        return new(connectionFactory, connectionProperties, Path.Combine(DefaultErtRelativePathWithoutName, ertName), context, resultName);
+    }
+
     private static T GetRequired<T>(Dictionary<string, object?> args, string name)
     {
         if (!args.TryGetValue(name, out object? value))
@@ -73,14 +117,40 @@ public class DataResolveService : IDataResolveService
             return checkedValue;
         }
 
+        if (value != null)
+        {
+            if (TryConvertThroughJToken(value, out T? converted))
+            {
+                return converted!;
+            }
+        }
+
         throw new ArgumentException($"Parameter '{name}' type is invalid ({name.GetType().Name} instead of {typeof(T).Name})");
     }
 
     private static T GetOptional<T>(Dictionary<string, object?> args, string name, T defaultValue)
     {
-        return args.TryGetValue(name, out object? value)
-            ? value is T checkedValue ? checkedValue : defaultValue
-            : defaultValue;
+        bool isPresent = args.TryGetValue(name, out object? value);
+
+        if (!isPresent)
+        {
+            return defaultValue;
+        }
+
+        if (value is T checkedValue)
+        {
+            return checkedValue;
+        }
+
+        if (value != null)
+        {
+            if (TryConvertThroughJToken(value, out T? converted))
+            {
+                return converted!;
+            }
+        }
+
+        return defaultValue;
     }
 
     private static StringContent? GetHttpContent(string? contentType, string? body)
@@ -100,5 +170,21 @@ public class DataResolveService : IDataResolveService
         string credential = $"{username}:{password}";
         string encodedCredential = Convert.ToBase64String(Encoding.UTF8.GetBytes(credential));
         return new AuthenticationHeaderValue("Basic", encodedCredential);
+    }
+
+    private static bool TryConvertThroughJToken<T>(object value, out T? converted)
+    {
+        converted = default;
+
+        T? convertedValue = JToken.FromObject(value).ToObject<T>();
+
+        if (convertedValue != null)
+        {
+            converted = convertedValue;
+
+            return true;
+        }
+
+        return false;
     }
 }
