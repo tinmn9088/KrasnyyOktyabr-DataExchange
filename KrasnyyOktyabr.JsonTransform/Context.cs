@@ -123,50 +123,44 @@ public sealed class Context : IContext
     {
         if (!TryGetLastAddedCursorName(out string? name))
         {
-            return CursorNotFound;
+            throw new CursorNotFoundException();
         }
 
-        bool isPresent = _cursors.TryGetValue(name!, out (object?, int) cursorIndex);
-
-        return isPresent
-            ? cursorIndex.Item1
-            : CursorNotFound;
+        return GetCursor(name!);
     }
 
     public object? GetCursor(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        bool isPresent = _cursors.TryGetValue(name, out (object?, int) cursorIndex);
+        if (!_cursors.TryGetValue(name, out (object?, int) cursorIndex))
+        {
+            throw new CursorNotFoundException(name);
+        }
 
-        return isPresent
-            ? cursorIndex.Item1
-            : CursorNotFound;
+        return cursorIndex.Item1;
     }
 
     public int GetCursorIndex()
     {
         if (!TryGetLastAddedCursorName(out string? name))
         {
-            return CursorIndexNotFound;
+            throw new CursorIndexNotFoundException();
         }
 
-        bool isPresent = _cursors.TryGetValue(name!, out (object?, int) cursorIndex);
-
-        return isPresent
-            ? cursorIndex.Item2
-            : CursorIndexNotFound;
+        return GetCursorIndex(name!);
     }
 
     public int GetCursorIndex(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        bool isPresent = _cursors.TryGetValue(name, out (object?, int) cursorIndex);
+        if (!_cursors.TryGetValue(name, out (object?, int) cursorIndex))
+        {
+            throw new CursorIndexNotFoundException(name);
+        }
 
-        return isPresent
-            ? cursorIndex.Item2
-            : CursorIndexNotFound;
+        return cursorIndex.Item2;
     }
 
     public void RemoveCursor(string name)
@@ -179,7 +173,7 @@ public sealed class Context : IContext
     {
         name = null;
 
-        if (!_cursorNames.Any())
+        if (_cursorNames.Count == 0)
         {
             return false;
         }

@@ -182,8 +182,8 @@ public class ContextTests
         string cursor2LastValue = "LastValue2";
         int cursor2LastIndex = 0;
 
-        Assert.AreEqual(CursorNotFound, _context!.GetCursor());
-        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex());
+        Assert.ThrowsException<CursorNotFoundException>(() => _context!.GetCursor());
+        Assert.ThrowsException<CursorIndexNotFoundException>(() => _context!.GetCursorIndex());
 
         // 1 start
         _context!.UpdateCursor(cursor1Name, "TestValue1", 0);
@@ -216,31 +216,35 @@ public class ContextTests
         // 1 end
         _context.RemoveCursor(cursor1Name);
 
-        Assert.AreEqual(CursorNotFound, _context!.GetCursor());
-        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex());
+        Assert.ThrowsException<CursorNotFoundException>(() => _context!.GetCursor());
+        Assert.ThrowsException<CursorIndexNotFoundException>(() => _context!.GetCursorIndex());
     }
 
     [TestMethod]
-    public void GetCursor_WhenNoName_ShoudReturnNull()
+    [ExpectedException(typeof(CursorNotFoundException))]
+    public void GetCursor_WhenNoName_ShoudThrowCursorNotFoundException()
     {
-        Assert.AreEqual(CursorNotFound, _context!.GetCursor());
+        _context!.GetCursor();
     }
 
     [TestMethod]
-    public void GetCursor_WhenNameInvalid_ShoudReturnNull()
+    [ExpectedException(typeof(CursorNotFoundException))]
+    public void GetCursor_WhenNameInvalid_ShoudThrowCursorNotFoundException()
     {
-        Assert.AreEqual(CursorNotFound, _context!.GetCursor("InvalidName"));
+        _context!.GetCursor("InvalidName");
     }
 
     [TestMethod]
-    public void GetCursorIndex_WhenNoName_ShoudReturnMinus1()
+    [ExpectedException(typeof(CursorIndexNotFoundException))]
+    public void GetCursorIndex_WhenNoName_ShoudThrowsCursorIndexNotFoundException()
     {
-        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex());
+        _context!.GetCursorIndex();
     }
 
     [TestMethod]
-    public void GetCursorIndex_WhenNameInvalid_ShoudReturnMinus1()
+    [ExpectedException(typeof(CursorIndexNotFoundException))]
+    public void GetCursorIndex_WhenNameInvalid_ShoudThrowsCursorIndexNotFoundException()
     {
-        Assert.AreEqual(CursorIndexNotFound, _context!.GetCursorIndex("InvalidName"));
+        _context!.GetCursorIndex("InvalidName");
     }
 }

@@ -7,10 +7,6 @@ namespace KrasnyyOktyabr.JsonTransform;
 /// </summary>
 public interface IContext
 {
-    public static object? CursorNotFound => null;
-
-    public static int CursorIndexNotFound => -1;
-
     /// <exception cref="ArgumentNullException"></exception>
     void MemorySet(string name, object? value);
 
@@ -34,18 +30,18 @@ public interface IContext
     /// <exception cref="ArgumentNullException"></exception>
     void UpdateCursor(string name, object? cursor, int index);
 
-    /// <returns>Cursor value or <see cref="CursorNotFound"/>.</returns>
+    /// <exception cref="CursorNotFoundException"></exception>
     object? GetCursor();
 
     /// <exception cref="ArgumentNullException"></exception>
-    /// <returns>Cursor value or <see cref="CursorNotFound"/>.</returns>
+    /// <exception cref="CursorNotFoundException"></exception>
     object? GetCursor(string name);
 
-    /// <returns>Cursor index or <see cref="CursorIndexNotFound"/>.</returns>
+    /// <exception cref="CursorIndexNotFoundException"
     int GetCursorIndex();
 
     /// <exception cref="ArgumentNullException"></exception>
-    /// <returns>Cursor index or <see cref="CursorIndexNotFound"/>.</returns>
+    /// <exception cref="CursorIndexNotFoundException"></exception>
     int GetCursorIndex(string name);
 
     /// <exception cref="ArgumentNullException"></exception>
@@ -53,5 +49,27 @@ public interface IContext
 
     public class MemoryValueNotFoundException(string name) : Exception(name)
     {
+    }
+
+    public class CursorNotFoundException : Exception
+    {
+        internal CursorNotFoundException()
+        {
+        }
+
+        internal CursorNotFoundException(string name) : base(name)
+        {
+        }
+    }
+
+    public class CursorIndexNotFoundException : Exception
+    {
+        internal CursorIndexNotFoundException()
+        {
+        }
+
+        internal CursorIndexNotFoundException(string name) : base(name)
+        {
+        }
     }
 }
