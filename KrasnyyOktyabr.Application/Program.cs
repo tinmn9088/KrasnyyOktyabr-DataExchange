@@ -47,6 +47,7 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 
 // Not implemented yet
 // builder.Services.AddV83ApplicationProducerService(healthChecksBuilder);
+// builder.Services.AddV83ApplicationConsumerService(healthChecksBuilder);
 
 WebApplication app = builder.Build();
 

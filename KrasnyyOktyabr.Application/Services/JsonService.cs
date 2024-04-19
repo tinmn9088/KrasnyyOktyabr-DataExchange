@@ -103,7 +103,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
     }
 
     /// <exception cref="ArgumentNullException"></exception>
-    public async ValueTask<List<string>> RunJsonTransformOnConsumedMessageV77ApplicationAsync(
+    public async ValueTask<List<string>> RunJsonTransformOnConsumedMessageVApplicationAsync(
         string instructionName,
         string jsonObject,
         CancellationToken cancellationToken = default)

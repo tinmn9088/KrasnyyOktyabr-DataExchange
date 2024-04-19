@@ -1,36 +1,33 @@
-﻿using System.Runtime.Versioning;
+﻿using System.Text.RegularExpressions;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using KrasnyyOktyabr.Application.Logging;
-using KrasnyyOktyabr.ComV77Application;
-using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationConsumerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-[SupportedOSPlatform("windows")]
-public sealed class V77ApplicationConsumerService(
+public sealed partial class V83ApplicationConsumerService(
     IConfiguration configuration,
     IJsonService jsonService,
-    IComV77ApplicationConnectionFactory connectionFactory,
+    IHttpClientFactory httpClientFactory,
     IKafkaService kafkaService,
     ITransliterationService transliterationService,
     ILogger<MsSqlConsumerService> logger,
     ILoggerFactory loggerFactory)
-    : IV77ApplicationConsumerService
+    : IV83ApplicationConsumerService
 {
     public delegate ValueTask<List<string>?> TransformMessageAsync(
         string topic,
         string message,
-        V77ApplicationConsumerSettings settings,
+        V83ApplicationConsumerSettings settings,
         IJsonService jsonService,
         ILogger logger,
         CancellationToken cancellationToken);
 
-    public delegate ValueTask V77ApplicationSaveAsync(
+    public delegate ValueTask V83ApplicationSaveAsync(
         List<string> jsonTransformResults,
-        V77ApplicationConsumerSettings settings,
-        IComV77ApplicationConnectionFactory connectionFactory,
+        V83ApplicationConsumerSettings settings,
+        IHttpClientFactory httpClientFactory,
         CancellationToken cancellationToken);
 
     public static string DefaultErtRelativePath => @"ExtForms\EDO\Test\SaveObject.ert";
@@ -43,9 +40,9 @@ public sealed class V77ApplicationConsumerService(
     /// Keys are results of <see cref="V77ApplicationProducer.Key"/>.
     /// </para>
     /// </summary>
-    private Dictionary<string, V77ApplicationConsumer>? _consumers;
+    private Dictionary<string, V83ApplicationConsumer>? _consumers;
 
-    public List<V77ApplicationConsumerStatus> Status
+    public List<V83ApplicationConsumerStatus> Status
     {
         get
         {
@@ -54,9 +51,9 @@ public sealed class V77ApplicationConsumerService(
                 return [];
             }
 
-            List<V77ApplicationConsumerStatus> statuses = new(_consumers.Count);
+            List<V83ApplicationConsumerStatus> statuses = new(_consumers.Count);
 
-            foreach (V77ApplicationConsumer consumer in _consumers.Values)
+            foreach (V83ApplicationConsumer consumer in _consumers.Values)
             {
                 statuses.Add(new()
                 {
@@ -110,7 +107,7 @@ public sealed class V77ApplicationConsumerService(
     public TransformMessageAsync TransformMessageTask => async (
         string topic,
         string message,
-        V77ApplicationConsumerSettings settings,
+        V83ApplicationConsumerSettings settings,
         IJsonService jsonService,
         ILogger logger,
         CancellationToken cancellationToken) =>
@@ -141,46 +138,18 @@ public sealed class V77ApplicationConsumerService(
         return jsonTransformResults;
     };
 
-    public V77ApplicationSaveAsync V77ApplicationSaveTask => async (
+    public V83ApplicationSaveAsync V83ApplicationSaveTask => (
         List<string> jsonTransformResults,
-        V77ApplicationConsumerSettings settings,
-        IComV77ApplicationConnectionFactory connectionFactory,
+        V83ApplicationConsumerSettings settings,
+        IHttpClientFactory httpClientFactory,
         CancellationToken cancellationToken) =>
     {
-        string infobaseFullPath = GetInfobaseFullPath(settings.InfobasePath);
-
-        logger.SavingObjects(jsonTransformResults.Count);
-
-        ConnectionProperties connectionProperties = new()
-        {
-            InfobasePath = infobaseFullPath,
-            Username = settings.Username,
-            Password = settings.Password,
-        };
-
-        await using (IComV77ApplicationConnection connection = await connectionFactory.GetConnectionAsync(connectionProperties, cancellationToken).ConfigureAwait(false))
-        {
-            await connection.ConnectAsync(cancellationToken).ConfigureAwait(false);
-
-            foreach (string result in jsonTransformResults)
-            {
-                Dictionary<string, object?> ertContext = new()
-                {
-                    { "ObjectJson", result },
-                };
-
-                await connection.RunErtAsync(
-                    ertRelativePath: GetErtRelativePath(settings),
-                    ertContext,
-                    resultName: null,
-                    cancellationToken).ConfigureAwait(false);
-            }
-        }
+        throw new NotImplementedException(); // TODO: send objects to infobase
     };
 
     private void StartConsumers()
     {
-        V77ApplicationConsumerSettings[]? producersSettings = GetConsumersSettings();
+        V83ApplicationConsumerSettings[]? producersSettings = GetConsumersSettings();
 
         if (producersSettings == null)
         {
@@ -193,30 +162,30 @@ public sealed class V77ApplicationConsumerService(
 
         logger.ConfigurationFound(producersSettings.Length);
 
-        foreach (V77ApplicationConsumerSettings settings in producersSettings)
+        foreach (V83ApplicationConsumerSettings settings in producersSettings)
         {
             StartConsumer(settings);
         }
     }
 
-    private V77ApplicationConsumerSettings[]? GetConsumersSettings()
-        => ValidationHelper.GetAndValidateKafkaClientSettings<V77ApplicationConsumerSettings>(configuration, V77ApplicationConsumerSettings.Position, logger);
+    private V83ApplicationConsumerSettings[]? GetConsumersSettings()
+        => ValidationHelper.GetAndValidateKafkaClientSettings<V83ApplicationConsumerSettings>(configuration, V83ApplicationConsumerSettings.Position, logger);
 
     /// <summary>
-    /// Creates new <see cref="V77ApplicationConsumer"/> and saves it to <see cref="_producers"/>.
+    /// Creates new <see cref="V83ApplicationConsumer"/> and saves it to <see cref="_producers"/>.
     /// </summary>
-    private void StartConsumer(V77ApplicationConsumerSettings settings)
+    private void StartConsumer(V83ApplicationConsumerSettings settings)
     {
         _consumers ??= [];
-        V77ApplicationConsumer consumer = new(
-            loggerFactory.CreateLogger<V77ApplicationConsumer>(),
+        V83ApplicationConsumer consumer = new(
+            loggerFactory.CreateLogger<V83ApplicationConsumer>(),
             settings,
             kafkaService,
             jsonService,
-            connectionFactory,
+            httpClientFactory,
             transliterationService,
             TransformMessageTask,
-            V77ApplicationSaveTask);
+            V83ApplicationSaveTask);
 
         _consumers.Add(consumer.Key, consumer);
     }
@@ -230,7 +199,7 @@ public sealed class V77ApplicationConsumerService(
                 logger.StoppingConsumers(_consumers.Count);
             }
 
-            foreach (V77ApplicationConsumer consumer in _consumers.Values)
+            foreach (V83ApplicationConsumer consumer in _consumers.Values)
             {
                 await consumer.DisposeAsync();
             }
@@ -239,21 +208,21 @@ public sealed class V77ApplicationConsumerService(
         }
     }
 
-    private sealed class V77ApplicationConsumer : IAsyncDisposable
+    private sealed partial class V83ApplicationConsumer : IAsyncDisposable
     {
-        private readonly ILogger<V77ApplicationConsumer> _logger;
+        private readonly ILogger<V83ApplicationConsumer> _logger;
 
-        private readonly V77ApplicationConsumerSettings _settings;
+        private readonly V83ApplicationConsumerSettings _settings;
 
         private readonly IKafkaService _kafkaService;
 
         private readonly IJsonService _jsonService;
 
-        private readonly IComV77ApplicationConnectionFactory _connectionFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         private readonly TransformMessageAsync _transformMessageTask;
 
-        private readonly V77ApplicationSaveAsync _v77ApplicationSaveTask;
+        private readonly V83ApplicationSaveAsync _v77ApplicationSaveTask;
 
         private readonly Task _consumerTask;
 
@@ -262,23 +231,23 @@ public sealed class V77ApplicationConsumerService(
         /// </remarks>
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        internal V77ApplicationConsumer(
-            ILogger<V77ApplicationConsumer> logger,
-            V77ApplicationConsumerSettings settings,
+        internal V83ApplicationConsumer(
+            ILogger<V83ApplicationConsumer> logger,
+            V83ApplicationConsumerSettings settings,
             IKafkaService kafkaService,
             IJsonService jsonService,
-            IComV77ApplicationConnectionFactory connectionFactory,
+            IHttpClientFactory httpClientFactory,
             ITransliterationService transliterationService,
             TransformMessageAsync transformMessageTask,
-            V77ApplicationSaveAsync v77ApplicationSaveTask)
+            V83ApplicationSaveAsync v77ApplicationSaveTask)
         {
             _logger = logger;
             _settings = settings;
             _kafkaService = kafkaService;
             _jsonService = jsonService;
-            _connectionFactory = connectionFactory;
+            _httpClientFactory = httpClientFactory;
 
-            InfobaseName = ExtractInfobaseName(settings.InfobasePath);
+            InfobaseName = ExtractInfobaseName(settings.InfobaseUrl);
 
             if (settings.ConsumerGroup != null)
             {
@@ -301,7 +270,7 @@ public sealed class V77ApplicationConsumerService(
             LastActivity = DateTimeOffset.Now;
         }
 
-        public string Key => _settings.InfobasePath;
+        public string Key => _settings.InfobaseUrl;
 
         public bool Active => Error == null;
 
@@ -358,7 +327,7 @@ public sealed class V77ApplicationConsumerService(
                     await _v77ApplicationSaveTask(
                         jsonTransformResults,
                         _settings,
-                        _connectionFactory,
+                        _httpClientFactory,
                         cancellationToken);
                 }
             }
@@ -383,12 +352,11 @@ public sealed class V77ApplicationConsumerService(
             await _consumerTask.ConfigureAwait(false);
         }
 
-        private static string ExtractInfobaseName(string infobasePath) => Path.GetFileName(infobasePath);
+        private static string ExtractInfobaseName(string infobaseUrl) => InfobaseNameRegex().Match(infobaseUrl).Groups[1].Value;
+
+        [GeneratedRegex(@"/([^/]+)")]
+        private static partial Regex InfobaseNameRegex();
     }
-
-    private static string GetInfobaseFullPath(string infobasePath) => Path.GetFullPath(infobasePath);
-
-    private static string GetErtRelativePath(V77ApplicationConsumerSettings settings) => settings.ErtRelativePath ?? DefaultErtRelativePath;
 
     public class InstructionNotSpecifiedException : Exception
     {

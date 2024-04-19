@@ -8,6 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 
@@ -27,6 +28,8 @@ public static class HealthCheckHelper
         List<OldComV77ApplicationConnectionHealthStatus>? comV77ApplicationConnectionStatuses = null;
 
         AddProducerStatuses(GetV83ApplicationProducerStatuses, healthReport, ref producerStatuses);
+
+        AddConsumerStatuses(GetV83ApplicationConsumerStatuses, healthReport, ref consumerStatuses);
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -194,6 +197,38 @@ public static class HealthCheckHelper
             oldStatuses.Add(new OldConsumerHealthStatus()
             {
                 Type = nameof(V77ApplicationConsumerService),
+                Active = status.Active,
+                LastActivity = status.LastActivity,
+                ErrorMessage = status.ErrorMessage,
+                Consumed = status.Consumed,
+                Saved = status.Saved,
+                InfobaseName = status.InfobaseName,
+                Topics = [.. status.Topics],
+                ConsumerGroup = status.ConsumerGroup,
+            });
+        }
+
+        return oldStatuses;
+    }
+
+    private static List<OldConsumerHealthStatus>? GetV83ApplicationConsumerStatuses(HealthReport healthReport)
+    {
+        List<V83ApplicationConsumerStatus>? statuses = GetStatusFromHealthReport<V83ApplicationConsumerStatus>(
+            healthReport,
+            dataKey: V83ApplicationConsumerServiceHealthChecker.DataKey);
+
+        if (statuses == null)
+        {
+            return null;
+        }
+
+        List<OldConsumerHealthStatus> oldStatuses = [];
+
+        foreach (V83ApplicationConsumerStatus status in statuses)
+        {
+            oldStatuses.Add(new OldConsumerHealthStatus()
+            {
+                Type = nameof(V83ApplicationConsumerService),
                 Active = status.Active,
                 LastActivity = status.LastActivity,
                 ErrorMessage = status.ErrorMessage,

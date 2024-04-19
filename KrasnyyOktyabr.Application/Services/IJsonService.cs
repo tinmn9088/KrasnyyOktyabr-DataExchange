@@ -45,7 +45,7 @@ public interface IJsonService
         CancellationToken cancellationToken);
 
     /// <exception cref="Exception"></exception>
-    ValueTask<List<string>> RunJsonTransformOnConsumedMessageV77ApplicationAsync(
+    ValueTask<List<string>> RunJsonTransformOnConsumedMessageVApplicationAsync(
         string instructionName,
         string message,
         CancellationToken cancellationToken);
