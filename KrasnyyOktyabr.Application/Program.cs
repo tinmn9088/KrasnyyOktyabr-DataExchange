@@ -14,6 +14,8 @@ Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMemoryCache();
+
 builder.Services.Configure<HostOptions>(options =>
 {
     options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
@@ -37,6 +39,8 @@ if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     builder.Services.AddSingleton<IComV77ApplicationConnectionFactory, ComV77ApplicationConnection.Factory>();
 
     builder.Services.AddSingleton<IMsSqlService, MsSqlService>();
+
+    builder.Services.AddSingleton<IWmiService, WmiService>();
 
     builder.Services.AddV77ApplicationProducerService(healthChecksBuilder);
 
@@ -81,5 +85,10 @@ app.MapPost("/test-json-transform", async (
         .ConfigureAwait(false);
     }
 });
+
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    app.MapGet("/wmi/are-remote-desktop-sessions-allowed", (IWmiService wmiService) => wmiService.AreRdSessionsAllowed());
+}
 
 app.Run();
