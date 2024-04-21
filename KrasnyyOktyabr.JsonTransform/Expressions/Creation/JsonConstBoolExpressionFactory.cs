@@ -11,6 +11,6 @@ public sealed class JsonConstBoolExpressionFactory : AbstractJsonExpressionFacto
     {
     }
 
-    public override ConstBoolExpression Create(JToken input) => new(input.ToObject<bool>());
+    public override ConstBoolExpression Create(JToken input) => new(input.Value<bool>());
 }
 

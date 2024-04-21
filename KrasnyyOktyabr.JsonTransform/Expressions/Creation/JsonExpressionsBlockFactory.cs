@@ -31,7 +31,7 @@ public sealed class JsonExpressionsBlockFactory : AbstractJsonExpressionFactory<
                 .Select(_factory.Create<IExpression<Task>>)
                 .ToList();
 
-            return new ExpressionsBlock(expressions);
+            return new(expressions);
         }
         else
         {

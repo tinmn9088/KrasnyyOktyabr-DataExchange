@@ -14,6 +14,6 @@ public sealed class JsonConstDoubleExpressionFactory : AbstractJsonExpressionFac
     {
     }
 
-    public override ConstDoubleExpression Create(JToken input) => new(input.ToObject<double>());
+    public override ConstDoubleExpression Create(JToken input) => new(input.Value<double>());
 }
 

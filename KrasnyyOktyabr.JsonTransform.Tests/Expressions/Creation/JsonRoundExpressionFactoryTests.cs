@@ -30,6 +30,7 @@ public class JsonRoundExpressionFactoryTests
                 new JObject()
                 {
                     { JsonSchemaPropertyValue, null },
+                    { JsonSchemaPropertyDigits, 0 },
                 }
             },
         };
@@ -110,6 +111,7 @@ public class JsonRoundExpressionFactoryTests
                 new JObject()
                 {
                     { JsonSchemaPropertyValue, fakeValueInstruction },
+                    { JsonSchemaPropertyDigits, 2 },
                 }
             },
         };

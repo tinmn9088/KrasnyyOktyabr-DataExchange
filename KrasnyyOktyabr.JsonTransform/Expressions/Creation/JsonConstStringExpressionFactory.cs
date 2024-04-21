@@ -12,6 +12,6 @@ public sealed class JsonConstStringExpressionFactory : AbstractJsonExpressionFac
     }
 
     /// <exception cref="NullReferenceException"></exception>
-    public override ConstStringExpression Create(JToken input) => new(input.ToObject<string>() ?? throw new NullReferenceException());
+    public override ConstStringExpression Create(JToken input) => new(input.Value<string>() ?? throw new NullReferenceException());
 }
 

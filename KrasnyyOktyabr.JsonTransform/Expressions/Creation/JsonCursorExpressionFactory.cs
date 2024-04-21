@@ -47,11 +47,11 @@ public sealed class JsonCursorExpressionFactory : AbstractJsonExpressionFactory<
         {
             IExpression<Task<string>> nameExpression = _factory.Create<IExpression<Task<string>>>(nameInstruction);
 
-            return new CursorExpression(nameExpression);
+            return new(nameExpression);
         }
         else
         {
-            return new CursorExpression();
+            return new();
         }
     }
 }

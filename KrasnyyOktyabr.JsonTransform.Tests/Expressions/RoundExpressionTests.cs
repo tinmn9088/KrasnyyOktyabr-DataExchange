@@ -33,4 +33,24 @@ public class RoundExpressionTests
 
         Assert.AreEqual(expected, actual);
     }
+
+    [TestMethod]
+    public async Task InterpretAsync_WhenDigitsSpecified_ShouldReturnRounded()
+    {
+        Number valueExpressionResult = new(2.666);
+
+        // Setting up value expression
+        Mock<IExpression<Task<Number>>> valueExpressionMock = new();
+        valueExpressionMock
+            .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult(valueExpressionResult));
+
+        RoundExpression roundExpression = new(valueExpressionMock.Object, 2);
+
+        Number expected = new(2.67);
+
+        Number actual = await roundExpression.InterpretAsync(CreateEmptyExpressionContext());
+
+        Assert.AreEqual(expected, actual);
+    }
 }

@@ -64,11 +64,11 @@ public sealed class JsonRegexGetGroupValueExpressionFactory : AbstractJsonExpres
         {
             IExpression<Task<int>> groupNumberExpression = _factory.Create<IExpression<Task<int>>>(groupNumberInstruction);
 
-            return new RegexGetGroupValueExpression(regexExpression, inputExpression, groupNumberExpression);
+            return new(regexExpression, inputExpression, groupNumberExpression);
         }
         else
         {
-            return new RegexGetGroupValueExpression(regexExpression, inputExpression);
+            return new(regexExpression, inputExpression);
         }
     }
 }

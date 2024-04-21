@@ -11,6 +11,6 @@ public sealed class JsonConstIntExpressionFactory : AbstractJsonExpressionFactor
     {
     }
 
-    public override ConstIntExpression Create(JToken input) => new(input.ToObject<int>());
+    public override ConstIntExpression Create(JToken input) => new(input.Value<int>());
 }
 

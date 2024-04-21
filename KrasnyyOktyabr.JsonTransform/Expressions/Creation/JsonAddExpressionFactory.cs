@@ -60,11 +60,11 @@ public sealed class JsonAddExpressionFactory : AbstractJsonExpressionFactory<Add
         {
             IExpression<Task<int>> indexExpression = _factory.Create<IExpression<Task<int>>>(indexInstruction);
 
-            return new AddExpression(keyExpression, valueExpression, indexExpression);
+            return new(keyExpression, valueExpression, indexExpression);
         }
         else
         {
-            return new AddExpression(keyExpression, valueExpression);
+            return new(keyExpression, valueExpression);
         }
     }
 }

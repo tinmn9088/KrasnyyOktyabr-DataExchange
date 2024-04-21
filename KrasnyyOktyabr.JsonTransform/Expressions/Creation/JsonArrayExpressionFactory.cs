@@ -28,11 +28,9 @@ public sealed class JsonArrayExpressionFactory : AbstractJsonExpressionFactory<A
                 .Select(_factory.Create<IExpression<Task<object?>>>)
                 .ToList();
 
-            return new ArrayExpression(expressions);
+            return new(expressions);
         }
-        else
-        {
-            throw new ArgumentException($"'{nameof(input)}' must be array");
-        }
+
+        throw new ArgumentException($"'{nameof(input)}' must be array");
     }
 }

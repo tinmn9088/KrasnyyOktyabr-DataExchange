@@ -44,6 +44,6 @@ public sealed class JsonMapExpressionFactory : AbstractJsonExpressionFactory<Map
             keysAndExpressions.Add(keyAndInstruction.Key, _factory.Create<IExpression<Task<object?>>>(keyAndInstruction.Value!));
         }
 
-        return new MapExpression(keysAndExpressions);
+        return new(keysAndExpressions);
     }
 }

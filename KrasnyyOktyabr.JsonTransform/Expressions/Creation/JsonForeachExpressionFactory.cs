@@ -61,11 +61,11 @@ public sealed class JsonForeachExpressionFactory : AbstractJsonExpressionFactory
 
         if (name != null)
         {
-            return new ForeachExpression(itemsExpression, innerExpression, name);
+            return new(itemsExpression, innerExpression, name);
         }
         else
         {
-            return new ForeachExpression(itemsExpression, innerExpression);
+            return new(itemsExpression, innerExpression);
         }
     }
 }

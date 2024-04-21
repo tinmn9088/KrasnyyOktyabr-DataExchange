@@ -52,6 +52,6 @@ public sealed class JsonMemorySetExpressionFactory : AbstractJsonExpressionFacto
         IExpression<Task<string>> nameExpression = _factory.Create<IExpression<Task<string>>>(nameInstruction);
         IExpression<Task<object?>> valueExpression = _factory.Create<IExpression<Task<object?>>>(valueInstruction);
 
-        return new MemorySetExpression(nameExpression, valueExpression);
+        return new(nameExpression, valueExpression);
     }
 }

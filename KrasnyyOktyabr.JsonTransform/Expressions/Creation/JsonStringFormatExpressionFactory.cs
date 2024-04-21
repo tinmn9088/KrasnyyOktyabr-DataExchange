@@ -58,6 +58,6 @@ public sealed class JsonStringFormatExpressionFactory : AbstractJsonExpressionFa
                 .Select(_factory.Create<IExpression<Task<object?>>>)
                 .ToList();
 
-        return new StringFormatExpression(formatExpression, argExpressions);
+        return new(formatExpression, argExpressions);
     }
 }

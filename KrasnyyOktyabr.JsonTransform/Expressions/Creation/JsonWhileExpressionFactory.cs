@@ -52,6 +52,6 @@ public sealed class JsonWhileExpressionFactory : AbstractJsonExpressionFactory<W
         IExpression<Task<bool>> conditionExpression = _factory.Create<IExpression<Task<bool>>>(conditionInstruction);
         IExpression<Task> innerExpression = _factory.Create<IExpression<Task>>(instructionsInstruction);
 
-        return new WhileExpression(conditionExpression, innerExpression);
+        return new(conditionExpression, innerExpression);
     }
 }

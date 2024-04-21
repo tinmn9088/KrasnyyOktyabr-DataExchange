@@ -48,6 +48,6 @@ public sealed class JsonMemoryGetExpressionFactory : AbstractJsonExpressionFacto
 
         IExpression<Task<string>> nameExpression = _factory.Create<IExpression<Task<string>>>(nameInstruction);
 
-        return new MemoryGetExpression(nameExpression);
+        return new(nameExpression);
     }
 }

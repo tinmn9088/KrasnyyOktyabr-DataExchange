@@ -62,11 +62,11 @@ public sealed class JsonIfElseExpressionFactory : AbstractJsonExpressionFactory<
         {
             IExpression<Task> elseExpression = _factory.Create<IExpression<Task>>(elseInstruction);
 
-            return new IfElseExpression(conditionExpression, thenExpression, elseExpression);
+            return new(conditionExpression, thenExpression, elseExpression);
         }
         else
         {
-            return new IfElseExpression(conditionExpression, thenExpression);
+            return new(conditionExpression, thenExpression);
         }
     }
 }

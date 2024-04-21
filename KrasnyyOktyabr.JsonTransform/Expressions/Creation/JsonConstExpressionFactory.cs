@@ -28,6 +28,6 @@ public sealed class JsonConstExpressionFactory : AbstractJsonExpressionFactory<C
     public override ConstExpression Create(JToken input)
     {
         JToken? value = input[JsonSchemaPropertyConst];
-        return new ConstExpression(value);
+        return new(value);
     }
 }

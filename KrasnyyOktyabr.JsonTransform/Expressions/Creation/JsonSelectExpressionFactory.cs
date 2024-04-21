@@ -58,11 +58,11 @@ public sealed class JsonSelectExpressionFactory : AbstractJsonExpressionFactory<
         {
             IExpression<Task<bool>> isOptionalExpression = _factory.Create<IExpression<Task<bool>>>(isOptionalInstruction!);
 
-            return new SelectExpression(pathExpression, isOptionalExpression);
+            return new(pathExpression, isOptionalExpression);
         }
         else
         {
-            return new SelectExpression(pathExpression);
+            return new(pathExpression);
         }
     }
 }

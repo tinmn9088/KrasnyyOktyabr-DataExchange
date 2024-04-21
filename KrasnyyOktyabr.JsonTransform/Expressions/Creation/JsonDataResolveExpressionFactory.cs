@@ -61,6 +61,6 @@ public sealed class JsonDataResolveExpressionFactory : AbstractJsonExpressionFac
         IExpression<Task<string>> resolverExpression = _factory.Create<IExpression<Task<string>>>(resolverInstruction);
         IExpression<Task<Dictionary<string, object?>>> paramsExpression = _factory.Create<IExpression<Task<Dictionary<string, object?>>>>(paramsInstructions);
 
-        return new DataResolveExpression(resolverExpression, paramsExpression, _dataResolveService);
+        return new(resolverExpression, paramsExpression, _dataResolveService);
     }
 }
