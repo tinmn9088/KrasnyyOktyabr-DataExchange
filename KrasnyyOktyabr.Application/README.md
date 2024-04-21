@@ -37,7 +37,7 @@ Properties:
 
 #### 1C7
 
-__Producer__ reads infobase log file and looks for new transactions that match `ObjectFilters` and `TransactionTypeFilters`.
+__Producer__ reads infobase log file looking for new transactions that match `ObjectFilters` and `TransactionTypeFilters`.
 
 When transactions are found __producer__ retrieves corresponding __objects JSONs__ from infobase by calling ERT specified  in `ErtRelativePath`.
 
@@ -46,7 +46,7 @@ Then __producer__ adds corresponding transaction data to each of the retrieved _
 Then it sends these __object JSONs__ to Kafka topic which name is `<infobaseName>_<dataType>` where:
 
 * `<infobaseName>` is directory name of the infobase
-* `<dataType>` is the value of the property of the __object JSON__ which name is specified in `DataTypePropertyName`
+* `<dataType>` is the value of the property in each __object JSON__ which name is specified in `DataTypePropertyName`
 
 Example:
 
@@ -85,7 +85,7 @@ __Producer__ requests infobase for new transactions that match `ObjectFilters` a
 Then it sends these __object JSONs__ to Kafka topic which name is `<infobaseName>_<dataType>` where:
 
 * `<infobaseName>` is directory name of the infobase
-* `<dataType>` is the value of the property of the __object JSON__ which name is specified in `DataTypePropertyName`
+* `<dataType>` is the value of the property in each __object JSON__ which name is specified in `DataTypePropertyName`
 
 Example:
 
