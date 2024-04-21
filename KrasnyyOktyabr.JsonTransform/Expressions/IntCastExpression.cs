@@ -17,7 +17,7 @@ public sealed class IntCastExpression(IExpression<Task> innerExpression) : Abstr
         {
             return intResult;
         }
-        if (int.TryParse(innerExpressionTaskResult?.ToString(), CultureInfo.InvariantCulture, out int parseResult))
+        else if (int.TryParse(innerExpressionTaskResult?.ToString(), CultureInfo.InvariantCulture, out int parseResult))
         {
             return parseResult;
         }

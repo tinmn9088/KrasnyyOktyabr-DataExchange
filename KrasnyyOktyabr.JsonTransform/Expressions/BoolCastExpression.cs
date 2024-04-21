@@ -15,7 +15,7 @@ public sealed class BoolCastExpression(IExpression<Task> innerExpression) : Abst
         {
             return boolResult;
         }
-        if (bool.TryParse(innerExpressionTaskResult.ToString(), out bool parseResult))
+        else if (bool.TryParse(innerExpressionTaskResult.ToString(), out bool parseResult))
         {
             return parseResult;
         }

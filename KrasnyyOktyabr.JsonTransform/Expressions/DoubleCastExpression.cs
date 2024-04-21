@@ -17,7 +17,7 @@ public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : Ab
         {
             return doubleResult;
         }
-        if (double.TryParse(innerExpressionTaskResult?.ToString(), CultureInfo.InvariantCulture, out double parseResult))
+        else if (double.TryParse(innerExpressionTaskResult?.ToString(), CultureInfo.InvariantCulture, out double parseResult))
         {
             return parseResult;
         }

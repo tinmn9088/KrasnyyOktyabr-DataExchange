@@ -11,6 +11,7 @@ public sealed class JsonCastExpressionsFactory : AbstractJsonExpressionFactory<I
         Float,
         Bool,
         String,
+        Array,
     }
 
     public static string JsonSchemaPropertyCast => "$cast";
@@ -75,6 +76,7 @@ public sealed class JsonCastExpressionsFactory : AbstractJsonExpressionFactory<I
             ReturnType.Float => new DoubleCastExpression(innerExpression),
             ReturnType.Bool => new BoolCastExpression(innerExpression),
             ReturnType.String => new StringCastExpression(innerExpression),
+            ReturnType.Array => new ArrayCastExpression(innerExpression),
             _ => throw new ArgumentException($"Unexpected '{JsonSchemaPropertyType}' value: '{returnTypeString}'"),
         };
     }
