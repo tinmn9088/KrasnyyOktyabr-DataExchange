@@ -1,4 +1,4 @@
-﻿namespace KrasnyyOktyabr.Application.Services.Kafka;
+﻿namespace KrasnyyOktyabr.Application.Services;
 
 public interface IRestartableHostedService : IHostedService, IRestartable
 {

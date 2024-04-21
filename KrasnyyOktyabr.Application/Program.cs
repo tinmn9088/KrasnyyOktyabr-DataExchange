@@ -7,59 +7,84 @@ using KrasnyyOktyabr.Application.Services;
 using KrasnyyOktyabr.ComV77Application;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
+using NLog.Web;
 
-Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // To read strings in 'Windows-1251' encoding
+Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
-
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-builder.Services.Configure<HostOptions>(options =>
+try
 {
-    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
-    options.ServicesStartConcurrently = true;
-    options.ServicesStopConcurrently = true;
-});
+    // Setup encodings to read strings in 'Windows-1251' encoding
+    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-{
-    builder.Services.AddSingleton<IComV77ApplicationConnectionFactory, ComV77ApplicationConnection.Factory>();
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-    builder.Services.AddSingleton<IMsSqlService, MsSqlService>();
+    // Setup logging
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
 
-    builder.Services.AddSingleton<IWmiService, WmiService>();
+    // Setup hosted services
+    builder.Services.Configure<HostOptions>(options =>
+    {
+        options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+        options.ServicesStartConcurrently = true;
+        options.ServicesStopConcurrently = true;
+    });
+
+    // Setup Windows-only services
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
+        builder.Services.AddSingleton<IComV77ApplicationConnectionFactory, ComV77ApplicationConnection.Factory>();
+
+        builder.Services.AddSingleton<IMsSqlService, MsSqlService>();
+
+        builder.Services.AddSingleton<IWmiService, WmiService>();
+    }
+
+    builder.Services.AddMemoryCache();
+
+    // Setup health checks
+    IHealthChecksBuilder healthChecksBuilder = builder.Services.AddHealthChecks();
+
+    // Setup Kafka clients
+    builder.Services.AddKafkaClients(healthChecksBuilder);
+
+
+    // Setup endpoints
+    WebApplication app = builder.Build();
+
+    RouteGroupBuilder apiV0 = app.MapGroup("/api/v0");
+
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
+        apiV0.MapGet("/wmi/are-remote-desktop-sessions-allowed", (IWmiService wmiService) => wmiService.AreRdSessionsAllowed());
+    }
+
+    apiV0.MapHealthChecks("/health", new HealthCheckOptions()
+    {
+        ResponseWriter = HealthCheckHelper.WebServiceRESTResponseWriter,
+    });
+
+    apiV0.MapPost("/test-json-transform", async (
+        [FromServices] IJsonService jsonService,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+        => await ApiHandlers.HandleTestJsonTransform(jsonService, httpContext, cancellationToken).ConfigureAwait(false));
+
+    apiV0.MapGet("/restart", async (
+        IServiceProvider provider,
+        IRestartService restartService,
+        CancellationToken cancellationToken)
+        => await restartService.RestartAsync(provider, cancellationToken));
+
+    app.Run();
 }
-
-builder.Services.AddMemoryCache();
-
-IHealthChecksBuilder healthChecksBuilder = builder.Services.AddHealthChecks();
-
-builder.Services.AddKafkaClients(healthChecksBuilder);
-
-
-WebApplication app = builder.Build();
-
-RouteGroupBuilder apiV0 = app.MapGroup("/api/v0");
-
-if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+catch (Exception ex)
 {
-    apiV0.MapGet("/wmi/are-remote-desktop-sessions-allowed", (IWmiService wmiService) => wmiService.AreRdSessionsAllowed());
+    logger.Error(ex, "Stopped");
+    throw;
 }
-
-apiV0.MapHealthChecks("/health", new HealthCheckOptions()
+finally
 {
-    ResponseWriter = HealthCheckHelper.WebServiceRESTResponseWriter,
-});
-
-apiV0.MapPost("/test-json-transform", async (
-    [FromServices] IJsonService jsonService,
-    HttpContext httpContext,
-    CancellationToken cancellationToken)
-    => await ApiHandlers.HandleTestJsonTransform(jsonService, httpContext, cancellationToken).ConfigureAwait(false));
-
-apiV0.MapGet("/restart", async (
-    IServiceProvider provider,
-    IRestartService restartService,
-    CancellationToken cancellationToken)
-    => await restartService.RestartAsync(provider, cancellationToken));
-
-app.Run();
+    LogManager.Shutdown();
+}
