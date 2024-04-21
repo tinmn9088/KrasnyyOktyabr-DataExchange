@@ -42,6 +42,8 @@ public sealed partial class V83ApplicationConsumerService(
     /// </summary>
     private Dictionary<string, V83ApplicationConsumer>? _consumers;
 
+    public int ManagedInstancesCount => _consumers?.Count ?? 0;
+
     public List<V83ApplicationConsumerStatus> Status
     {
         get

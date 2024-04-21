@@ -15,7 +15,14 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
 
     private readonly ConcurrentDictionary<string, IExpression<Task>> _instructionNamesExpressions = [];
 
-    public void ClearCachedExpressions() => _instructionNamesExpressions.Clear();
+    public int ClearCachedExpressions()
+    {
+        int instructionsCount = _instructionNamesExpressions.Count;
+
+        _instructionNamesExpressions.Clear();
+
+        return instructionsCount;
+    }
 
     public KafkaProducerMessageData BuildKafkaProducerMessageData(
         string objectJson,

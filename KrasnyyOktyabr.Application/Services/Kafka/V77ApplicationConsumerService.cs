@@ -45,6 +45,8 @@ public sealed class V77ApplicationConsumerService(
     /// </summary>
     private Dictionary<string, V77ApplicationConsumer>? _consumers;
 
+    public int ManagedInstancesCount => _consumers?.Count ?? 0;
+
     public List<V77ApplicationConsumerStatus> Status
     {
         get

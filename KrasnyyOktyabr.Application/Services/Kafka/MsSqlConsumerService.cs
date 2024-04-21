@@ -41,6 +41,8 @@ public sealed class MsSqlConsumerService(
     /// </summary>
     private Dictionary<string, MsSqlConsumer>? _consumers;
 
+    public int ManagedInstancesCount => _consumers?.Count ?? 0;
+
     public List<MsSqlConsumerStatus> Status
     {
         get

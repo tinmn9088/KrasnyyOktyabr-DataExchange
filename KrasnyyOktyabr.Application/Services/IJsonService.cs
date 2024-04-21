@@ -20,7 +20,7 @@ public interface IJsonService
 
     public static string InputPropertyName => "input";
 
-    void ClearCachedExpressions();
+    int ClearCachedExpressions();
 
     /// <summary>
     /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,

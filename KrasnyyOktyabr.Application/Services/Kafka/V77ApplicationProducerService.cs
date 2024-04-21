@@ -78,6 +78,8 @@ public sealed partial class V77ApplicationProducerService(
     /// </summary>
     private Dictionary<string, V77ApplicationProducer>? _producers;
 
+    public int ManagedInstancesCount => _producers?.Count ?? 0;
+
     public List<V77ApplicationProducerStatus> Status
     {
         get

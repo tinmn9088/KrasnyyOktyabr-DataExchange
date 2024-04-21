@@ -2,6 +2,7 @@
 using System.Runtime.Versioning;
 using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
+using KrasnyyOktyabr.Application.Services.DataResolve;
 using KrasnyyOktyabr.Application.Services.Kafka;
 using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
@@ -13,6 +14,60 @@ namespace KrasnyyOktyabr.Application.DependencyInjection;
 
 public static class KafkaDependencyInjectionHelper
 {
+    /// <summary>
+    /// Services added:
+    ///  <list type="bullet">
+    ///   <item><see cref="IOffsetService"/></item>
+    ///   <item><see cref="IJsonService"/></item>
+    ///   <item><see cref="ITransliterationService"/></item>
+    ///   <item><see cref="IKafkaService"/></item>
+    ///   <item><see cref="IRestartService"/></item>
+    ///   <item>Typed <see cref="HttpClient"/> for <see cref="DataResolveService"/></item>
+    /// </list>
+    /// 
+    /// Called:
+    /// <list type="bullet">
+    ///   <item><see cref="AddV83ApplicationProducerService(IServiceCollection, IHealthChecksBuilder)"/></item>
+    ///   <item><see cref="AddV83ApplicationConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
+    /// </list>
+    ///
+    /// When current OS is <c>"windows"</c> are also called:
+    /// <list type="bullet">
+    ///   <item><see cref="AddV77ApplicationProducerService(IServiceCollection, IHealthChecksBuilder)"/></item>
+    ///   <item><see cref="AddV77ApplicationConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
+    ///   <item><see cref="AddMsSqlConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
+    /// </list>
+    /// </summary>
+    public static void AddKafkaClients(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
+    {
+        services.AddHttpClient<DataResolveService>();
+
+        services.AddSingleton<IOffsetService, OffsetService>();
+
+        services.AddSingleton<IJsonService, JsonService>();
+
+        services.AddSingleton<ITransliterationService, TransliterationService>();
+
+        services.AddSingleton<IKafkaService, KafkaService>();
+
+        services.AddSingleton<IRestartService, RestartService>();
+
+        services.AddJsonTransform();
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            services.AddV77ApplicationProducerService(healthChecksBuilder);
+
+            services.AddV77ApplicationConsumerService(healthChecksBuilder);
+
+            services.AddMsSqlConsumerService(healthChecksBuilder);
+        }
+
+        services.AddV83ApplicationProducerService(healthChecksBuilder);
+
+        services.AddV83ApplicationConsumerService(healthChecksBuilder);
+    }
+
     /// <summary>
     /// Register singleton <see cref="IV77ApplicationProducerService"/>, start <see cref="V77ApplicationProducerService"/>
     /// as hosted service and add health check for it.

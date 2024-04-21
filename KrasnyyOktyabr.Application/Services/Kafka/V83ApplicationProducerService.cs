@@ -30,6 +30,8 @@ public sealed class V83ApplicationProducerService(
     /// </summary>
     private Dictionary<string, V83ApplicationProducer>? _producers;
 
+    public int ManagedInstancesCount => _producers?.Count ?? 0;
+
     public List<V83ApplicationProducerStatus> Status
     {
         get
