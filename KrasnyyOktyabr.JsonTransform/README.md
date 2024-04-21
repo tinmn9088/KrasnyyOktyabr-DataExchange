@@ -283,10 +283,10 @@ Returns _2_.
 
 ##### Parameters
 
-| Name     | Type          | 
-|:---      |:---           |
-| `value`  | `number` exp. |
-| `digits` | `int` exp.    |
+| Name                 | Type          | 
+|:---                  |:---           |
+| `value`              | `number` exp. |
+| (_optional_) `digits` | `int` exp.    |
 
 ##### Returns
 
