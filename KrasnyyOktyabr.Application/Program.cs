@@ -70,11 +70,17 @@ app.MapPost("/test-json-transform", async (
 
     try
     {
+        await using MemoryStream outputStream = new();
+
         await jsonService.RunJsonTransformAsync(
             inputStream: httpContext.Request.Body,
-            outputStream: httpContext.Response.Body,
+            outputStream,
             cancellationToken)
         .ConfigureAwait(false);
+
+        outputStream.Capacity = Convert.ToInt32(outputStream.Length); // Truncate tail of nulls
+
+        await httpContext.Response.Body.WriteAsync(outputStream.GetBuffer(), cancellationToken);
     }
     catch (Exception ex)
     {

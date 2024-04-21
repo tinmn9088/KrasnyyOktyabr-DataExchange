@@ -34,6 +34,9 @@ public interface IJsonService
     /// <param name="inputStream">
     /// Must contain JSON: <c>"{'instructions': ... ,'input': { ... } }"</c>
     /// </param>
+    /// <remarks>
+    /// <paramref name="outputStream"/> may be written synchronously.
+    /// </remarks>
     /// <exception cref="Exception"></exception>
     ValueTask RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken);
 

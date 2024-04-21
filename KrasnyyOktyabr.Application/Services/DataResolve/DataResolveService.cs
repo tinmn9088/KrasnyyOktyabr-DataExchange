@@ -5,7 +5,7 @@ using System.Text;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
-using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.Application.Services.JsonHelper;
 using static KrasnyyOktyabr.JsonTransform.Expressions.DataResolve.IDataResolveService;
 
 namespace KrasnyyOktyabr.Application.Services.DataResolve;
@@ -170,21 +170,5 @@ public class DataResolveService : IDataResolveService
         string credential = $"{username}:{password}";
         string encodedCredential = Convert.ToBase64String(Encoding.UTF8.GetBytes(credential));
         return new AuthenticationHeaderValue("Basic", encodedCredential);
-    }
-
-    private static bool TryConvertThroughJToken<T>(object value, out T? converted)
-    {
-        converted = default;
-
-        T? convertedValue = JToken.FromObject(value).ToObject<T>();
-
-        if (convertedValue != null)
-        {
-            converted = convertedValue;
-
-            return true;
-        }
-
-        return false;
     }
 }

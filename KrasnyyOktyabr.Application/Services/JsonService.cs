@@ -5,6 +5,7 @@ using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
+using static KrasnyyOktyabr.JsonTransform.JsonHelper;
 
 namespace KrasnyyOktyabr.Application.Services;
 
@@ -27,7 +28,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
 
         JObject jObject = ParseJsonObject(objectJson);
 
-        JsonHelper.RemoveEmptyProperties(jObject);
+        RemoveEmptyProperties(jObject);
 
         AddProperties(jObject, propertiesToAdd);
 
@@ -41,6 +42,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
         };
     }
 
+    /// <param name="outputStream">Is written synchronously.</param>
     public async ValueTask RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
     {
         JObject? request = null;
@@ -68,8 +70,12 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
 
         await expression.InterpretAsync(context, cancellationToken);
 
-        await using StreamWriter streamWriter = new(outputStream);
-        JsonSerializer.CreateDefault().Serialize(streamWriter, new JArray(context.OutputGet()));
+        StreamWriter writer = new(outputStream);
+
+        // Writes to stream synchronously
+        JsonSerializer.CreateDefault().Serialize(writer, new JArray(context.OutputGet()));
+
+        await writer.FlushAsync(cancellationToken);
     }
 
     /// <exception cref="ArgumentNullException"></exception>
