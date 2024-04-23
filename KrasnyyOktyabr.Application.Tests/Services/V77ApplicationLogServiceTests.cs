@@ -15,6 +15,8 @@ public class V77ApplicationLogServiceTests
 
     private static string LogFilePath => Path.Combine("Resources", "V77ApplicationLogFile.mlg");
 
+    private static string SortedStringsFilePath => Path.Combine("Resources", "SortedStrings.txt");
+
     [TestInitialize]
     public void TestInitialize()
     {
@@ -22,9 +24,9 @@ public class V77ApplicationLogServiceTests
     }
 
     [TestMethod]
-    public async Task ReadLogTransactions_ShouldReadLogTransactions()
+    public async Task GetLogTransactionsAsync_ShouldReadLogTransactions()
     {
-        TransactionFilter filter = new()
+        TransactionFilterWithCommit filter = new()
         {
             ObjectIds = ["O/666/", "O/999/"],
             TransactionTypes = ["DocWrite"],
@@ -32,7 +34,7 @@ public class V77ApplicationLogServiceTests
             SeekBackPosition = 100,
         };
 
-        GetLogTransactionsResult result = await s_logService.GetLogTransactions(
+        GetLogTransactionsResult result = await s_logService.GetLogTransactionsAsync(
             LogFilePath,
             filter,
             cancellationToken: default);
@@ -63,5 +65,37 @@ public class V77ApplicationLogServiceTests
 
         // length < limit => filter - min
         Assert.AreEqual(0, s_logService.CalculateStartPosition(SeekBackBytesLimit - 1, 2));
+    }
+
+    [TestMethod]
+    public async Task SearchPositionByPrefixAsync_ShouldFindOffset()
+    {
+        string prefix = "20240115;19:45:00;";
+
+        long expected = 13005;
+
+        using FileStream fileStream = File.OpenRead(SortedStringsFilePath);
+
+        long actual = await s_logService.SearchPositionByPrefixAsync(fileStream, prefix);
+
+        Assert.AreEqual(expected, actual);
+    }
+
+    [TestMethod]
+    public async Task GetLogTransactionsForPeriodAsync_ShouldFindTransaction()
+    {
+        TransactionFilter filter = new()
+        {
+            ObjectIds = ["B/10/"],
+            TransactionTypes = ["RefWrite"],
+        };
+
+        DateTime start = new(2024, 01, 22);
+        TimeSpan duration = TimeSpan.FromDays(4);
+
+        GetLogTransactionsResult logTransactions = await s_logService.GetLogTransactionsForPeriodAsync(SortedStringsFilePath, filter, start, duration);
+
+        Assert.IsNotNull(logTransactions.Transactions);
+        Assert.AreEqual(3, logTransactions.Transactions.Count);
     }
 }

@@ -158,7 +158,7 @@ public sealed partial class V77ApplicationProducerService(
 
         LogOffset commitedOffset = await GetCommitedOffset(offsetService, infobaseFullPath, logger, cancellationToken).ConfigureAwait(false);
 
-        TransactionFilter filter = new()
+        TransactionFilterWithCommit filter = new()
         {
             SeekBackPosition = commitedOffset.Position,
             CommittedLine = commitedOffset.LastReadLine,
@@ -168,7 +168,7 @@ public sealed partial class V77ApplicationProducerService(
 
         string logFilePath = Path.Combine(infobaseFullPath, LogFileRelativePath);
 
-        return await logService.GetLogTransactions(logFilePath, filter, cancellationToken).ConfigureAwait(false);
+        return await logService.GetLogTransactionsAsync(logFilePath, filter, cancellationToken).ConfigureAwait(false);
     };
 
     public GetObjectJsonsAsync GetObjectJsonsTask => async (

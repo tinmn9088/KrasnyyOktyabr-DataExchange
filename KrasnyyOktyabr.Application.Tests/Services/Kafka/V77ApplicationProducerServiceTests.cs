@@ -85,7 +85,7 @@ public class V77ApplicationProducerServiceTests
             Transactions = TestLogTransactions,
         };
         logServiceMock
-            .Setup(s => s.GetLogTransactions(It.IsAny<string>(), It.IsAny<TransactionFilter>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.GetLogTransactionsAsync(It.IsAny<string>(), It.IsAny<TransactionFilterWithCommit>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         // Setting up logger mock
