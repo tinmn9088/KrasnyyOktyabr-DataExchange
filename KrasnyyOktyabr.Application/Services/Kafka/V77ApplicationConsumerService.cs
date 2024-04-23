@@ -1,10 +1,10 @@
 ﻿using System.Runtime.Versioning;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using KrasnyyOktyabr.Application.Logging;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 

@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Versioning;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using KrasnyyOktyabr.Application.Logging;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 

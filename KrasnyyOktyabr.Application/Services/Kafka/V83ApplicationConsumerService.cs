@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using KrasnyyOktyabr.Application.Logging;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationConsumerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 

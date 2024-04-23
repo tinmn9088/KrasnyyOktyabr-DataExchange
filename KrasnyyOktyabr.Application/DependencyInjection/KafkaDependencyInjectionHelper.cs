@@ -1,14 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
 using KrasnyyOktyabr.Application.Services.DataResolve;
 using KrasnyyOktyabr.Application.Services.Kafka;
-using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationConsumerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 
 namespace KrasnyyOktyabr.Application.DependencyInjection;
 

@@ -3,13 +3,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json.Serialization;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using KrasnyyOktyabr.Application.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using static KrasnyyOktyabr.Application.Services.Kafka.IMsSqlConsumerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationConsumerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationConsumerService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 
 namespace KrasnyyOktyabr.Application.Health;
@@ -101,7 +97,7 @@ public static class HealthCheckHelper
                 Produced = status.Produced,
                 InfobasePath = status.InfobasePath,
                 Username = status.Username,
-                DataTypeJsonPropertyName = status.DataTypeJsonPropertyName,
+                DataTypeJsonPropertyName = status.DataTypePropertyName,
             });
         }
 
@@ -135,7 +131,7 @@ public static class HealthCheckHelper
                 Produced = status.Produced,
                 InfobasePath = status.InfobaseUrl,
                 Username = status.Username,
-                DataTypeJsonPropertyName = status.DataTypeJsonPropertyName,
+                DataTypeJsonPropertyName = status.DataTypePropertyName,
 
                 // Unused
                 ReadFromLogFile = null,

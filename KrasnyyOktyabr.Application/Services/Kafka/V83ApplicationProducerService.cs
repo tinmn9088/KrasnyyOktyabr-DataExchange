@@ -1,6 +1,6 @@
 ﻿using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using static KrasnyyOktyabr.Application.Logging.KafkaLoggingHelper;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV83ApplicationProducerService;
 using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
@@ -56,7 +56,7 @@ public sealed class V83ApplicationProducerService(
                     Produced = producer.Produced,
                     InfobaseUrl = producer.InfobaseUrl,
                     Username = producer.Username,
-                    DataTypeJsonPropertyName = producer.DataTypeJsonPropertyName,
+                    DataTypePropertyName = producer.DataTypeJsonPropertyName,
                 });
             }
 

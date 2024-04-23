@@ -2,12 +2,12 @@
 using System.Text.RegularExpressions;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using KrasnyyOktyabr.Application.Logging;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
 using static KrasnyyOktyabr.Application.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.Application.Services.Kafka.IV77ApplicationProducerService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
@@ -105,7 +105,7 @@ public sealed partial class V77ApplicationProducerService(
                     Produced = producer.Produced,
                     InfobasePath = producer.InfobaseFullPath,
                     Username = producer.Username,
-                    DataTypeJsonPropertyName = producer.DataTypeJsonPropertyName,
+                    DataTypePropertyName = producer.DataTypeJsonPropertyName,
                 });
             }
 
