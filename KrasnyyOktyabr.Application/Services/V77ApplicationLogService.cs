@@ -115,8 +115,12 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
         long right = fileStream.Length;
         string lastReadLine = string.Empty;
 
+        int iterationsCount = 0;
+
         while (right - left > LogFileBinarySearchDelta)
         {
+            iterationsCount++;
+
             reader.DiscardBufferedData(); // To prevent reading from buffer
 
             long middle = (left + right) / 2;
@@ -146,11 +150,15 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
 
         do
         {
+            iterationsCount++;
+
             previouslyReadPosition = reader.BaseStream.Position;
 
             lastReadLine = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false) ?? string.Empty;
         }
         while (!lastReadLine.StartsWith(prefix) && prefix.CompareTo(lastReadLine) > 0 && !reader.EndOfStream);
+
+        logger.SearchByPrefixResult(previouslyReadPosition, prefix, lastReadLine, iterationsCount);
 
         return previouslyReadPosition;
     }
@@ -167,17 +175,29 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
         long startPosition = await SearchPositionByPrefixAsync(fileStream, startPrefix, cancellationToken);
 
         fileStream.Position = startPosition;
-        using StreamReader reader = new(fileStream, Encoding.GetEncoding(1251), bufferSize: 128);
+        using StreamReader reader = new(fileStream, Encoding.GetEncoding(1251));
 
-        string endPrefix = FormatDateTime(start + duration);
+        DateTimeOffset end = start + duration;
 
+        logger.StartReadingPeriod(fileStream.Position, start, end);
+
+        string endPrefix = FormatDateTime(end);
+
+        int lineReadCount = 0;
         long lastReadPosition = fileStream.Position;
         string lastReadLine = string.Empty;
 
         while (!reader.EndOfStream)
         {
+            lineReadCount++;
+
             lastReadLine = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false) ?? string.Empty;
             lastReadPosition = fileStream.Position;
+
+            if (lineReadCount == 1)
+            {
+                logger.FirstLineReadInPeriod(lastReadLine, start, end);
+            }
 
             if (endPrefix.CompareTo(lastReadLine) <= 0)
             {
@@ -189,6 +209,8 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
                 logTransactions.Add(logTransaction!.Value);
             }
         }
+
+        logger.LastReadLineInPeriod(lineReadCount, lastReadLine, logTransactions.Count, start, end);
 
         return new()
         {
