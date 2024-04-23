@@ -53,17 +53,23 @@ try
     // Setup endpoints
     WebApplication app = builder.Build();
 
-    RouteGroupBuilder apiV0 = app.MapGroup("/api/v0");
-
-    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    // Legacy endpoint
+    app.MapHealthChecks("/HealthService.svc/Status", new HealthCheckOptions()
     {
-        apiV0.MapGet("/wmi/are-remote-desktop-sessions-allowed", (IWmiService wmiService) => wmiService.AreRdSessionsAllowed());
-    }
+        ResponseWriter = HealthCheckHelper.WebServiceRESTResponseWriter,
+    });
+
+    RouteGroupBuilder apiV0 = app.MapGroup("/api/v0");
 
     apiV0.MapHealthChecks("/health", new HealthCheckOptions()
     {
         ResponseWriter = HealthCheckHelper.WebServiceRESTResponseWriter,
     });
+
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
+        apiV0.MapGet("/wmi/are-remote-desktop-sessions-allowed", (IWmiService wmiService) => wmiService.AreRdSessionsAllowed());
+    }
 
     apiV0.MapPost("/test-json-transform", async (
         [FromServices] IJsonService jsonService,
