@@ -17,6 +17,9 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4004, Level = LogLevel.Trace, Message = "Consumer group not specified")]
     public static partial void ConsumerGroupNotPresent(this ILogger logger);
 
+    [LoggerMessage(EventId = 4008, Level = LogLevel.Trace, Message = "Starting period produce job on '{infobaseAddress}' ({start} - {end})")]
+    public static partial void StartingPeriodProduceJob(this ILogger logger, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
+
     [LoggerMessage(EventId = 4009, Level = LogLevel.Trace, Message = "Starting watching infobase '{infobaseAddress}' changes")]
     public static partial void StartingWatchingChanges(this ILogger logger, string infobaseAddress);
 
@@ -31,6 +34,9 @@ public static partial class KafkaLoggingHelper
 
     [LoggerMessage(EventId = 4012, Level = LogLevel.Warning, Message = "'{infobaseAddress}' producer errors exceeded")]
     public static partial void ErrorsExceeded(this ILogger logger, string infobaseAddress);
+
+    [LoggerMessage(EventId = 4019, Level = LogLevel.Trace, Message = "Getting transactions from infobase '{infobaseAddress}' for {start} - {end}")]
+    public static partial void GettingTransactionsForPeriod(this ILogger logger, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
 
     [LoggerMessage(EventId = 4020, Level = LogLevel.Trace, Message = "Getting new transactions from infobase '{infobaseAddress}'")]
     public static partial void GettingNewTransactions(this ILogger logger, string infobaseAddress);
@@ -59,11 +65,17 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4042, Level = LogLevel.Trace, Message = "Sending object to topic '{topicName}': '{shortenedMessage}'")]
     public static partial void SendingObjectJson(this ILogger logger, string topicName, string shortenedMessage);
 
+    [LoggerMessage(EventId = 4079, Level = LogLevel.Trace, Message = "Cancelling job on '{infobaseAddress}' ({start} - {end})")]
+    public static partial void CancellingPeriodProduceJob(this ILogger logger, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
+
     [LoggerMessage(EventId = 4080, Level = LogLevel.Trace, Message = "Stopping {producersCount} producers")]
     public static partial void StoppingProducers(this ILogger logger, int producersCount);
 
     [LoggerMessage(EventId = 4081, Level = LogLevel.Trace, Message = "Stopping {consumersCount} consumers")]
     public static partial void StoppingConsumers(this ILogger logger, int consumersCount);
+
+    [LoggerMessage(EventId = 5000, Level = LogLevel.Error, Message = "Error on produce job on '{infobaseAddress}' ({start} - {end})")]
+    public static partial void ErrorOnPeriodProduceJob(this ILogger logger, Exception exception, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
 
     [LoggerMessage(EventId = 5001, Level = LogLevel.Error, Message = "Error on infobase changes")]
     public static partial void ErrorOnInfobaseChange(this ILogger logger, Exception exception);
@@ -71,11 +83,23 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 5002, Level = LogLevel.Warning, Message = "Operation cancelled")]
     public static partial void OperationCancelled(this ILogger logger);
 
-    [LoggerMessage(EventId = 5003, Level = LogLevel.Trace, Message = "Disposing '{infobaseAddress}'")]
+    [LoggerMessage(EventId = 5011, Level = LogLevel.Trace, Message = "Period produce job on '{infobaseAddress}' ({start} - {end}) finished")]
+    public static partial void PeriodProduceJobFinished(this ILogger logger, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
+
+    [LoggerMessage(EventId = 5012, Level = LogLevel.Warning, Message = "Period produce job on '{infobaseAddress}' ({start} - {end}) operation cancelled")]
+    public static partial void PeriodProduceJobCancelled(this ILogger logger, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
+
+    [LoggerMessage(EventId = 5023, Level = LogLevel.Trace, Message = "Disposing '{infobaseAddress}'")]
     public static partial void Disposing(this ILogger logger, string infobaseAddress);
 
-    [LoggerMessage(EventId = 5004, Level = LogLevel.Warning, Message = "Already disposed '{infobaseAddress}'")]
+    [LoggerMessage(EventId = 5034, Level = LogLevel.Warning, Message = "Already disposed '{infobaseAddress}'")]
     public static partial void AlreadyDisposed(this ILogger logger, string infobaseAddress);
+
+    [LoggerMessage(EventId = 5045, Level = LogLevel.Trace, Message = "Disposing job '{infobaseAddress}' ({start} - {end})")]
+    public static partial void DisposingProduceJob(this ILogger logger, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
+
+    [LoggerMessage(EventId = 5057, Level = LogLevel.Trace, Message = "Disposed {disposedCount} jobs")]
+    public static partial void DisposedProduceJobs(this ILogger logger, int disposedCount);
 
     [LoggerMessage(EventId = 7001, Level = LogLevel.Warning, Message = "Invalid offset format: '{offset}'")]
     public static partial void InvalidOffsetFormat(this ILogger logger, string offset);

@@ -30,6 +30,7 @@ public static class KafkaDependencyInjectionHelper
     /// When current OS is <c>"windows"</c> are also called:
     /// <list type="bullet">
     ///   <item><see cref="AddV77ApplicationProducerService(IServiceCollection, IHealthChecksBuilder)"/></item>
+    ///   <item><see cref="AddV77ApplicationPeriodProduceJobService(IServiceCollection, IHealthChecksBuilder)"/></item>
     ///   <item><see cref="AddV77ApplicationConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
     ///   <item><see cref="AddMsSqlConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
     /// </list>
@@ -52,7 +53,11 @@ public static class KafkaDependencyInjectionHelper
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            services.AddSingleton<IV77ApplicationLogService, V77ApplicationLogService>();
+
             services.AddV77ApplicationProducerService(healthChecksBuilder);
+
+            services.AddV77ApplicationPeriodProduceJobService(healthChecksBuilder);
 
             services.AddV77ApplicationConsumerService(healthChecksBuilder);
 
@@ -71,8 +76,6 @@ public static class KafkaDependencyInjectionHelper
     [SupportedOSPlatform("windows")]
     public static void AddV77ApplicationProducerService(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
     {
-        services.AddSingleton<IV77ApplicationLogService, V77ApplicationLogService>();
-
         services.AddSingleton<IV77ApplicationProducerService, V77ApplicationProducerService>();
         services.AddHostedService(p =>
         {
@@ -85,6 +88,18 @@ public static class KafkaDependencyInjectionHelper
         });
 
         healthChecksBuilder.AddCheck<V77ApplicationProducerServiceHealthChecker>(nameof(V77ApplicationProducerStatus));
+    }
+
+    /// <summary>
+    /// Register singleton <see cref="IV77ApplicationPeriodProduceJobService"/>, start <see cref="V77ApplicationPeriodProduceJobService"/>
+    /// as hosted service and add health check for it.
+    /// </summary>
+    [SupportedOSPlatform("windows")]
+    public static void AddV77ApplicationPeriodProduceJobService(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
+    {
+        services.AddSingleton<IV77ApplicationPeriodProduceJobService, V77ApplicationPeriodProduceJobService>();
+
+        healthChecksBuilder.AddCheck<V77ApplicationPeriodProduceJobServiceHealthChecker>(nameof(V77ApplicationPeriodProduceJobStatus));
     }
 
     /// <summary>

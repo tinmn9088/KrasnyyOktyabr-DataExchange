@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
 using static KrasnyyOktyabr.Application.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducersHelper;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka.Tests;
 
@@ -93,6 +93,7 @@ public class V77ApplicationProducerServiceTests
 
         GetLogTransactionsResult logTransactions = await s_service.GetLogTransactionsTask(
             settings,
+            [],
             offsetServiceMock.Object,
             logServiceMock.Object,
             loggerMock.Object,

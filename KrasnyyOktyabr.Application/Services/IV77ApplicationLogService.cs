@@ -1,6 +1,8 @@
-﻿namespace KrasnyyOktyabr.Application.Services;
+﻿using System.Text.RegularExpressions;
 
-public interface IV77ApplicationLogService
+namespace KrasnyyOktyabr.Application.Services;
+
+public partial interface IV77ApplicationLogService
 {
     public readonly struct LogTransaction()
     {
@@ -38,6 +40,11 @@ public interface IV77ApplicationLogService
 
         public required List<LogTransaction> Transactions { get; init; }
     }
+
+    public static string LogFileRelativePath => @"SYSLOG\1cv7.mlg";
+
+    [GeneratedRegex(@"\s+(\d{2}\.\d{2}\.\d{4})\s?")]
+    public static partial Regex ObjectDateRegex();
 
     Task<GetLogTransactionsResult> GetLogTransactionsAsync(string logFilePath, TransactionFilterWithCommit filter, CancellationToken cancellationToken);
 

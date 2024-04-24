@@ -51,7 +51,7 @@ public sealed class V83ApplicationProducerService(
                     LastActivity = producer.LastActivity,
                     ErrorMessage = producer.Error?.Message,
                     ObjectFilters = producer.ObjectFilters,
-                    TransactionTypes = producer.TransactionTypes,
+                    TransactionTypeFilters = producer.TransactionTypes,
                     Fetched = producer.Fetched,
                     Produced = producer.Produced,
                     InfobaseUrl = producer.InfobaseUrl,

@@ -1,11 +1,10 @@
 ﻿using System.Text.Json.Serialization;
-using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducerService;
+using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducersHelper;
 
 namespace KrasnyyOktyabr.Application.Contracts.Kafka;
 
 public class V77ApplicationProducerStatus : AbstractProducerStatus
 {
-
     [JsonPropertyName("objectFilters")]
     public required IReadOnlyList<ObjectFilter> ObjectFilters { get; init; }
 

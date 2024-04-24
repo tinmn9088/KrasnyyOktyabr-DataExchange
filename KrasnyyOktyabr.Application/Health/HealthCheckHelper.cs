@@ -22,6 +22,7 @@ public static class HealthCheckHelper
         List<OldProducerHealthStatus>? producerStatuses = [];
         List<OldConsumerHealthStatus>? consumerStatuses = [];
         List<OldComV77ApplicationConnectionHealthStatus>? comV77ApplicationConnectionStatuses = null;
+        List<V77ApplicationPeriodProduceJobStatus>? v77ApplicationPeriodProduceJobStatuses = null;
 
         AddProducerStatuses(GetV83ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
@@ -36,6 +37,8 @@ public static class HealthCheckHelper
             AddConsumerStatuses(GetV77ApplicationConsumerStatuses, healthReport, ref consumerStatuses);
 
             comV77ApplicationConnectionStatuses = GetComV77ApplicationConnectionHealthStatuses(healthReport);
+
+            v77ApplicationPeriodProduceJobStatuses = GetV77ApplicationPeriodProduceJobStatuses(healthReport);
         }
 
         OldHealthStatus healthStatus = new()
@@ -43,6 +46,7 @@ public static class HealthCheckHelper
             Producers = producerStatuses.Count > 0 ? producerStatuses : null,
             Consumers = consumerStatuses.Count > 0 ? consumerStatuses : null,
             ComV77ApplicationConnections = comV77ApplicationConnectionStatuses,
+            V77ApplicationPeriodProduceJobs = v77ApplicationPeriodProduceJobStatuses,
         };
 
         await context.Response.WriteAsJsonAsync(healthStatus).ConfigureAwait(false);
@@ -91,7 +95,7 @@ public static class HealthCheckHelper
                 LastActivity = status.LastActivity,
                 ErrorMessage = status.ErrorMessage,
                 ObjectIds = [.. status.ObjectFilters.Select(f => f.Id)],
-                TransactionTypes = [.. status.TransactionTypes],
+                TransactionTypes = [.. status.TransactionTypeFilters],
                 ReadFromLogFile = status.GotLogTransactions,
                 Fetched = status.Fetched,
                 Produced = status.Produced,
@@ -126,7 +130,7 @@ public static class HealthCheckHelper
                 LastActivity = status.LastActivity,
                 ErrorMessage = status.ErrorMessage,
                 ObjectIds = [.. status.ObjectFilters],
-                TransactionTypes = [.. status.TransactionTypes],
+                TransactionTypes = [.. status.TransactionTypeFilters],
                 Fetched = status.Fetched,
                 Produced = status.Produced,
                 InfobasePath = status.InfobaseUrl,
@@ -313,6 +317,33 @@ public static class HealthCheckHelper
             .ToList();
     }
 
+    [SupportedOSPlatform("windows")]
+    private static List<V77ApplicationPeriodProduceJobStatus>? GetV77ApplicationPeriodProduceJobStatuses(HealthReport healthReport)
+    {
+        bool isStatusPresent = healthReport.Entries.TryGetValue(
+            key: nameof(V77ApplicationPeriodProduceJobStatus),
+            out HealthReportEntry status);
+
+        if (!isStatusPresent)
+        {
+            return null;
+        }
+
+        bool isDataPresent = status.Data.TryGetValue(V77ApplicationPeriodProduceJobServiceHealthChecker.DataKey, out object? data);
+
+        if (!isDataPresent)
+        {
+            return null;
+        }
+
+        if (data is not List<V77ApplicationPeriodProduceJobStatus> jobsStatuses)
+        {
+            return null;
+        }
+
+        return jobsStatuses.Count == 0 ? null : jobsStatuses;
+    }
+
     private readonly struct OldHealthStatus
     {
         public OldHealthStatus()
@@ -330,6 +361,10 @@ public static class HealthCheckHelper
         [JsonPropertyName("consumers")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<OldConsumerHealthStatus>? Consumers { get; init; }
+
+        [JsonPropertyName("periodProduceJobs")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<V77ApplicationPeriodProduceJobStatus>? V77ApplicationPeriodProduceJobs { get; init; }
 
         [JsonPropertyName("connections1C7")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

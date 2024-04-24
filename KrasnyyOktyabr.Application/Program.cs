@@ -1,9 +1,11 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using KrasnyyOktyabr.Application.Api;
+using KrasnyyOktyabr.Application.Contracts.Kafka;
 using KrasnyyOktyabr.Application.DependencyInjection;
 using KrasnyyOktyabr.Application.Health;
 using KrasnyyOktyabr.Application.Services;
+using KrasnyyOktyabr.Application.Services.Kafka;
 using KrasnyyOktyabr.ComV77Application;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
@@ -49,9 +51,13 @@ try
     // Setup Kafka clients
     builder.Services.AddKafkaClients(healthChecksBuilder);
 
+    builder.Services.AddExceptionHandler<ExceptionHandler>();
+
 
     // Setup endpoints
     WebApplication app = builder.Build();
+
+    app.UseExceptionHandler(_ => { /* Use lambda to prevent a bug with 'ExceptionHandlingPath' */ });
 
     // Legacy endpoint
     app.MapHealthChecks("/HealthService.svc/Status", new HealthCheckOptions()
@@ -69,6 +75,18 @@ try
     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
         apiV0.MapGet("/wmi/are-remote-desktop-sessions-allowed", (IWmiService wmiService) => wmiService.AreRdSessionsAllowed());
+
+        apiV0.MapPost("/producers/v77application/jobs/start", (
+            [FromBody] V77ApplicationPeriodProduceJobRequest request,
+            [FromServices] IV77ApplicationPeriodProduceJobService service,
+            CancellationToken cancellationToken)
+            => service.StartJob(request));
+
+        apiV0.MapPost("/producers/v77application/jobs/cancel", async (
+            [FromQuery] string infobasePath,
+            [FromServices] IV77ApplicationPeriodProduceJobService service)
+            => await service.CancelJobAsync(infobasePath))
+            .Produces(statusCode: 200, contentType: "application/json");
     }
 
     apiV0.MapPost("/test-json-transform", async (

@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Versioning;
-using System.Text.RegularExpressions;
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Kafka;
@@ -8,6 +7,7 @@ using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
 using static KrasnyyOktyabr.Application.Services.IV77ApplicationLogService;
+using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducersHelper;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
@@ -23,15 +23,9 @@ public sealed partial class V77ApplicationProducerService(
     IKafkaService kafkaService)
     : IV77ApplicationProducerService
 {
-    public readonly struct ObjectFilter
-    {
-        public required string Id { get; init; }
-
-        public required int Depth { get; init; }
-    }
-
     public delegate ValueTask<GetLogTransactionsResult> GetLogTransactionsAsync(
         V77ApplicationProducerSettings settings,
+        List<ObjectFilter> objectFilters,
         IOffsetService offsetService,
         IV77ApplicationLogService logService,
         ILogger logger,
@@ -54,19 +48,7 @@ public sealed partial class V77ApplicationProducerService(
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
 
-    public static string LogFileRelativePath => @"SYSLOG\1cv7.mlg";
-
-    public static string DefaultErtRelativePath => @"ExtForms\EDO\Test\UN_JSON_Synch.ert";
-
-    public static string TransactionTypePropertyName => "ТипТранзакции";
-
-    public static string ObjectDatePropertyName => "ДатаДокИзЛогов";
-
     private static char OffsetValuesSeparator => '&';
-
-    private static char ObjectFilterValuesSeparator => ':';
-
-    private static int ObjectFilterDefaultDepth => 1;
 
     /// <summary>
     /// <para>
@@ -99,7 +81,7 @@ public sealed partial class V77ApplicationProducerService(
                     LastActivity = producer.LastActivity,
                     ErrorMessage = producer.Error?.Message,
                     ObjectFilters = producer.ObjectFilters,
-                    TransactionTypes = producer.TransactionTypes,
+                    TransactionTypeFilters = producer.TransactionTypes,
                     GotLogTransactions = producer.GotFromLog,
                     Fetched = producer.Fetched,
                     Produced = producer.Produced,
@@ -147,6 +129,7 @@ public sealed partial class V77ApplicationProducerService(
 
     public GetLogTransactionsAsync GetLogTransactionsTask => async (
         V77ApplicationProducerSettings settings,
+        List<ObjectFilter> objectFilters,
         IOffsetService offsetService,
         IV77ApplicationLogService logService,
         ILogger logger,
@@ -162,7 +145,7 @@ public sealed partial class V77ApplicationProducerService(
         {
             SeekBackPosition = commitedOffset.Position,
             CommittedLine = commitedOffset.LastReadLine,
-            ObjectIds = settings.ObjectFilters.Select(f => f.Split(ObjectFilterValuesSeparator, 2)[0]).ToArray(),
+            ObjectIds = objectFilters.Select(f => f.Id).ToArray(),
             TransactionTypes = settings.TransactionTypeFilters,
         };
 
@@ -571,6 +554,7 @@ public sealed partial class V77ApplicationProducerService(
 
             GetLogTransactionsResult getLogTransactionsResult = await _getLogTransactionsTask(
                 _settings,
+                _objectFilters,
                 _offsetService,
                 _logService,
                 _logger,
@@ -683,9 +667,6 @@ public sealed partial class V77ApplicationProducerService(
             })
             .ToList();
     }
-
-    [GeneratedRegex(@"\s+(\d{2}\.\d{2}\.\d{4})\s?")]
-    private static partial Regex ObjectDateRegex();
 
     public class FailedToGetObjectException : Exception
     {

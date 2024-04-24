@@ -14,8 +14,8 @@ public abstract class AbstractProducerStatus
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public required string? ErrorMessage { get; init; }
 
-    [JsonPropertyName("transactionTypes")]
-    public required IReadOnlyList<string> TransactionTypes { get; init; }
+    [JsonPropertyName("transactionTypeFilters")]
+    public required IReadOnlyList<string> TransactionTypeFilters { get; init; }
 
     [JsonPropertyName("produced")]
     public required int Produced { get; init; }
