@@ -2,7 +2,7 @@
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Kafka;
-using KrasnyyOktyabr.Application.Logging;
+using static KrasnyyOktyabr.Application.Logging.KafkaLoggingHelper;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
@@ -42,15 +42,20 @@ public sealed partial class V83ApplicationConsumerService(
     /// </summary>
     private Dictionary<string, V83ApplicationConsumer>? _consumers;
 
+    /// <summary>
+    /// Synchronizes restart methods.
+    /// </summary>
+    private readonly SemaphoreSlim _restartLock = new(1, 1);
+
     public int ManagedInstancesCount => _consumers?.Count ?? 0;
 
-    public List<V83ApplicationConsumerStatus> Status
+    public IStatusContainer<V83ApplicationConsumerStatus> Status
     {
         get
         {
             if (_consumers == null || _consumers.Count == 0)
             {
-                return [];
+                return StatusContainer<V83ApplicationConsumerStatus>.Empty;
             }
 
             List<V83ApplicationConsumerStatus> statuses = new(_consumers.Count);
@@ -59,6 +64,7 @@ public sealed partial class V83ApplicationConsumerService(
             {
                 statuses.Add(new()
                 {
+                    ServiceKey = consumer.Key,
                     Active = consumer.Active,
                     LastActivity = consumer.LastActivity,
                     ErrorMessage = consumer.Error?.Message,
@@ -70,7 +76,10 @@ public sealed partial class V83ApplicationConsumerService(
                 });
             }
 
-            return statuses;
+            return new StatusContainer<V83ApplicationConsumerStatus>()
+            {
+                Statuses = statuses,
+            };
         }
     }
 
@@ -87,9 +96,43 @@ public sealed partial class V83ApplicationConsumerService(
     {
         logger.LogTrace("Restarting ...");
 
-        await StopConsumersAsync();
+        await _restartLock.WaitAsync(cancellationToken);
 
-        StartConsumers();
+        try
+        {
+            await StopConsumersAsync();
+
+            StartConsumers();
+
+            logger.LogTrace("Restarted");
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
+    }
+
+    public async ValueTask RestartAsync(string key, CancellationToken cancellationToken)
+    {
+        logger.RestartingByKey(key);
+
+        await _restartLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            if (_consumers != null && _consumers.TryGetValue(key, out V83ApplicationConsumer? consumer))
+            {
+                _consumers.Remove(key);
+
+                StartConsumer(consumer.Settings);
+
+                logger.RestartedWithKey(key);
+            }
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -174,7 +217,7 @@ public sealed partial class V83ApplicationConsumerService(
         => ValidationHelper.GetAndValidateKafkaClientSettings<V83ApplicationConsumerSettings>(configuration, V83ApplicationConsumerSettings.Position, logger);
 
     /// <summary>
-    /// Creates new <see cref="V83ApplicationConsumer"/> and saves it to <see cref="_producers"/>.
+    /// Creates new <see cref="V83ApplicationConsumer"/> and saves it to <see cref="_consumers"/>.
     /// </summary>
     private void StartConsumer(V83ApplicationConsumerSettings settings)
     {
@@ -214,8 +257,6 @@ public sealed partial class V83ApplicationConsumerService(
     {
         private readonly ILogger<V83ApplicationConsumer> _logger;
 
-        private readonly V83ApplicationConsumerSettings _settings;
-
         private readonly IKafkaService _kafkaService;
 
         private readonly IJsonService _jsonService;
@@ -244,7 +285,7 @@ public sealed partial class V83ApplicationConsumerService(
             V83ApplicationSaveAsync v77ApplicationSaveTask)
         {
             _logger = logger;
-            _settings = settings;
+            Settings = settings;
             _kafkaService = kafkaService;
             _jsonService = jsonService;
             _httpClientFactory = httpClientFactory;
@@ -272,7 +313,9 @@ public sealed partial class V83ApplicationConsumerService(
             LastActivity = DateTimeOffset.Now;
         }
 
-        public string Key => _settings.InfobaseUrl;
+        public V83ApplicationConsumerSettings Settings { get; init; }
+
+        public string Key => Settings.InfobaseUrl;
 
         public bool Active => Error == null;
 
@@ -280,7 +323,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         public bool CancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
-        public IReadOnlyList<string> Topics => _settings.Topics;
+        public IReadOnlyList<string> Topics => Settings.Topics;
 
         public string InfobaseName { get; init; }
 
@@ -296,7 +339,7 @@ public sealed partial class V83ApplicationConsumerService(
         {
             try
             {
-                IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(_settings.Topics, ConsumerGroup);
+                IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -309,14 +352,14 @@ public sealed partial class V83ApplicationConsumerService(
                         topicName: consumeResult.Topic,
                         key: consumeResult.Message.Key,
                         length: consumeResult.Message.Value.Length,
-                        shortenedMessage: KafkaLoggingHelper.ShortenMessage(consumeResult.Message.Value, 400));
+                        shortenedMessage: ShortenMessage(consumeResult.Message.Value, 400));
 
                     LastActivity = DateTimeOffset.Now;
 
                     List<string>? jsonTransformResults = await _transformMessageTask(
                         topic: consumeResult.Topic,
                         message: consumeResult.Message.Value,
-                        _settings,
+                        Settings,
                         _jsonService,
                         _logger,
                         cancellationToken);
@@ -328,7 +371,7 @@ public sealed partial class V83ApplicationConsumerService(
 
                     await _v77ApplicationSaveTask(
                         jsonTransformResults,
-                        _settings,
+                        Settings,
                         _httpClientFactory,
                         cancellationToken);
                 }

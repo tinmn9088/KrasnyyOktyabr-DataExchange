@@ -5,7 +5,7 @@ namespace KrasnyyOktyabr.Application.Health;
 
 public class V83ApplicationConsumerServiceHealthChecker(IV83ApplicationConsumerService v83ApplicationConsumerService) : IHealthCheck
 {
-    public static string DataKey => "producers";
+    public static string DataKey => "status";
 
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {

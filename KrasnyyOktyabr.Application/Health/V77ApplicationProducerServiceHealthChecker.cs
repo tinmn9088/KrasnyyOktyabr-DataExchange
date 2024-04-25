@@ -7,7 +7,7 @@ namespace KrasnyyOktyabr.Application.Health;
 [SupportedOSPlatform("windows")]
 public class V77ApplicationProducerServiceHealthChecker(IV77ApplicationProducerService v77ApplicationProducerService) : IHealthCheck
 {
-    public static string DataKey => "producers";
+    public static string DataKey => "status";
 
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {

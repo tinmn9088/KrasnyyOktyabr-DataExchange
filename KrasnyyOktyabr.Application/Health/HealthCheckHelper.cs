@@ -75,7 +75,7 @@ public static class HealthCheckHelper
     [SupportedOSPlatform("windows")]
     private static List<OldProducerHealthStatus>? GetV77ApplicationProducerStatuses(HealthReport healthReport)
     {
-        List<V77ApplicationProducerStatus>? statuses = GetStatusFromHealthReport<V77ApplicationProducerStatus>(
+        IReadOnlyList<V77ApplicationProducerStatus>? statuses = GetStatusFromHealthReport<V77ApplicationProducerStatus>(
             healthReport,
             dataKey: V77ApplicationProducerServiceHealthChecker.DataKey);
 
@@ -110,7 +110,7 @@ public static class HealthCheckHelper
 
     private static List<OldProducerHealthStatus>? GetV83ApplicationProducerStatuses(HealthReport healthReport)
     {
-        List<V83ApplicationProducerStatus>? statuses = GetStatusFromHealthReport<V83ApplicationProducerStatus>(
+        IReadOnlyList<V83ApplicationProducerStatus>? statuses = GetStatusFromHealthReport<V83ApplicationProducerStatus>(
             healthReport,
             dataKey: V83ApplicationProducerServiceHealthChecker.DataKey);
 
@@ -148,7 +148,7 @@ public static class HealthCheckHelper
     [SupportedOSPlatform("windows")]
     private static List<OldConsumerHealthStatus>? GetMsSqlConsumerStatuses(HealthReport healthReport)
     {
-        List<MsSqlConsumerStatus>? statuses = GetStatusFromHealthReport<MsSqlConsumerStatus>(
+        IReadOnlyList<MsSqlConsumerStatus>? statuses = GetStatusFromHealthReport<MsSqlConsumerStatus>(
             healthReport,
             dataKey: MsSqlConsumerServiceHealthChecker.DataKey);
 
@@ -181,7 +181,7 @@ public static class HealthCheckHelper
     [SupportedOSPlatform("windows")]
     private static List<OldConsumerHealthStatus>? GetV77ApplicationConsumerStatuses(HealthReport healthReport)
     {
-        List<V77ApplicationConsumerStatus>? statuses = GetStatusFromHealthReport<V77ApplicationConsumerStatus>(
+        IReadOnlyList<V77ApplicationConsumerStatus>? statuses = GetStatusFromHealthReport<V77ApplicationConsumerStatus>(
             healthReport,
             dataKey: V77ApplicationConsumerServiceHealthChecker.DataKey);
 
@@ -213,7 +213,7 @@ public static class HealthCheckHelper
 
     private static List<OldConsumerHealthStatus>? GetV83ApplicationConsumerStatuses(HealthReport healthReport)
     {
-        List<V83ApplicationConsumerStatus>? statuses = GetStatusFromHealthReport<V83ApplicationConsumerStatus>(
+        IReadOnlyList<V83ApplicationConsumerStatus>? statuses = GetStatusFromHealthReport<V83ApplicationConsumerStatus>(
             healthReport,
             dataKey: V83ApplicationConsumerServiceHealthChecker.DataKey);
 
@@ -243,7 +243,7 @@ public static class HealthCheckHelper
         return oldStatuses;
     }
 
-    private static List<TStatus>? GetStatusFromHealthReport<TStatus>(HealthReport healthReport, string dataKey)
+    private static IReadOnlyList<TStatus>? GetStatusFromHealthReport<TStatus>(HealthReport healthReport, string dataKey) where TStatus : AbstractStatus
     {
         bool isStatusPresent = healthReport.Entries.TryGetValue(
             key: typeof(TStatus).Name,
@@ -261,17 +261,17 @@ public static class HealthCheckHelper
             return null;
         }
 
-        if (data is not List<TStatus> statuses)
+        if (data is not IStatusContainer<TStatus> serviceStatus)
         {
             return null;
         }
 
-        if (statuses.Count == 0)
+        if (serviceStatus.Statuses == null || serviceStatus.Statuses.Count == 0)
         {
             return null;
         }
 
-        return statuses;
+        return serviceStatus.Statuses;
     }
 
     [SupportedOSPlatform("windows")]

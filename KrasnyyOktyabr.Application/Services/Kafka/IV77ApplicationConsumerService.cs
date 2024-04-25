@@ -2,6 +2,6 @@
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public interface IV77ApplicationConsumerService : IRestartableHostedService<List<V77ApplicationConsumerStatus>>, IAsyncDisposable
+public interface IV77ApplicationConsumerService : IRestartableHostedService<IStatusContainer<V77ApplicationConsumerStatus>>, IAsyncDisposable
 {
 }

@@ -2,6 +2,6 @@
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public interface IMsSqlConsumerService : IRestartableHostedService<List<MsSqlConsumerStatus>>, IAsyncDisposable
+public interface IMsSqlConsumerService : IRestartableHostedService<IStatusContainer<MsSqlConsumerStatus>>, IAsyncDisposable
 {
 }

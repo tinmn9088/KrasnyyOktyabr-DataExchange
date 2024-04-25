@@ -30,15 +30,20 @@ public sealed class V83ApplicationProducerService(
     /// </summary>
     private Dictionary<string, V83ApplicationProducer>? _producers;
 
+    /// <summary>
+    /// Synchronizes restart methods.
+    /// </summary>
+    private readonly SemaphoreSlim _restartLock = new(1, 1);
+
     public int ManagedInstancesCount => _producers?.Count ?? 0;
 
-    public List<V83ApplicationProducerStatus> Status
+    public IStatusContainer<V83ApplicationProducerStatus> Status
     {
         get
         {
             if (_producers == null || _producers.Count == 0)
             {
-                return [];
+                return StatusContainer<V83ApplicationProducerStatus>.Empty;
             }
 
             List<V83ApplicationProducerStatus> statuses = new(_producers.Count);
@@ -47,6 +52,7 @@ public sealed class V83ApplicationProducerService(
             {
                 statuses.Add(new()
                 {
+                    ServiceKey = producer.Key,
                     Active = producer.Active,
                     LastActivity = producer.LastActivity,
                     ErrorMessage = producer.Error?.Message,
@@ -60,7 +66,10 @@ public sealed class V83ApplicationProducerService(
                 });
             }
 
-            return statuses;
+            return new StatusContainer<V83ApplicationProducerStatus>()
+            {
+                Statuses = statuses,
+            };
         }
     }
 
@@ -77,9 +86,41 @@ public sealed class V83ApplicationProducerService(
     {
         logger.LogTrace("Restarting ...");
 
-        await StopProducersAsync();
+        await _restartLock.WaitAsync(cancellationToken);
 
-        StartProducers();
+        try
+        {
+            await StopProducersAsync();
+
+            StartProducers();
+
+            logger.LogTrace("Restarted");
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
+    }
+
+    public async ValueTask RestartAsync(string key, CancellationToken cancellationToken)
+    {
+        logger.RestartingByKey(key);
+
+        await _restartLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            if (_producers != null && _producers.TryGetValue(key, out V83ApplicationProducer? producer))
+            {
+                _producers.Remove(key);
+
+                StartProducer(producer.Settings);
+            }
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -171,8 +212,6 @@ public sealed class V83ApplicationProducerService(
 
         private readonly ILogger<V83ApplicationProducer> _logger;
 
-        private readonly V83ApplicationProducerSettings _settings;
-
         private readonly IOffsetService _offsetService;
 
         private readonly IHttpClientFactory _httpClientFactory;
@@ -194,7 +233,7 @@ public sealed class V83ApplicationProducerService(
             GetLogTransactionsAsync getLogTransactionsTask)
         {
             _logger = logger;
-            _settings = settings;
+            Settings = settings;
             _offsetService = offsetService;
             _httpClientFactory = httpClientFactory;
 
@@ -207,7 +246,9 @@ public sealed class V83ApplicationProducerService(
             LastActivity = DateTimeOffset.Now;
         }
 
-        public string Key => _settings.InfobaseUrl;
+        public V83ApplicationProducerSettings Settings { get; init; }
+
+        public string Key => Settings.InfobaseUrl;
 
         public bool Active => Error == null;
 
@@ -215,19 +256,19 @@ public sealed class V83ApplicationProducerService(
 
         public bool CancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
-        public string InfobaseUrl => _settings.InfobaseUrl;
+        public string InfobaseUrl => Settings.InfobaseUrl;
 
-        public string Username => _settings.Username;
+        public string Username => Settings.Username;
 
         public int Fetched { get; private set; }
 
         public int Produced { get; private set; }
 
-        public string DataTypeJsonPropertyName => _settings.DataTypePropertyName;
+        public string DataTypeJsonPropertyName => Settings.DataTypePropertyName;
 
-        public IReadOnlyList<string> ObjectFilters => _settings.ObjectFilters.AsReadOnly();
+        public IReadOnlyList<string> ObjectFilters => Settings.ObjectFilters.AsReadOnly();
 
-        public IReadOnlyList<string> TransactionTypes => _settings.TransactionTypeFilters;
+        public IReadOnlyList<string> TransactionTypes => Settings.TransactionTypeFilters;
 
         public Exception? Error { get; private set; }
 
@@ -239,10 +280,10 @@ public sealed class V83ApplicationProducerService(
                 {
                     LastActivity = DateTimeOffset.Now;
 
-                    _logger.RequestInfobaseChanges(_settings.InfobaseUrl);
+                    _logger.RequestInfobaseChanges(Settings.InfobaseUrl);
 
                     string changes = await _getLogTransactionsTask(
-                        _settings,
+                        Settings,
                         _offsetService,
                         _httpClientFactory,
                         _logger,

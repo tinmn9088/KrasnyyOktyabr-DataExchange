@@ -2,8 +2,13 @@
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
 
-public interface IKafkaService : IRestartable
+public interface IKafkaService
 {
+    /// <summary>
+    /// Reload configuration.
+    /// </summary>
+    void Restart();
+
     IProducer<TKey, TValue> GetProducer<TKey, TValue>();
 
     IConsumer<TKey, TValue> GetConsumer<TKey, TValue>(IEnumerable<string> topics, string consumerGroup);

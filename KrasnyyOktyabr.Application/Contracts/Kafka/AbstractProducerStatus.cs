@@ -2,18 +2,8 @@
 
 namespace KrasnyyOktyabr.Application.Contracts.Kafka;
 
-public abstract class AbstractProducerStatus
+public abstract class AbstractProducerStatus : AbstractStatus
 {
-    [JsonPropertyName("active")]
-    public required bool Active { get; init; }
-
-    [JsonPropertyName("lastActivity")]
-    public required DateTimeOffset LastActivity { get; init; }
-
-    [JsonPropertyName("errorMessage")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public required string? ErrorMessage { get; init; }
-
     [JsonPropertyName("transactionTypeFilters")]
     public required IReadOnlyList<string> TransactionTypeFilters { get; init; }
 

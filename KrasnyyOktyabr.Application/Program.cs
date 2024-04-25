@@ -51,6 +51,10 @@ try
     // Setup Kafka clients
     builder.Services.AddKafkaClients(healthChecksBuilder);
 
+    // Setup restart service
+    builder.Services.AddSingleton<IRestartService, RestartService>();
+    builder.Services.AddHostedService(provider => provider.GetRequiredService<IRestartService>());
+
     builder.Services.AddExceptionHandler<ExceptionHandler>();
 
 
@@ -85,8 +89,7 @@ try
         apiV0.MapPost("/producers/v77application/jobs/cancel", async (
             [FromQuery] string infobasePath,
             [FromServices] IV77ApplicationPeriodProduceJobService service)
-            => await service.CancelJobAsync(infobasePath))
-            .Produces(statusCode: 200, contentType: "application/json");
+            => await service.CancelJobAsync(infobasePath));
     }
 
     apiV0.MapPost("/test-json-transform", async (
@@ -96,10 +99,9 @@ try
         => await ApiHandlers.HandleTestJsonTransform(jsonService, httpContext, cancellationToken).ConfigureAwait(false));
 
     apiV0.MapGet("/restart", async (
-        IServiceProvider provider,
         IRestartService restartService,
         CancellationToken cancellationToken)
-        => await restartService.RestartAsync(provider, cancellationToken));
+        => await restartService.RestartAsync(cancellationToken));
 
     app.Run();
 }

@@ -2,9 +2,9 @@
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Kafka;
-using KrasnyyOktyabr.Application.Logging;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+using static KrasnyyOktyabr.Application.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
 using static KrasnyyOktyabr.Application.Services.IV77ApplicationLogService;
 using static KrasnyyOktyabr.Application.Services.Kafka.V77ApplicationProducersHelper;
@@ -60,15 +60,20 @@ public sealed partial class V77ApplicationProducerService(
     /// </summary>
     private Dictionary<string, V77ApplicationProducer>? _producers;
 
+    /// <summary>
+    /// Synchronizes restart methods.
+    /// </summary>
+    private readonly SemaphoreSlim _restartLock = new(1, 1);
+
     public int ManagedInstancesCount => _producers?.Count ?? 0;
 
-    public List<V77ApplicationProducerStatus> Status
+    public IStatusContainer<V77ApplicationProducerStatus> Status
     {
         get
         {
             if (_producers == null || _producers.Count == 0)
             {
-                return [];
+                return StatusContainer<V77ApplicationProducerStatus>.Empty;
             }
 
             List<V77ApplicationProducerStatus> statuses = new(_producers.Count);
@@ -77,6 +82,7 @@ public sealed partial class V77ApplicationProducerService(
             {
                 statuses.Add(new()
                 {
+                    ServiceKey = producer.Key,
                     Active = producer.Active,
                     LastActivity = producer.LastActivity,
                     ErrorMessage = producer.Error?.Message,
@@ -91,7 +97,10 @@ public sealed partial class V77ApplicationProducerService(
                 });
             }
 
-            return statuses;
+            return new StatusContainer<V77ApplicationProducerStatus>()
+            {
+                Statuses = statuses,
+            };
         }
     }
 
@@ -99,7 +108,16 @@ public sealed partial class V77ApplicationProducerService(
     {
         logger.LogTrace("Starting ...");
 
-        StartProducers();
+        try
+        {
+            StartProducers();
+
+            logger.LogTrace("Started");
+        }
+        catch (Exception ex)
+        {
+            logger.ErrorOnStart(ex);
+        }
 
         return Task.CompletedTask;
     }
@@ -108,9 +126,43 @@ public sealed partial class V77ApplicationProducerService(
     {
         logger.LogTrace("Restarting ...");
 
-        await StopProducersAsync();
+        await _restartLock.WaitAsync(cancellationToken);
 
-        StartProducers();
+        try
+        {
+            await StopProducersAsync();
+
+            StartProducers();
+
+            logger.LogTrace("Restarted");
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
+    }
+
+    public async ValueTask RestartAsync(string key, CancellationToken cancellationToken)
+    {
+        logger.RestartingByKey(key);
+
+        await _restartLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            if (_producers != null && _producers.TryGetValue(key, out V77ApplicationProducer? producer))
+            {
+                _producers.Remove(key);
+
+                StartProducer(producer.Settings);
+
+                logger.RestartedWithKey(key);
+            }
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -350,8 +402,6 @@ public sealed partial class V77ApplicationProducerService(
 
         private readonly ILogger<V77ApplicationProducer> _logger;
 
-        private readonly V77ApplicationProducerSettings _settings;
-
         private readonly string _infobaseFullPath;
 
         private readonly IV77ApplicationLogService _logService;
@@ -380,6 +430,7 @@ public sealed partial class V77ApplicationProducerService(
         private readonly GetObjectJsonsAsync _getObjectJsonsTask;
 
         private readonly SendObjectJsonsAsync _sendObjectJsonsTask;
+
         private Task? _currentProcessingTask;
 
         private bool _isDisposed;
@@ -402,7 +453,7 @@ public sealed partial class V77ApplicationProducerService(
             SendObjectJsonsAsync sendObjectJsonsTask)
         {
             _logger = logger;
-            _settings = settings;
+            Settings = settings;
             _logService = logService;
             _offsetService = offsetService;
             _connectionFactory = connectionFactory;
@@ -442,6 +493,8 @@ public sealed partial class V77ApplicationProducerService(
             LastActivity = DateTimeOffset.Now;
         }
 
+        public V77ApplicationProducerSettings Settings { get; init; }
+
         public string Key => _infobaseFullPath;
 
         public bool Active => _watcher.EnableRaisingEvents;
@@ -450,7 +503,7 @@ public sealed partial class V77ApplicationProducerService(
 
         public string InfobaseFullPath => _infobaseFullPath;
 
-        public string Username => _settings.Username;
+        public string Username => Settings.Username;
 
         public int GotFromLog { get; private set; }
 
@@ -458,11 +511,11 @@ public sealed partial class V77ApplicationProducerService(
 
         public int Produced { get; private set; }
 
-        public string DataTypeJsonPropertyName => _settings.DataTypePropertyName;
+        public string DataTypeJsonPropertyName => Settings.DataTypePropertyName;
 
         public IReadOnlyList<ObjectFilter> ObjectFilters => _objectFilters.AsReadOnly();
 
-        public IReadOnlyList<string> TransactionTypes => _settings.TransactionTypeFilters;
+        public IReadOnlyList<string> TransactionTypes => Settings.TransactionTypeFilters;
 
         public Exception? Error { get; private set; }
 
@@ -512,6 +565,8 @@ public sealed partial class V77ApplicationProducerService(
 
                         try
                         {
+                            throw new Exception(); // TODO: remove
+
                             _logger.ProcessingInfobaseChange(_infobaseFullPath);
 
                             await Task.Delay(MinChangesInterval, cancellationToken).ConfigureAwait(false);
@@ -553,7 +608,7 @@ public sealed partial class V77ApplicationProducerService(
             LastActivity = DateTimeOffset.Now;
 
             GetLogTransactionsResult getLogTransactionsResult = await _getLogTransactionsTask(
-                _settings,
+                Settings,
                 _objectFilters,
                 _offsetService,
                 _logService,
@@ -570,7 +625,7 @@ public sealed partial class V77ApplicationProducerService(
             LastActivity = DateTimeOffset.Now;
 
             List<string> objectJsons = await _getObjectJsonsTask(
-                _settings,
+                Settings,
                 getLogTransactionsResult.Transactions,
                 _objectFilters,
                 _connectionFactory,
@@ -582,7 +637,7 @@ public sealed partial class V77ApplicationProducerService(
             LastActivity = DateTimeOffset.Now;
 
             int sentObjectsCount = await _sendObjectJsonsTask(
-                _settings,
+                Settings,
                 getLogTransactionsResult.Transactions,
                 objectJsons,
                 _jsonService,

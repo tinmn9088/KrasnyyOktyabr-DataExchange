@@ -2,7 +2,7 @@
 using Confluent.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Configuration.Kafka;
 using KrasnyyOktyabr.Application.Contracts.Kafka;
-using KrasnyyOktyabr.Application.Logging;
+using static KrasnyyOktyabr.Application.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.Application.Services.IJsonService;
 
 namespace KrasnyyOktyabr.Application.Services.Kafka;
@@ -41,15 +41,20 @@ public sealed class MsSqlConsumerService(
     /// </summary>
     private Dictionary<string, MsSqlConsumer>? _consumers;
 
+    /// <summary>
+    /// Synchronizes restart methods.
+    /// </summary>
+    private readonly SemaphoreSlim _restartLock = new(1, 1);
+
     public int ManagedInstancesCount => _consumers?.Count ?? 0;
 
-    public List<MsSqlConsumerStatus> Status
+    public IStatusContainer<MsSqlConsumerStatus> Status
     {
         get
         {
             if (_consumers == null || _consumers.Count == 0)
             {
-                return [];
+                return StatusContainer<MsSqlConsumerStatus>.Empty;
             }
 
             List<MsSqlConsumerStatus> statuses = new(_consumers.Count);
@@ -58,6 +63,7 @@ public sealed class MsSqlConsumerService(
             {
                 statuses.Add(new()
                 {
+                    ServiceKey = consumer.Key,
                     Active = consumer.Active,
                     LastActivity = consumer.LastActivity,
                     ErrorMessage = consumer.Error?.Message,
@@ -69,7 +75,10 @@ public sealed class MsSqlConsumerService(
                 });
             }
 
-            return statuses;
+            return new StatusContainer<MsSqlConsumerStatus>()
+            {
+                Statuses = statuses
+            };
         }
     }
 
@@ -86,9 +95,43 @@ public sealed class MsSqlConsumerService(
     {
         logger.LogTrace("Restarting ...");
 
-        await StopConsumersAsync();
+        await _restartLock.WaitAsync(cancellationToken);
 
-        StartConsumers();
+        try
+        {
+            await StopConsumersAsync();
+
+            StartConsumers();
+
+            logger.LogTrace("Restarted");
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
+    }
+
+    public async ValueTask RestartAsync(string key, CancellationToken cancellationToken)
+    {
+        logger.RestartingByKey(key);
+
+        await _restartLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            if (_consumers != null && _consumers.TryGetValue(key, out MsSqlConsumer? consumer))
+            {
+                _consumers.Remove(key);
+
+                StartConsumer(consumer.Settings);
+
+                logger.RestartedWithKey(key);
+            }
+        }
+        finally
+        {
+            _restartLock.Release();
+        }
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -216,8 +259,6 @@ public sealed class MsSqlConsumerService(
     {
         private readonly ILogger<MsSqlConsumer> _logger;
 
-        private readonly MsSqlConsumerSettings _settings;
-
         private readonly IKafkaService _kafkaService;
 
         private readonly IJsonService _jsonService;
@@ -245,7 +286,7 @@ public sealed class MsSqlConsumerService(
             SqlInsertAsync sqlInsertTask)
         {
             _logger = logger;
-            _settings = settings;
+            Settings = settings;
             _kafkaService = kafkaService;
             _jsonService = jsonService;
             _msSqlService = msSqlService;
@@ -273,7 +314,9 @@ public sealed class MsSqlConsumerService(
             LastActivity = DateTimeOffset.Now;
         }
 
-        public string Key => _settings.ConnectionString;
+        public MsSqlConsumerSettings Settings { get; init; }
+
+        public string Key => Settings.ConnectionString;
 
         public bool Active => Error == null;
 
@@ -281,7 +324,7 @@ public sealed class MsSqlConsumerService(
 
         public bool CancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
-        public IReadOnlyList<string> Topics => _settings.Topics;
+        public IReadOnlyList<string> Topics => Settings.Topics;
 
         public string DatabaseName { get; init; }
 
@@ -291,7 +334,7 @@ public sealed class MsSqlConsumerService(
 
         public int Saved { get; private set; }
 
-        public string TablePropertyName => _settings.TablePropertyName;
+        public string TablePropertyName => Settings.TablePropertyName;
 
         public Exception? Error { get; private set; }
 
@@ -299,7 +342,7 @@ public sealed class MsSqlConsumerService(
         {
             try
             {
-                IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(_settings.Topics, ConsumerGroup);
+                IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
@@ -312,14 +355,14 @@ public sealed class MsSqlConsumerService(
                         topicName: consumeResult.Topic,
                         key: consumeResult.Message.Key,
                         length: consumeResult.Message.Value.Length,
-                        shortenedMessage: KafkaLoggingHelper.ShortenMessage(consumeResult.Message.Value, 400));
+                        shortenedMessage: ShortenMessage(consumeResult.Message.Value, 400));
 
                     LastActivity = DateTimeOffset.Now;
 
                     List<JsonTransformMsSqlResult>? jsonTransformResults = await _transformMessageTask(
                         topic: consumeResult.Topic,
                         message: consumeResult.Message.Value,
-                        _settings,
+                        Settings,
                         _jsonService,
                         _logger,
                         cancellationToken);
@@ -331,7 +374,7 @@ public sealed class MsSqlConsumerService(
 
                     await _sqlInsertTask(
                         jsonTransformResults,
-                        _settings,
+                        Settings,
                         _msSqlService,
                         cancellationToken);
                 }

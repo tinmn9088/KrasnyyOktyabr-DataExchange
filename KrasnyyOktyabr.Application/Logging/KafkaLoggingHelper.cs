@@ -17,16 +17,25 @@ public static partial class KafkaLoggingHelper
     [LoggerMessage(EventId = 4004, Level = LogLevel.Trace, Message = "Consumer group not specified")]
     public static partial void ConsumerGroupNotPresent(this ILogger logger);
 
-    [LoggerMessage(EventId = 4008, Level = LogLevel.Trace, Message = "Starting period produce job on '{infobaseAddress}' ({start} - {end})")]
+    [LoggerMessage(EventId = 4006, Level = LogLevel.Trace, Message = "Error on start")]
+    public static partial void ErrorOnStart(this ILogger logger, Exception exception);
+
+    [LoggerMessage(EventId = 4007, Level = LogLevel.Trace, Message = "Restarting '{key}' ...")]
+    public static partial void RestartingByKey(this ILogger logger, string key);
+
+    [LoggerMessage(EventId = 4007, Level = LogLevel.Trace, Message = "Restarted '{key}'")]
+    public static partial void RestartedWithKey(this ILogger logger, string key);
+
+    [LoggerMessage(EventId = 4009, Level = LogLevel.Trace, Message = "Starting period produce job on '{infobaseAddress}' ({start} - {end})")]
     public static partial void StartingPeriodProduceJob(this ILogger logger, string infobaseAddress, DateTimeOffset start, DateTimeOffset end);
 
-    [LoggerMessage(EventId = 4009, Level = LogLevel.Trace, Message = "Starting watching infobase '{infobaseAddress}' changes")]
+    [LoggerMessage(EventId = 4010, Level = LogLevel.Trace, Message = "Starting watching infobase '{infobaseAddress}' changes")]
     public static partial void StartingWatchingChanges(this ILogger logger, string infobaseAddress);
 
-    [LoggerMessage(EventId = 4010, Level = LogLevel.Trace, Message = "Processing infobase '{infobaseAddress}' change")]
+    [LoggerMessage(EventId = 4011, Level = LogLevel.Trace, Message = "Processing infobase '{infobaseAddress}' change")]
     public static partial void ProcessingInfobaseChange(this ILogger logger, string infobaseAddress);
 
-    [LoggerMessage(EventId = 4011, Level = LogLevel.Trace, Message = "Request infobase '{infobaseAddress}' changes")]
+    [LoggerMessage(EventId = 4012, Level = LogLevel.Trace, Message = "Request infobase '{infobaseAddress}' changes")]
     public static partial void RequestInfobaseChanges(this ILogger logger, string infobaseAddress);
 
     [LoggerMessage(EventId = 4015, Level = LogLevel.Trace, Message = "'{consumerGroup}' consuming message from '{topicName}' (key: '{key}', length: {length}): {shortenedMessage}")]

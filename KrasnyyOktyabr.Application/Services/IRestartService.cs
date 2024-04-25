@@ -2,7 +2,7 @@
 
 namespace KrasnyyOktyabr.Application.Services;
 
-public interface IRestartService
+public interface IRestartService : IHostedService, IAsyncDisposable
 {
-    ValueTask<RestartResult> RestartAsync(IServiceProvider provider, CancellationToken cancellationToken);
+    ValueTask<RestartResult> RestartAsync(CancellationToken cancellationToken);
 }

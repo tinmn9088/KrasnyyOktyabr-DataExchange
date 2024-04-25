@@ -28,11 +28,9 @@ public sealed partial class KafkaService : IKafkaService
         LoadKafkaSettings();
     }
 
-    public ValueTask RestartAsync(CancellationToken cancellationToken)
+    public void Restart()
     {
         LoadKafkaSettings();
-
-        return ValueTask.CompletedTask;
     }
 
     /// <exception cref="NoKafkaSettingsException"></exception>
