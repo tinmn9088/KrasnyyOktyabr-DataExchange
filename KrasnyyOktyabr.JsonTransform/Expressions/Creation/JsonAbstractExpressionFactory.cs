@@ -18,13 +18,19 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     {
         set
         {
-            ArgumentNullException.ThrowIfNull(value);
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
 
             List<IJsonExpressionFactory<IExpression<Task>>> newValue = [];
 
             foreach (IJsonExpressionFactory<IExpression<Task>> expressionFactory in value)
             {
-                ArgumentNullException.ThrowIfNull(expressionFactory);
+                if (expressionFactory == null)
+                {
+                    throw new ArgumentNullException(nameof(expressionFactory));
+                }
 
                 newValue.Add(expressionFactory);
             }
@@ -127,7 +133,10 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     /// <exception cref="UnknownInstructionException"></exception>
     private List<IJsonExpressionFactory<IExpression<Task>>> GetMatchingJsonExpressionFactories(JToken instruction)
     {
-        ArgumentNullException.ThrowIfNull(instruction);
+        if (instruction == null)
+        {
+            throw new ArgumentNullException(nameof(instruction));
+        }
 
         List<IJsonExpressionFactory<IExpression<Task>>> matchingExpressionFactories = [];
 
@@ -154,7 +163,7 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     {
         return factory.GetType()
             .GetInterfaces()
-            .Where(i => i.IsAssignableTo(typeof(IJsonExpressionFactory<IExpression<Task>>))) // Is guaranteed to match one interface 
+            .Where(i => typeof(IJsonExpressionFactory<IExpression<Task>>).IsAssignableFrom(i)) // Is guaranteed to match one interface 
             .First()
             .GetGenericArguments()
             .First();
@@ -167,7 +176,7 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     {
         return expression.GetType()
             .GetInterfaces()
-            .Where(i => i.IsAssignableTo(typeof(IExpression<Task>))) // Is guaranteed to match one interface 
+            .Where(i => typeof(IExpression<Task>).IsAssignableFrom(i)) // Is guaranteed to match one interface 
             .First()
             .GetGenericArguments()
             .First()

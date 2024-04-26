@@ -3,45 +3,41 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonMemoryGetExpressionFactory : AbstractJsonExpressionFactory<MemoryGetExpression>
+public sealed class JsonMemoryGetExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<MemoryGetExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyMGet + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyName + @"': {}
+                },
+                'required': [
+                '" + JsonSchemaPropertyName + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyMGet + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyMGet => "$mget";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonMemoryGetExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyMGet + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyName + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyName + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyMGet + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override MemoryGetExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyMGet]!;
         JToken nameInstruction = instruction[JsonSchemaPropertyName]!;

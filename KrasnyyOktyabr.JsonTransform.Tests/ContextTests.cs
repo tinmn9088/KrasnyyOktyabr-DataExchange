@@ -70,7 +70,7 @@ public class ContextTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [ExpectedException(typeof(ArgumentNullException))]
     public void InputSelect_WhenPathEmpty_ShouldThrowArgumentNullException()
     {
         _context!.InputSelect(string.Empty);

@@ -1,28 +1,43 @@
-﻿using System.Runtime.Versioning;
-
-namespace KrasnyyOktyabr.ComV77Application;
+﻿namespace KrasnyyOktyabr.ComV77Application;
 
 /// <summary>
 /// Represents connection to <c>V77.Application</c> COM object.
 /// </summary>
-[SupportedOSPlatform("windows")]
 public interface IComV77ApplicationConnection : IAsyncDisposable
 {
     public readonly struct ComV77ApplicationConnectionStatus
     {
-        public required string InfobasePath { get; init; }
+        public ComV77ApplicationConnectionStatus(
+            string infobasePath,
+            string username,
+            DateTimeOffset? lastTimeDisposed,
+            int errorsCount,
+            int retrievedTimes,
+            bool isInitialized,
+            bool isDisposed)
+        {
+            InfobasePath = infobasePath;
+            Username = username;
+            LastTimeDisposed = lastTimeDisposed;
+            ErrorsCount = errorsCount;
+            RetrievedTimes = retrievedTimes;
+            IsInitialized = isInitialized;
+            IsDisposed = isDisposed;
+        }
 
-        public required string Username { get; init; }
+        public string InfobasePath { get; }
 
-        public required DateTimeOffset? LastTimeDisposed { get; init; }
+        public string Username { get; }
 
-        public required int ErrorsCount { get; init; }
+        public DateTimeOffset? LastTimeDisposed { get; }
 
-        public required int RetievedTimes { get; init; }
+        public int ErrorsCount { get; }
 
-        public required bool IsInitialized { get; init; }
+        public int RetrievedTimes { get; }
 
-        public required bool IsDisposed { get; init; }
+        public bool IsInitialized { get; }
+
+        public bool IsDisposed { get; }
     }
 
     ComV77ApplicationConnectionStatus Status { get; }

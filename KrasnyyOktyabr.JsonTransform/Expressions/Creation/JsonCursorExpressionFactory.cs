@@ -3,42 +3,38 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonCursorExpressionFactory : AbstractJsonExpressionFactory<CursorExpression>
+public sealed class JsonCursorExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<CursorExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyCur + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyName + @"': {}
+                }
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyCur + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyCur => "$cur";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonCursorExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyCur + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyName + @"': {}
-                  }
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyCur + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override CursorExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyCur]!;
         JToken? nameInstruction = instruction[JsonSchemaPropertyName];

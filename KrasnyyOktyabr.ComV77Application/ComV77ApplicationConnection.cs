@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+using KrasnyyOktyabr.ComV77Application.Threading;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnection;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
@@ -9,7 +9,6 @@ using static KrasnyyOktyabr.ComV77Application.Logging.LoggingHelper;
 
 namespace KrasnyyOktyabr.ComV77Application;
 
-[SupportedOSPlatform("windows")]
 public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 {
     public static int MaxErrorsCount => 3;
@@ -103,16 +102,15 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     {
         get
         {
-            return new ComV77ApplicationConnectionStatus()
-            {
-                InfobasePath = _properties.InfobasePath,
-                Username = _properties.Username,
-                RetievedTimes = _retrievedTimes,
-                ErrorsCount = _errorsCount,
-                IsInitialized = _isInitialized,
-                IsDisposed = _isDisposed,
-                LastTimeDisposed = _lastTimeDisposed,
-            };
+            return new ComV77ApplicationConnectionStatus(
+                infobasePath: _properties.InfobasePath,
+                username: _properties.Username,
+                retrievedTimes: _retrievedTimes,
+                errorsCount: _errorsCount,
+                isInitialized: _isInitialized,
+                isDisposed: _isDisposed,
+                lastTimeDisposed: _lastTimeDisposed
+            );
         }
     }
 
@@ -164,7 +162,10 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
             throw new ErrorsCountExceededException();
         }
 
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        if (_isDisposed)
+        {
+            throw new ObjectDisposedException(ToString());
+        }
 
         if (!isInitializing)
         {
@@ -445,10 +446,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         {
             get
             {
-                return new()
-                {
-                    Connections = _propertiesConnections.Values.Select(c => c.Status).ToArray(),
-                };
+                return new(connections: _propertiesConnections.Values.Select(c => c.Status).ToArray());
             }
         }
 
@@ -459,7 +457,10 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 
             try
             {
-                ObjectDisposedException.ThrowIf(_isDisposed, this);
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException(ToString());
+                }
 
                 if (_propertiesConnections.TryGetValue(connectionProperties, out ComV77ApplicationConnection? connection))
                 {

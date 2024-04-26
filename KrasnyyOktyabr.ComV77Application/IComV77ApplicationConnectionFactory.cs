@@ -7,7 +7,12 @@ public interface IComV77ApplicationConnectionFactory : IAsyncDisposable
 {
     public readonly struct ComV77ApplicationConnectionFactoryStatus
     {
-        public required ComV77ApplicationConnectionStatus[] Connections { get; init; }
+        public ComV77ApplicationConnectionFactoryStatus(ComV77ApplicationConnectionStatus[] connections)
+        {
+            Connections = connections;
+        }
+
+        public ComV77ApplicationConnectionStatus[] Connections { get; }
     }
 
     ComV77ApplicationConnectionFactoryStatus Status { get; }

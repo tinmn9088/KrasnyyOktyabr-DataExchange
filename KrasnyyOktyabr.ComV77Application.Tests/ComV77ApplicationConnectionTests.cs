@@ -1,10 +1,8 @@
-﻿using System.Runtime.Versioning;
-using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+﻿using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 
 namespace KrasnyyOktyabr.ComV77Application.Tests;
 
 [TestClass]
-[SupportedOSPlatform("windows")]
 public class ComV77ApplicationConnectionTests
 {
     [TestMethod]
@@ -14,12 +12,11 @@ public class ComV77ApplicationConnectionTests
         string username = "TestUsername";
         string password = "TestPassword";
 
-        ConnectionProperties properties = new()
-        {
-            InfobasePath = infobasePath,
-            Username = username,
-            Password = password,
-        };
+        ConnectionProperties properties = new(
+            infobasePath: infobasePath,
+            username: username,
+            password: password
+        );
         ConnectionProperties propertiesCopy = properties with { };
 
         Assert.AreNotSame(properties, propertiesCopy);
@@ -36,23 +33,27 @@ public class ComV77ApplicationConnectionTests
 
         Dictionary<ConnectionProperties, object?> properties = [];
 
-        ConnectionProperties properties1 = new()
-        {
-            InfobasePath = infobasePath1,
-            Username = username,
-            Password = password,
-        };
+        ConnectionProperties properties1 = new(
+            infobasePath: infobasePath1,
+            username: username,
+            password: password
+        );
         ConnectionProperties properties1Copy = properties1 with { };
-        ConnectionProperties properties2 = new()
-        {
-            InfobasePath = infobasePath2,
-            Username = username,
-            Password = password,
-        };
+        ConnectionProperties properties2 = new(
+            infobasePath: infobasePath2,
+            username: username,
+            password: password
+        );
 
-        Assert.IsTrue(properties.TryAdd(properties1, null));
-        Assert.IsFalse(properties.TryAdd(properties1Copy, null));
-        Assert.IsTrue(properties.TryAdd(properties2, null));
+        properties.Add(properties1, null);
+
+        Assert.ThrowsException<ArgumentException>(() => properties.Add(properties1Copy, null));
+
+        properties.Add(properties2, null);
+
+        Assert.IsTrue(properties.ContainsKey(properties1));
+        Assert.IsTrue(properties.ContainsKey(properties1Copy));
+        Assert.IsTrue(properties.ContainsKey(properties2));
         Assert.AreEqual(2, properties.Count);
     }
 }

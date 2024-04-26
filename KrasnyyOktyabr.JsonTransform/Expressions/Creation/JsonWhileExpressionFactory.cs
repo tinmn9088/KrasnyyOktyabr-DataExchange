@@ -3,47 +3,43 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonWhileExpressionFactory : AbstractJsonExpressionFactory<WhileExpression>
+public sealed class JsonWhileExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<WhileExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyWhile + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyCondition + @"': {},
+                '" + JsonSchemaPropertyInstructions + @"': {}
+                },
+                'required': [
+                '" + JsonSchemaPropertyCondition + @"',
+                '" + JsonSchemaPropertyInstructions + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyWhile + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyWhile => "$while";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonWhileExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyWhile + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyCondition + @"': {},
-                    '" + JsonSchemaPropertyInstructions + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyCondition + @"',
-                    '" + JsonSchemaPropertyInstructions + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyWhile + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override WhileExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyWhile]!;
         JToken conditionInstruction = instruction[JsonSchemaPropertyCondition]!;

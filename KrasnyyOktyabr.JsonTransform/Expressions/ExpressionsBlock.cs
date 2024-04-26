@@ -10,14 +10,12 @@ public sealed class ExpressionsBlock : AbstractExpression<Task>
     /// <exception cref="ArgumentNullException"></exception>
     public ExpressionsBlock(IReadOnlyList<IExpression<Task>> expressions)
     {
-        ArgumentNullException.ThrowIfNull(expressions);
+        _expressions = expressions ?? throw new ArgumentNullException(nameof(expressions));
 
         if (expressions.Any(e => e == null))
         {
             throw new ArgumentNullException(nameof(expressions));
         }
-
-        _expressions = expressions;
     }
 
     protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)

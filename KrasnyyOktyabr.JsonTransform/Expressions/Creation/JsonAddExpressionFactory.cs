@@ -3,50 +3,46 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonAddExpressionFactory : AbstractJsonExpressionFactory<AddExpression>
+public sealed class JsonAddExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<AddExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyAdd + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyKey + @"': {},
+                '" + JsonSchemaPropertyValue + @"': {},
+                '" + JsonSchemaPropertyIndex + @"': {}
+                },
+                'required': [
+                '" + JsonSchemaPropertyKey + @"',
+                '" + JsonSchemaPropertyValue + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyAdd + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyAdd => "$add";
 
     public static string JsonSchemaPropertyIndex => "index";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonAddExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyAdd + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyKey + @"': {},
-                    '" + JsonSchemaPropertyValue + @"': {},
-                    '" + JsonSchemaPropertyIndex + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyKey + @"',
-                    '" + JsonSchemaPropertyValue + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyAdd + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override AddExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyAdd]!;
         JToken keyInstruction = instruction[JsonSchemaPropertyKey]!;

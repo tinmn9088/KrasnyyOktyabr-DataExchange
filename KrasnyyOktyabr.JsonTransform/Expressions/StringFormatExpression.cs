@@ -12,16 +12,13 @@ public sealed class StringFormatExpression : AbstractExpression<Task<string>>
     /// <exception cref="ArgumentNullException"></exception>
     public StringFormatExpression(IExpression<Task<string>> formatExpression, IReadOnlyList<IExpression<Task<object?>>> argExpressions)
     {
-        ArgumentNullException.ThrowIfNull(formatExpression);
-        ArgumentNullException.ThrowIfNull(argExpressions);
+        _formatExpression = formatExpression ?? throw new ArgumentNullException(nameof(formatExpression));
+        _argsExpression = argExpressions ?? throw new ArgumentNullException(nameof(argExpressions));
 
         if (argExpressions.Any(e => e == null))
         {
             throw new ArgumentNullException(nameof(argExpressions));
         }
-
-        _formatExpression = formatExpression;
-        _argsExpression = argExpressions;
     }
 
     /// <exception cref="NullReferenceException"></exception>

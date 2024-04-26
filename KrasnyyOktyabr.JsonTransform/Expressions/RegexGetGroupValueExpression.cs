@@ -19,11 +19,8 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
         IExpression<Task<string>> inputExpression,
         IExpression<Task<int>>? groupNumberExpression = null)
     {
-        ArgumentNullException.ThrowIfNull(regexExpression);
-        ArgumentNullException.ThrowIfNull(inputExpression);
-
-        _regexExpression = regexExpression;
-        _inputExpression = inputExpression;
+        _regexExpression = regexExpression ?? throw new ArgumentNullException(nameof(regexExpression));
+        _inputExpression = inputExpression ?? throw new ArgumentNullException(nameof(inputExpression));
 
         if (groupNumberExpression != null)
         {

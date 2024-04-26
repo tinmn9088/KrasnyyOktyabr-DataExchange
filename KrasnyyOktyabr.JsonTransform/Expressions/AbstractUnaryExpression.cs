@@ -1,16 +1,9 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public abstract class AbstractUnaryExpression<TValue, TResult> : AbstractExpression<Task<TResult>>
+/// <exception cref="ArgumentNullException"></exception>
+public abstract class AbstractUnaryExpression<TValue, TResult>(IExpression<Task<TValue>> valueExpression) : AbstractExpression<Task<TResult>>
 {
-    private readonly IExpression<Task<TValue>> _valueExpression;
-
-    /// <exception cref="ArgumentNullException"></exception>
-    public AbstractUnaryExpression(IExpression<Task<TValue>> valueExpression)
-    {
-        ArgumentNullException.ThrowIfNull(valueExpression);
-
-        _valueExpression = valueExpression;
-    }
+    private readonly IExpression<Task<TValue>> _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
     protected override async Task<TResult> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {

@@ -1,16 +1,9 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public abstract class AbstractCastExpression<T> : AbstractExpression<Task<T>>
+/// <exception cref="ArgumentNullException"></exception>
+public abstract class AbstractCastExpression<T>(IExpression<Task> innerExpression) : AbstractExpression<Task<T>>
 {
-    private readonly IExpression<Task> _innerExpression;
-
-    /// <exception cref="ArgumentNullException"></exception>
-    public AbstractCastExpression(IExpression<Task> innerExpression)
-    {
-        ArgumentNullException.ThrowIfNull(innerExpression);
-
-        _innerExpression = innerExpression;
-    }
+    private readonly IExpression<Task> _innerExpression = innerExpression ?? throw new ArgumentNullException(nameof(innerExpression));
 
     protected override async Task<T> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {

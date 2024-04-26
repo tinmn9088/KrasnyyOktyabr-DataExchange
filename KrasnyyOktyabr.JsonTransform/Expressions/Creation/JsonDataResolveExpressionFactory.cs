@@ -4,7 +4,31 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonDataResolveExpressionFactory : AbstractJsonExpressionFactory<DataResolveExpression>
+public sealed class JsonDataResolveExpressionFactory(IJsonAbstractExpressionFactory factory, IDataResolveService dataResolveService)
+    : AbstractJsonExpressionFactory<DataResolveExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyResolve + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyResolver + @"': {},
+                '" + JsonSchemaPropertyParams + @"': {}
+                },
+                'required': [
+                '" + JsonSchemaPropertyResolver + @"',
+                '" + JsonSchemaPropertyParams + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyResolve + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyResolve => "$resolve";
 
@@ -12,47 +36,17 @@ public sealed class JsonDataResolveExpressionFactory : AbstractJsonExpressionFac
 
     public static string JsonSchemaPropertyParams => "params";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
-    private readonly IDataResolveService _dataResolveService;
-
-    public JsonDataResolveExpressionFactory(IJsonAbstractExpressionFactory factory, IDataResolveService dataResolveService)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyResolve + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyResolver + @"': {},
-                    '" + JsonSchemaPropertyParams + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyResolver + @"',
-                    '" + JsonSchemaPropertyParams + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyResolve + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-        ArgumentNullException.ThrowIfNull(dataResolveService);
-
-        _factory = factory;
-        _dataResolveService = dataResolveService;
-    }
+    private readonly IDataResolveService _dataResolveService = dataResolveService ?? throw new ArgumentNullException(nameof(dataResolveService));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override DataResolveExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyResolve]!;
         JToken resolverInstruction = instruction[JsonSchemaPropertyResolver]!;

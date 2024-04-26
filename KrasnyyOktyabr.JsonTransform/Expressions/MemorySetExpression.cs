@@ -1,20 +1,11 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public sealed class MemorySetExpression : AbstractExpression<Task>
+/// <exception cref="ArgumentNullException"></exception>
+public sealed class MemorySetExpression(IExpression<Task<string>> nameExpression, IExpression<Task<object?>> valueExpression) : AbstractExpression<Task>
 {
-    private readonly IExpression<Task<string>> _nameExpression;
+    private readonly IExpression<Task<string>> _nameExpression = nameExpression ?? throw new ArgumentNullException(nameof(nameExpression));
 
-    private readonly IExpression<Task<object?>> _valueExpression;
-
-    /// <exception cref="ArgumentNullException"></exception>
-    public MemorySetExpression(IExpression<Task<string>> nameExpression, IExpression<Task<object?>> valueExpression)
-    {
-        ArgumentNullException.ThrowIfNull(nameExpression);
-        ArgumentNullException.ThrowIfNull(valueExpression);
-
-        _nameExpression = nameExpression;
-        _valueExpression = valueExpression;
-    }
+    private readonly IExpression<Task<object?>> _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
     /// <exception cref="NullReferenceException"></exception>
     protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)

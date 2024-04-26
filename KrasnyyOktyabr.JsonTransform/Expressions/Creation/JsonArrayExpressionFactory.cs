@@ -2,25 +2,21 @@
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonArrayExpressionFactory : AbstractJsonExpressionFactory<ArrayExpression>
+public sealed class JsonArrayExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<ArrayExpression>(@"{
+            'type': 'array'
+        }")
 {
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonArrayExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'array'
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"><paramref name="input"/> is not <see cref="JArray"/>.</exception>
     public override ArrayExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         if (input is JArray instructions)
         {

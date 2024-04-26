@@ -5,25 +5,21 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 /// <remarks>
 /// Overlaps JSON Schema of <see cref="JsonArrayExpressionFactory"/>!
 /// </remarks>
-public sealed class JsonExpressionsBlockFactory : AbstractJsonExpressionFactory<ExpressionsBlock>
-{
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
+public sealed class JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<ExpressionsBlock>(@"{
               'type': 'array'
             }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+{
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"><paramref name="input"/> is not <see cref="JArray"/>.</exception>
     public override ExpressionsBlock Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         if (input is JArray instructions)
         {

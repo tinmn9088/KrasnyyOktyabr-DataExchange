@@ -7,14 +7,12 @@ public sealed class MapExpression : AbstractExpression<Task<Dictionary<string, o
     /// <exception cref="ArgumentNullException"></exception>
     public MapExpression(IReadOnlyDictionary<string, IExpression<Task<object?>>> keysAndExpressions)
     {
-        ArgumentNullException.ThrowIfNull(keysAndExpressions);
+        _keysAndExpressions = keysAndExpressions ?? throw new ArgumentNullException(nameof(keysAndExpressions));
 
         if (keysAndExpressions.Any(e => e.Value == null))
         {
             throw new ArgumentNullException(nameof(keysAndExpressions));
         }
-
-        _keysAndExpressions = keysAndExpressions;
     }
 
     protected override async Task<Dictionary<string, object?>> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)

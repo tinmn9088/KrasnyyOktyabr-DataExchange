@@ -2,9 +2,16 @@
 
 public record ConnectionProperties
 {
-    public required string InfobasePath { get; init; }
+    public ConnectionProperties(string infobasePath, string username, string password)
+    {
+        InfobasePath = infobasePath;
+        Username = username;
+        Password = password;
+    }
 
-    public required string Username { get; init; }
+    public string InfobasePath { get; }
 
-    public required string Password { get; init; }
+    public string Username { get; }
+
+    public string Password { get; }
 }

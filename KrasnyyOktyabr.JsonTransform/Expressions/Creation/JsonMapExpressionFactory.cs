@@ -3,38 +3,35 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonMapExpressionFactory : AbstractJsonExpressionFactory<MapExpression>
+public sealed class JsonMapExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<MapExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyMap + @"': {
+                'type': 'object'
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyMap + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyMap => "$map";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonMapExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyMap + @"': {
-                  'type': 'object'
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyMap + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override MapExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
+
         JObject instruction = (JObject)input[JsonSchemaPropertyMap]!;
 
         Dictionary<string, IExpression<Task<object?>>> keysAndExpressions = [];

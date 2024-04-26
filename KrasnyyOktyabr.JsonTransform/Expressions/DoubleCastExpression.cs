@@ -11,13 +11,20 @@ public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : Ab
     /// <exception cref="DoubleCastExpressionException"></exception>
     public override double Cast(object? innerExpressionTaskResult)
     {
-        ArgumentNullException.ThrowIfNull(innerExpressionTaskResult);
+        if (innerExpressionTaskResult == null)
+        {
+            throw new ArgumentNullException(nameof(innerExpressionTaskResult));
+        }
 
         if (innerExpressionTaskResult is double doubleResult)
         {
             return doubleResult;
         }
-        else if (double.TryParse(innerExpressionTaskResult?.ToString(), CultureInfo.InvariantCulture, out double parseResult))
+        else if (double.TryParse(
+            innerExpressionTaskResult?.ToString(),
+            style: NumberStyles.Any,
+            provider: CultureInfo.InvariantCulture,
+            out double parseResult))
         {
             return parseResult;
         }

@@ -14,17 +14,13 @@ public sealed class NumberCastExpression : AbstractExpression<Task<Number>>
     /// <exception cref="ArgumentNullException"></exception>
     public NumberCastExpression(IExpression<Task<int>> innerIntExpression)
     {
-        ArgumentNullException.ThrowIfNull(innerIntExpression);
-
-        _innerIntExpression = innerIntExpression;
+        _innerIntExpression = innerIntExpression ?? throw new ArgumentNullException(nameof(innerIntExpression));
     }
 
     /// <exception cref="ArgumentNullException"></exception>
     public NumberCastExpression(IExpression<Task<double>> innerDoubleExpression)
     {
-        ArgumentNullException.ThrowIfNull(innerDoubleExpression);
-
-        _innerDoubleExpression = innerDoubleExpression;
+        _innerDoubleExpression = innerDoubleExpression ?? throw new ArgumentNullException(nameof(innerDoubleExpression));
     }
 
     protected override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)

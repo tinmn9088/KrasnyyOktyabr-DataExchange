@@ -11,9 +11,7 @@ public sealed class SelectExpression : AbstractExpression<Task<JToken?>>
     /// <exception cref="ArgumentNullException"></exception>
     public SelectExpression(IExpression<Task<string>> pathExpression, IExpression<Task<bool>>? isOptionalExpression = null)
     {
-        ArgumentNullException.ThrowIfNull(pathExpression);
-
-        _pathExpression = pathExpression;
+        _pathExpression = pathExpression ?? throw new ArgumentNullException(nameof(pathExpression));
 
         if (isOptionalExpression != null)
         {

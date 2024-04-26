@@ -1,20 +1,12 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public abstract class AbstractBinaryExpression<TLeft, TRight, TResult> : AbstractExpression<Task<TResult>>
+/// <exception cref="ArgumentNullException"></exception>
+public abstract class AbstractBinaryExpression<TLeft, TRight, TResult>(IExpression<Task<TLeft>> leftExpression, IExpression<Task<TRight>> rightExpression)
+    : AbstractExpression<Task<TResult>>
 {
-    private readonly IExpression<Task<TLeft>> _leftExpression;
+    private readonly IExpression<Task<TLeft>> _leftExpression = leftExpression ?? throw new ArgumentNullException(nameof(leftExpression));
 
-    private readonly IExpression<Task<TRight>> _rightExpression;
-
-    /// <exception cref="ArgumentNullException"></exception>
-    public AbstractBinaryExpression(IExpression<Task<TLeft>> leftExpression, IExpression<Task<TRight>> rightExpression)
-    {
-        ArgumentNullException.ThrowIfNull(leftExpression);
-        ArgumentNullException.ThrowIfNull(rightExpression);
-
-        _leftExpression = leftExpression;
-        _rightExpression = rightExpression;
-    }
+    private readonly IExpression<Task<TRight>> _rightExpression = rightExpression ?? throw new ArgumentNullException(nameof(rightExpression));
 
     protected override async Task<TResult> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {

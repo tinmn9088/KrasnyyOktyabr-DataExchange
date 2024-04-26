@@ -34,9 +34,7 @@ public sealed class Context : IContext
     /// <exception cref="ArgumentNullException"></exception>
     public Context(JObject input)
     {
-        ArgumentNullException.ThrowIfNull(input);
-
-        _input = input;
+        _input = input ?? throw new ArgumentNullException(nameof(input));
         _memory = [];
         _output = [];
         _cursors = [];
@@ -45,23 +43,27 @@ public sealed class Context : IContext
 
     public void MemorySet(string name, object? value)
     {
-        ArgumentNullException.ThrowIfNull(name);
-
-        _memory[name] = value;
+        _memory[name] = value ?? throw new ArgumentNullException(nameof(name));
     }
 
     public object? MemoryGet(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        if (name == null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
 
         return _memory.TryGetValue(name, out object? value)
             ? value
-            : throw new IContext.MemoryValueNotFoundException(name);
+            : throw new MemoryValueNotFoundException(name);
     }
 
     public JToken? InputSelect(string path)
     {
-        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (path == null || string.IsNullOrEmpty(path))
+        {
+            throw new ArgumentNullException(path);
+        }
 
         try
         {
@@ -75,7 +77,10 @@ public sealed class Context : IContext
 
     public void OutputAdd(string key, object? value, int index)
     {
-        ArgumentNullException.ThrowIfNull(key);
+        if (key == null)
+        {
+            throw new ArgumentNullException(nameof(key));
+        }
 
         if (index < 0)
         {
@@ -109,7 +114,10 @@ public sealed class Context : IContext
 
     public void UpdateCursor(string name, object? cursor, int index)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        if (name == null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
 
         if (!_cursors.ContainsKey(name))
         {
@@ -131,7 +139,10 @@ public sealed class Context : IContext
 
     public object? GetCursor(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        if (name == null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
 
         if (!_cursors.TryGetValue(name, out (object?, int) cursorIndex))
         {
@@ -153,7 +164,10 @@ public sealed class Context : IContext
 
     public int GetCursorIndex(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        if (name == null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
 
         if (!_cursors.TryGetValue(name, out (object?, int) cursorIndex))
         {

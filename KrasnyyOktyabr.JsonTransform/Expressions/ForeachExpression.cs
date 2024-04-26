@@ -11,11 +11,8 @@ public class ForeachExpression : AbstractExpression<Task>
     /// <param name="name">May cause collision in cursor names in <see cref="IContext"/>.</param>
     public ForeachExpression(IExpression<Task<object?[]>> itemsExpression, IExpression<Task> innerExpression, string? name = null)
     {
-        ArgumentNullException.ThrowIfNull(itemsExpression);
-        ArgumentNullException.ThrowIfNull(innerExpression);
-
-        _itemsExpression = itemsExpression;
-        _innerExpression = innerExpression;
+        _itemsExpression = itemsExpression ?? throw new ArgumentNullException(nameof(itemsExpression));
+        _innerExpression = innerExpression ?? throw new ArgumentNullException(nameof(innerExpression));
 
         if (name != null)
         {

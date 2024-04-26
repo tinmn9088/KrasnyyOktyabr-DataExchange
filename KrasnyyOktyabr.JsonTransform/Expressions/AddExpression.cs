@@ -14,11 +14,8 @@ public sealed class AddExpression : AbstractExpression<Task>
         IExpression<Task<object?>> valueExpression,
         IExpression<Task<int>>? indexExpression = null)
     {
-        ArgumentNullException.ThrowIfNull(keyExpression);
-        ArgumentNullException.ThrowIfNull(valueExpression);
-
-        _keyExpression = keyExpression;
-        _valueExpression = valueExpression;
+        _keyExpression = keyExpression ?? throw new ArgumentNullException(nameof(keyExpression));
+        _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
         if (indexExpression != null)
         {

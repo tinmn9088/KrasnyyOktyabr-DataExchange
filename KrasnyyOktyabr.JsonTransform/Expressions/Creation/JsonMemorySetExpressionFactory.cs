@@ -3,47 +3,43 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonMemorySetExpressionFactory : AbstractJsonExpressionFactory<MemorySetExpression>
+public sealed class JsonMemorySetExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<MemorySetExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyMSet + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyName + @"': {},
+                '" + JsonSchemaPropertyValue + @"': {}
+                },
+                'required': [
+                '" + JsonSchemaPropertyName + @"',
+                '" + JsonSchemaPropertyValue + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyMSet + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyMSet => "$mset";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonMemorySetExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyMSet + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyName + @"': {},
-                    '" + JsonSchemaPropertyValue + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyName + @"',
-                    '" + JsonSchemaPropertyValue + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyMSet + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override MemorySetExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyMSet]!;
         JToken nameInstruction = instruction[JsonSchemaPropertyName]!;

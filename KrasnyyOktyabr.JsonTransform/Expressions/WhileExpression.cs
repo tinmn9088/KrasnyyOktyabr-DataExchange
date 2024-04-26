@@ -1,19 +1,10 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public class WhileExpression : AbstractExpression<Task>
+public class WhileExpression(IExpression<Task<bool>> conditionExpression, IExpression<Task> innerExpression) : AbstractExpression<Task>
 {
-    private readonly IExpression<Task<bool>> _conditionExpression;
+    private readonly IExpression<Task<bool>> _conditionExpression = conditionExpression ?? throw new ArgumentNullException(nameof(conditionExpression));
 
-    private readonly IExpression<Task> _innerExpression;
-
-    public WhileExpression(IExpression<Task<bool>> conditionExpression, IExpression<Task> innerExpression)
-    {
-        ArgumentNullException.ThrowIfNull(conditionExpression);
-        ArgumentNullException.ThrowIfNull(innerExpression);
-
-        _conditionExpression = conditionExpression;
-        _innerExpression = innerExpression;
-    }
+    private readonly IExpression<Task> _innerExpression = innerExpression ?? throw new ArgumentNullException(nameof(innerExpression));
 
     /// <exception cref="OperationCanceledException"></exception>
     protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)

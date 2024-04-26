@@ -16,13 +16,9 @@ public sealed class DataResolveExpression : AbstractExpression<Task<object?>>
         IExpression<Task<Dictionary<string, object?>>> argsExpression,
         IDataResolveService dataResolveService)
     {
-        ArgumentNullException.ThrowIfNull(resolverExpression);
-        ArgumentNullException.ThrowIfNull(argsExpression);
-        ArgumentNullException.ThrowIfNull(dataResolveService);
-
-        _resolverExpression = resolverExpression;
-        _argsExpression = argsExpression;
-        _dataResolveService = dataResolveService;
+        _resolverExpression = resolverExpression ?? throw new ArgumentNullException(nameof(resolverExpression));
+        _argsExpression = argsExpression ?? throw new ArgumentNullException(nameof(argsExpression));
+        _dataResolveService = dataResolveService ?? throw new ArgumentNullException(nameof(dataResolveService));
     }
 
     /// <exception cref="IDataResolveService.ResolverNotFoundException"></exception>

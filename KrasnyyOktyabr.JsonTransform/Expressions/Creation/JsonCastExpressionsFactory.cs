@@ -3,7 +3,34 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonCastExpressionsFactory : AbstractJsonExpressionFactory<IExpression<Task>>
+public sealed class JsonCastExpressionsFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<IExpression<Task>>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyCast + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyValue + @"': {},
+                '" + JsonSchemaPropertyType + @"': {
+                    'type': 'string',
+                    'enum': [" + GetPropertyTypeValuesString() + @"]
+                }
+                },
+                'required': [
+                '" + JsonSchemaPropertyValue + @"',
+                '" + JsonSchemaPropertyType + @"',
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyCast + @"'
+            ]
+        }")
 {
     public enum ReturnType
     {
@@ -18,47 +45,16 @@ public sealed class JsonCastExpressionsFactory : AbstractJsonExpressionFactory<I
 
     public static string JsonSchemaPropertyType => "type";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonCastExpressionsFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                    'type': 'string'
-                },
-                '" + JsonSchemaPropertyCast + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyValue + @"': {},
-                    '" + JsonSchemaPropertyType + @"': {
-                      'type': 'string',
-                      'enum': [" + GetPropertyTypeValuesString() + @"]
-                    }
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyValue + @"',
-                    '" + JsonSchemaPropertyType + @"',
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyCast + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     public override IExpression<Task> Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyCast]!;
         JToken valueInstruction = instruction[JsonSchemaPropertyValue]!;
@@ -83,8 +79,13 @@ public sealed class JsonCastExpressionsFactory : AbstractJsonExpressionFactory<I
 
     private static string GetPropertyTypeValuesString()
     {
-        return Enum.GetValues<ReturnType>()
-            .Select(t => $"'{t.ToString().ToLower()}'")
-            .Aggregate((types, next) => $"{types}, {next}");
+        List<string> returnTypeNames = [];
+
+        foreach (object name in Enum.GetValues(typeof(ReturnType)))
+        {
+            returnTypeNames.Add($"'{name.ToString().ToLower()}'");
+        }
+
+        return string.Join(", ", [.. returnTypeNames]);
     }
 }

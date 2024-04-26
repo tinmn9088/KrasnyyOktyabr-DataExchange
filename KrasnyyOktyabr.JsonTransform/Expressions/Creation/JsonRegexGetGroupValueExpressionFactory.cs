@@ -3,7 +3,32 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonRegexGetGroupValueExpressionFactory : AbstractJsonExpressionFactory<RegexGetGroupValueExpression>
+public sealed class JsonRegexGetGroupValueExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<RegexGetGroupValueExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertyRegexGetGroup + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyRegex + @"': {},
+                '" + JsonSchemaPropertyInput + @"': {},
+                '" + JsonSchemaPropertyGroupNumber + @"': {}
+                },
+                'required': [
+                '" + JsonSchemaPropertyRegex + @"',
+                '" + JsonSchemaPropertyInput + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertyRegexGetGroup + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertyRegexGetGroup => "$regexgetgroup";
 
@@ -13,44 +38,15 @@ public sealed class JsonRegexGetGroupValueExpressionFactory : AbstractJsonExpres
 
     public static string JsonSchemaPropertyGroupNumber => "groupNumber";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonRegexGetGroupValueExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertyRegexGetGroup + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyRegex + @"': {},
-                    '" + JsonSchemaPropertyInput + @"': {},
-                    '" + JsonSchemaPropertyGroupNumber + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyRegex + @"',
-                    '" + JsonSchemaPropertyInput + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertyRegexGetGroup + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override RegexGetGroupValueExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyRegexGetGroup]!;
         JToken regexInstruction = instruction[JsonSchemaPropertyRegex]!;

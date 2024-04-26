@@ -3,50 +3,45 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public abstract class AbstractJsonBinaryExpressionFactory<TLeft, TRight, TOut> : AbstractJsonExpressionFactory<TOut> where TOut : IExpression<Task>
-{
-    private readonly string _expressionName;
-
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    public AbstractJsonBinaryExpressionFactory(string expressionName, IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
+/// <exception cref="ArgumentException"></exception>
+/// <exception cref="ArgumentNullException"></exception>
+public abstract class AbstractJsonBinaryExpressionFactory<TLeft, TRight, TOut>(string expressionName, IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<TOut>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + expressionName + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyLeft + @"': {},
+                '" + JsonSchemaPropertyRight + @"': {}
                 },
-                '" + expressionName + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyLeft + @"': {},
-                    '" + JsonSchemaPropertyRight + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyLeft + @"',
-                    '" + JsonSchemaPropertyRight + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + expressionName + @"'
-              ]
-            }")
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(expressionName);
-        ArgumentNullException.ThrowIfNull(factory);
+                'required': [
+                '" + JsonSchemaPropertyLeft + @"',
+                '" + JsonSchemaPropertyRight + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + expressionName + @"'
+            ]
+        }")
+    where TOut : IExpression<Task>
+{
+    private readonly string _expressionName = expressionName ?? throw new ArgumentNullException(nameof(expressionName));
 
-        _expressionName = expressionName;
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     public override TOut Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[_expressionName]!;
         JToken leftInstruction = instruction[JsonSchemaPropertyLeft]!;

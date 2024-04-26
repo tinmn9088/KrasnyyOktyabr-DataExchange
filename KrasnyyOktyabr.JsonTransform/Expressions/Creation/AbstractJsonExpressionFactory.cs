@@ -9,7 +9,10 @@ public abstract class AbstractJsonExpressionFactory<TOut> : IJsonExpressionFacto
 
     public AbstractJsonExpressionFactory(string jsonSchemaString)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(jsonSchemaString);
+        if (jsonSchemaString == null || string.IsNullOrWhiteSpace(jsonSchemaString))
+        {
+            throw new ArgumentNullException(nameof(jsonSchemaString));
+        }
 
         _jsonSchema = new Lazy<JsonSchema>(() => JsonSchema.FromJsonAsync(jsonSchemaString).Result);
     }

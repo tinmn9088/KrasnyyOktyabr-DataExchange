@@ -3,7 +3,30 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonSelectExpressionFactory : AbstractJsonExpressionFactory<SelectExpression>
+public sealed class JsonSelectExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<SelectExpression>(@"{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+            '" + JsonSchemaPropertyComment + @"': {
+                'type': 'string'
+            },
+            '" + JsonSchemaPropertySelect + @"': {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                '" + JsonSchemaPropertyPath + @"': {},
+                '" + JsonSchemaPropertyOptional + @"': {}
+                },
+                'required': [
+                '" + JsonSchemaPropertyPath + @"'
+                ]
+            }
+            },
+            'required': [
+            '" + JsonSchemaPropertySelect + @"'
+            ]
+        }")
 {
     public static string JsonSchemaPropertySelect => "$select";
 
@@ -11,42 +34,15 @@ public sealed class JsonSelectExpressionFactory : AbstractJsonExpressionFactory<
 
     public static string JsonSchemaPropertyOptional => "optional";
 
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonSelectExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                '" + JsonSchemaPropertyComment + @"': {
-                  'type': 'string'
-                },
-                '" + JsonSchemaPropertySelect + @"': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    '" + JsonSchemaPropertyPath + @"': {},
-                    '" + JsonSchemaPropertyOptional + @"': {}
-                  },
-                  'required': [
-                    '" + JsonSchemaPropertyPath + @"'
-                  ]
-                }
-              },
-              'required': [
-                '" + JsonSchemaPropertySelect + @"'
-              ]
-            }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _factory = factory;
-    }
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override SelectExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertySelect]!;
         JToken pathInstruction = instruction[JsonSchemaPropertyPath]!;

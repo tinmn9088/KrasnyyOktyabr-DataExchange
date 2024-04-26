@@ -3,8 +3,10 @@ using Newtonsoft.Json.Linq;
 
 namespace KrasnyyOktyabr.JsonTransform;
 
-public static partial class JsonHelper
+public static class JsonHelper
 {
+    private static readonly Regex s_arrayIndexRegex = new(@"^\[(?<index>\d+)\]$");
+
     /// <summary>
     /// Deletes all properties with values that match (<see cref="string.IsNullOrWhiteSpace(string)"/>).
     /// </summary>
@@ -52,7 +54,10 @@ public static partial class JsonHelper
     /// <exception cref="ArgumentNullException"></exception>
     public static JObject Unflatten(JObject flatJson)
     {
-        ArgumentNullException.ThrowIfNull(flatJson);
+        if (flatJson == null)
+        {
+            throw new ArgumentNullException(nameof(flatJson));
+        }
 
         static JToken wrap(JToken? flatJsonPropertyValue, string[] keyParts, int keyPartIndex = 0)
         {
@@ -62,7 +67,7 @@ public static partial class JsonHelper
 
             string keyPart = keyParts[keyPartIndex];
 
-            Match arrayIndexMatch = ArrayIndexRegex().Match(keyPart);
+            Match arrayIndexMatch = s_arrayIndexRegex.Match(keyPart);
 
             if (arrayIndexMatch.Success)
             {
@@ -113,7 +118,10 @@ public static partial class JsonHelper
     /// <exception cref="ArgumentNullException"></exception>
     public static JObject Flatten(JObject structuredJson, string keyPrefix = "")
     {
-        ArgumentNullException.ThrowIfNull(structuredJson);
+        if (structuredJson == null)
+        {
+            throw new ArgumentNullException(nameof(structuredJson));
+        }
 
         JObject flatJson = new();
 
@@ -165,7 +173,4 @@ public static partial class JsonHelper
 
         return flatJson;
     }
-
-    [GeneratedRegex(@"^\[(?<index>\d+)\]$")]
-    private static partial Regex ArrayIndexRegex();
 }

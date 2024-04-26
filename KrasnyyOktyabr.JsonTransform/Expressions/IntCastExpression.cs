@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace KrasnyyOktyabr.JsonTransform.Expressions;
+﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 /// <summary>
 /// Casts inner expression result to <see cref="int"/> or translates it to <see cref="string"/> and parses.
@@ -11,13 +9,16 @@ public sealed class IntCastExpression(IExpression<Task> innerExpression) : Abstr
     /// <exception cref="IntCastExpressionException"></exception>
     public override int Cast(object? innerExpressionTaskResult)
     {
-        ArgumentNullException.ThrowIfNull(innerExpressionTaskResult);
+        if (innerExpressionTaskResult == null)
+        {
+            throw new ArgumentNullException(nameof(innerExpressionTaskResult));
+        }
 
         if (innerExpressionTaskResult is int intResult)
         {
             return intResult;
         }
-        else if (int.TryParse(innerExpressionTaskResult?.ToString(), CultureInfo.InvariantCulture, out int parseResult))
+        else if (int.TryParse(innerExpressionTaskResult?.ToString(), out int parseResult))
         {
             return parseResult;
         }

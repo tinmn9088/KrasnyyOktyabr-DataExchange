@@ -11,11 +11,8 @@ public sealed class IfElseExpression : AbstractExpression<Task>
     /// <exception cref="ArgumentNullException"></exception>
     public IfElseExpression(IExpression<Task<bool>> conditionExpression, IExpression<Task> thenExpression, IExpression<Task>? elseExpression = null)
     {
-        ArgumentNullException.ThrowIfNull(conditionExpression);
-        ArgumentNullException.ThrowIfNull(thenExpression);
-
-        _conditionExpression = conditionExpression;
-        _thenExpression = thenExpression;
+        _conditionExpression = conditionExpression ?? throw new ArgumentNullException(nameof(conditionExpression));
+        _thenExpression = thenExpression ?? throw new ArgumentNullException(nameof(thenExpression));
 
         if (elseExpression != null)
         {

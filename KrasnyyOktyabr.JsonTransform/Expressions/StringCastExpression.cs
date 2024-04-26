@@ -9,7 +9,10 @@ public sealed class StringCastExpression(IExpression<Task> innerExpression) : Ab
     /// <exception cref="NullReferenceException"></exception>
     public override string Cast(object? innerExpressionTaskResult)
     {
-        ArgumentNullException.ThrowIfNull(innerExpressionTaskResult);
+        if (innerExpressionTaskResult == null)
+        {
+            throw new ArgumentNullException(nameof(innerExpressionTaskResult));
+        }
 
         if (innerExpressionTaskResult is string stringResult)
         {

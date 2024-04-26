@@ -3,16 +3,8 @@ using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFac
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 
-public sealed class JsonStringFormatExpressionFactory : AbstractJsonExpressionFactory<StringFormatExpression>
-{
-    public static string JsonSchemaPropertyStrformat => "$strformat";
-
-    public static string JsonSchemaPropertyArgs => "args";
-
-    private readonly IJsonAbstractExpressionFactory _factory;
-
-    public JsonStringFormatExpressionFactory(IJsonAbstractExpressionFactory factory)
-        : base(@"{
+public sealed class JsonStringFormatExpressionFactory(IJsonAbstractExpressionFactory factory)
+    : AbstractJsonExpressionFactory<StringFormatExpression>(@"{
               'type': 'object',
               'additionalProperties': false,
               'properties': {
@@ -38,16 +30,20 @@ public sealed class JsonStringFormatExpressionFactory : AbstractJsonExpressionFa
                 '" + JsonSchemaPropertyStrformat + @"'
               ]
             }")
-    {
-        ArgumentNullException.ThrowIfNull(factory);
+{
+    public static string JsonSchemaPropertyStrformat => "$strformat";
 
-        _factory = factory;
-    }
+    public static string JsonSchemaPropertyArgs => "args";
+
+    private readonly IJsonAbstractExpressionFactory _factory = factory ?? throw new ArgumentNullException(nameof(factory));
 
     /// <exception cref="ArgumentNullException"></exception>
     public override StringFormatExpression Create(JToken input)
     {
-        ArgumentNullException.ThrowIfNull(input);
+        if (input == null)
+        {
+            throw new ArgumentNullException(nameof(input));
+        }
 
         JObject instruction = (JObject)input[JsonSchemaPropertyStrformat]!;
         JToken valueInstruction = instruction[JsonSchemaPropertyValue]!;

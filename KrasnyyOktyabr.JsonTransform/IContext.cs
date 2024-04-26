@@ -17,8 +17,7 @@ public interface IContext
     /// <returns>
     /// Result of JSONPath query or <c>null</c> if not found.
     /// </returns>
-    /// <exception cref="ArgumentException"><paramref name="path"/> is empty.</exception>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> is <c>null</c> or empty.</exception>
     JToken? InputSelect(string path);
 
     /// <exception cref="ArgumentNullException"><paramref name="key"/> is <c>null</c>.</exception>
