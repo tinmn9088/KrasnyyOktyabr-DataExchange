@@ -23,8 +23,8 @@ public static class JsonTransformDependencyInjectionHelper
                 new JsonDataResolveExpressionFactory(factory, provider.GetRequiredService<IDataResolveService>()),
 
                 // Containers
-                new JsonArrayExpressionFactory(factory),
-                new JsonExpressionsBlockFactory(factory), // Must be below JsonArrayExpressionFactory (JSON Schema overlaps)
+                new JsonExpressionsBlockFactory(factory), 
+                new JsonArrayExpressionFactory(factory), // Must be below JsonExpressionsBlockFactory (JSON Schema overlaps)
                 new JsonMapExpressionFactory(factory),
 
                 // Const

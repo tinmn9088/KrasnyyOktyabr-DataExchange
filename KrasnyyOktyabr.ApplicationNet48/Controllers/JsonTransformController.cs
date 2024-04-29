@@ -1,10 +1,12 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -34,7 +36,7 @@ public class JsonTransformController(IJsonService jsonService) : ApiController
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return RunError(ex);
         }
 
         response.Content = new JsonTransformContent(resultStream);
@@ -43,6 +45,23 @@ public class JsonTransformController(IJsonService jsonService) : ApiController
     }
 
     private static JsonTransformRunResult RunResult(HttpResponseMessage response) => new(response);
+
+    private static JsonTransformError RunError(Exception exception) => new(exception);
+
+    public class JsonTransformError(Exception exception) : IHttpActionResult
+    {
+        public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+        {
+            HttpResponseMessage response = new(HttpStatusCode.BadRequest);
+
+            response.Content = JsonContent.Create(new Dictionary<string, string>()
+            {
+                { exception.GetType().Name, exception.Message },
+            });
+
+            return Task.FromResult(response);
+        }
+    }
 
     public class JsonTransformRunResult(HttpResponseMessage response) : IHttpActionResult
     {
