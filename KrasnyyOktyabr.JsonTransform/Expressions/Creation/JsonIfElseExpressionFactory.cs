@@ -30,7 +30,7 @@ public sealed class JsonIfElseExpressionFactory(IJsonAbstractExpressionFactory f
             ]
         }")
 {
-    public static string JsonSchemaPropertyIf => "$while";
+    public static string JsonSchemaPropertyIf => "$if";
 
     public static string JsonSchemaPropertyThen => "then";
 
