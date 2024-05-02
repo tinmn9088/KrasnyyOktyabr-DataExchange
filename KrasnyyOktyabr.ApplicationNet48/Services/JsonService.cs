@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using KrasnyyOktyabr.JsonTransform;
@@ -98,10 +99,17 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
 
         await expression.InterpretAsync(context, cancellationToken);
 
+        JArray result = [];
+
+        foreach (JObject item in context.OutputGet())
+        {
+            result.Add(Unflatten(item));
+        }
+
         StreamWriter writer = new(outputStream);
 
         // Writes to stream synchronously
-        JsonSerializer.CreateDefault().Serialize(writer, new JArray(context.OutputGet()));
+        JsonSerializer.CreateDefault().Serialize(writer, result);
 
         await writer.FlushAsync();
     }
@@ -180,7 +188,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
 
         await expression.InterpretAsync(context, cancellationToken);
 
-        return context.OutputGet();
+        return context.OutputGet().Select(Unflatten).ToList();
     }
 
     /// <exception cref="ArgumentException"></exception>
