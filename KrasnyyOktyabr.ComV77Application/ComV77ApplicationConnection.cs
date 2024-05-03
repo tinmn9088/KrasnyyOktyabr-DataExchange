@@ -266,7 +266,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     }
 
     /// <exception cref="OperationCanceledException"></exception>
-    public async Task<object?> RunErtAsync(string ertRelativePath, Dictionary<string, object?>? ertContext, string? resultName, CancellationToken cancellationToken = default)
+    public async Task<object?> RunErtAsync(string ertRelativePath, IReadOnlyDictionary<string, string>? ertContext, string? resultName, CancellationToken cancellationToken = default)
     {
         await _connectionLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -288,7 +288,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 
             if (ertContext != null)
             {
-                foreach (KeyValuePair<string, object?> nameValue in ertContext)
+                foreach (KeyValuePair<string, string> nameValue in ertContext)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

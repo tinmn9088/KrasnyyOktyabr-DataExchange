@@ -262,11 +262,11 @@ public sealed partial class V77ApplicationProducerService(
                 }
 
                 // Prepare ERT parameters
-                Dictionary<string, object?> ertContext = new()
+                Dictionary<string, string> ertContext = new()
                 {
                     { "ObjectId", objectId },
-                    { "JsonMaxDepth", depth },
-                    { "DatabaseGUIDsConnectionString", settings.DocumentGuidsDatabaseConnectionString },
+                    { "JsonMaxDepth", depth.ToString() },
+                    { "DatabaseGUIDsConnectionString", settings.DocumentGuidsDatabaseConnectionString ?? string.Empty },
                 };
 
                 object? result = await connection.RunErtAsync(

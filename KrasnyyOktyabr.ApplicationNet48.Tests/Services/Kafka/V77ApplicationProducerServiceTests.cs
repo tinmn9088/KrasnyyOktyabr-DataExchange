@@ -118,7 +118,7 @@ public class V77ApplicationProducerServiceTests
         // Setting up connection mock
         Mock<IComV77ApplicationConnection> connectionMock = new();
         connectionMock
-            .Setup(c => c.RunErtAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .Setup(c => c.RunErtAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, string>?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("{}");
 
         // Setting up connection factory mock

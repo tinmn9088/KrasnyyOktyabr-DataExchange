@@ -5,44 +5,33 @@
 /// </summary>
 public interface IComV77ApplicationConnection : IAsyncDisposable
 {
-    public readonly struct ComV77ApplicationConnectionStatus
+    public readonly struct ComV77ApplicationConnectionStatus(
+        string infobasePath,
+        string username,
+        DateTimeOffset? lastTimeDisposed,
+        int errorsCount,
+        int retrievedTimes,
+        bool isInitialized,
+        bool isDisposed)
     {
-        public ComV77ApplicationConnectionStatus(
-            string infobasePath,
-            string username,
-            DateTimeOffset? lastTimeDisposed,
-            int errorsCount,
-            int retrievedTimes,
-            bool isInitialized,
-            bool isDisposed)
-        {
-            InfobasePath = infobasePath;
-            Username = username;
-            LastTimeDisposed = lastTimeDisposed;
-            ErrorsCount = errorsCount;
-            RetrievedTimes = retrievedTimes;
-            IsInitialized = isInitialized;
-            IsDisposed = isDisposed;
-        }
+        public string InfobasePath { get; } = infobasePath;
 
-        public string InfobasePath { get; }
+        public string Username { get; } = username;
 
-        public string Username { get; }
+        public DateTimeOffset? LastTimeDisposed { get; } = lastTimeDisposed;
 
-        public DateTimeOffset? LastTimeDisposed { get; }
+        public int ErrorsCount { get; } = errorsCount;
 
-        public int ErrorsCount { get; }
+        public int RetrievedTimes { get; } = retrievedTimes;
 
-        public int RetrievedTimes { get; }
+        public bool IsInitialized { get; } = isInitialized;
 
-        public bool IsInitialized { get; }
-
-        public bool IsDisposed { get; }
+        public bool IsDisposed { get; } = isDisposed;
     }
 
     ComV77ApplicationConnectionStatus Status { get; }
 
     Task ConnectAsync(CancellationToken cancellationToken);
 
-    Task<object?> RunErtAsync(string ertRelativePath, Dictionary<string, object?>? ertContext, string? resultName, CancellationToken cancellationToken);
+    Task<object?> RunErtAsync(string ertRelativePath, IReadOnlyDictionary<string, string>? ertContext, string? resultName, CancellationToken cancellationToken);
 }

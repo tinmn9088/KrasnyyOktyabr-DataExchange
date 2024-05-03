@@ -107,7 +107,26 @@ public class DataResolveService : IDataResolveService
             password: password
         );
 
-        return new(connectionFactory, connectionProperties, Path.Combine(DefaultErtRelativePathWithoutName, ertName), context, resultName);
+        Dictionary<string, string>? convertedContext = null;
+
+        if (context != null)
+        {
+            convertedContext = [];
+
+            foreach (KeyValuePair<string, object?> nameValue in context)
+            {
+                convertedContext.Add(
+                    key: nameValue.Key,
+                    value: nameValue.Value?.ToString() ?? string.Empty);
+            }
+        }
+
+        return new(
+            connectionFactory,
+            connectionProperties,
+            ertRelativePath: Path.Combine(DefaultErtRelativePathWithoutName, ertName),
+            context: convertedContext,
+            resultName);
     }
 
     private static T GetRequired<T>(Dictionary<string, object?> args, string name)

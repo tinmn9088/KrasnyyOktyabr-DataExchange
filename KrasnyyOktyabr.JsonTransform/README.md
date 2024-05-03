@@ -834,6 +834,8 @@ Available resolvers (i.e. `resolver` parameter values) with parameters for now:
   * (_optional_) `formParams` - `map<string, object?>`
   * (_optional_) `resultName` - `string`
 
+> In _ComV77ApplicationResolver_ `formParams` values are converted to strings before passing to ERT.
+
 ##### Returns
 
 `any`.

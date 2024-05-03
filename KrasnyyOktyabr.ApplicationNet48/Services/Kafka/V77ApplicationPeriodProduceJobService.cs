@@ -155,11 +155,11 @@ public sealed class V77ApplicationPeriodProduceJobService(
                 }
 
                 // Prepare ERT parameters
-                Dictionary<string, object?> ertContext = new()
+                Dictionary<string, string> ertContext = new()
                 {
                     { "ObjectId", objectId },
-                    { "JsonMaxDepth", depth },
-                    { "DatabaseGUIDsConnectionString", request.DocumentGuidsDatabaseConnectionString },
+                    { "JsonMaxDepth", depth.ToString() },
+                    { "DatabaseGUIDsConnectionString", request.DocumentGuidsDatabaseConnectionString ?? string.Empty },
                 };
 
                 object? result = await connection.RunErtAsync(

@@ -14,7 +14,7 @@ public class ComV77ApplicationResolver(
     IComV77ApplicationConnectionFactory connectionFactory,
     ConnectionProperties connectionProperties,
     string ertRelativePath,
-    Dictionary<string, object?>? context,
+    IReadOnlyDictionary<string, string>? context,
     string? resultName)
     : IDataResolver
 {
@@ -24,7 +24,7 @@ public class ComV77ApplicationResolver(
 
     private readonly string _ertRelativePath = ertRelativePath ?? throw new ArgumentNullException(nameof(ertRelativePath));
 
-    private readonly Dictionary<string, object?>? _context = context;
+    private readonly IReadOnlyDictionary<string, string>? _context = context;
 
     private readonly string? _resultName = resultName;
 

@@ -5,14 +5,9 @@ namespace KrasnyyOktyabr.ComV77Application;
 
 public interface IComV77ApplicationConnectionFactory : IAsyncDisposable
 {
-    public readonly struct ComV77ApplicationConnectionFactoryStatus
+    public readonly struct ComV77ApplicationConnectionFactoryStatus(ComV77ApplicationConnectionStatus[] connections)
     {
-        public ComV77ApplicationConnectionFactoryStatus(ComV77ApplicationConnectionStatus[] connections)
-        {
-            Connections = connections;
-        }
-
-        public ComV77ApplicationConnectionStatus[] Connections { get; }
+        public ComV77ApplicationConnectionStatus[] Connections { get; } = connections;
     }
 
     ComV77ApplicationConnectionFactoryStatus Status { get; }

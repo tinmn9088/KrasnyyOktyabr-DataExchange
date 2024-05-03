@@ -228,7 +228,7 @@ public sealed class V77ApplicationConsumerService(
 
             foreach (string result in jsonTransformResults)
             {
-                Dictionary<string, object?> ertContext = new()
+                Dictionary<string, string> ertContext = new()
                 {
                     { "ObjectJson", result },
                 };
