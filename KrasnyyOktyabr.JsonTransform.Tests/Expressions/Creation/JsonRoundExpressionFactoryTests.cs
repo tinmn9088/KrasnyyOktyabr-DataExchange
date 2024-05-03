@@ -99,6 +99,7 @@ public class JsonRoundExpressionFactoryTests
     {
         // Setting up value instruction mock
         JObject fakeValueInstruction = new();
+        JToken fakeDigitsInstruction = 2;
         Mock<IExpression<Task<Number>>> valueExpressionMock = new();
         _abstractFactoryMock!
             .Setup(f => f.Create<IExpression<Task<Number>>>(fakeValueInstruction))
@@ -111,7 +112,7 @@ public class JsonRoundExpressionFactoryTests
                 new JObject()
                 {
                     { JsonSchemaPropertyValue, fakeValueInstruction },
-                    { JsonSchemaPropertyDigits, 2 },
+                    { JsonSchemaPropertyDigits, fakeDigitsInstruction },
                 }
             },
         };
@@ -120,6 +121,7 @@ public class JsonRoundExpressionFactoryTests
 
         Assert.IsNotNull(expression);
         _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<Number>>>(It.Is<JToken>(i => i == fakeValueInstruction)), Times.Once);
+        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<int>>>(It.Is<JToken>(i => i == fakeDigitsInstruction)), Times.Once);
         _abstractFactoryMock.VerifyNoOtherCalls();
     }
 }

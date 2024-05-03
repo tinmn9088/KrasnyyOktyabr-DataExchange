@@ -45,7 +45,13 @@ public class RoundExpressionTests
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(valueExpressionResult));
 
-        RoundExpression roundExpression = new(valueExpressionMock.Object, 2);
+        // Setting up digits expression
+        Mock<IExpression<Task<int>>> digitsExpressionMock = new();
+        digitsExpressionMock
+            .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(2);
+
+        RoundExpression roundExpression = new(valueExpressionMock.Object, digitsExpressionMock.Object);
 
         Number expected = new(2.67);
 

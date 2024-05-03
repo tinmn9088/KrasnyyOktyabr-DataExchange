@@ -2,25 +2,38 @@
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public sealed class RoundExpression : AbstractUnaryExpression<Number>
+/// <exception cref="ArgumentException"></exception>
+public sealed class RoundExpression : AbstractExpression<Task<Number>>
 {
-    private readonly int _digits;
+    private readonly IExpression<Task<Number>> _valueExpression;
 
-    /// <exception cref="ArgumentException"></exception>
-    public RoundExpression(IExpression<Task<Number>> valueExpression, int digits = 0)
-        : base(valueExpression)
+    private readonly IExpression<Task<int>>? _digitsExpression;
+
+    public RoundExpression(IExpression<Task<Number>> valueExpression, IExpression<Task<int>>? digitsExpression = null)
     {
+        _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
+
+        if (digitsExpression != null)
+        {
+            _digitsExpression = digitsExpression;
+        }
+    }
+
+    protected override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    {
+        int digits = 0;
+
+        if (_digitsExpression != null)
+        {
+            digits = await _digitsExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+        }
+
         if (digits < 0)
         {
             throw new ArgumentException($"Negative digits ({digits}) not allowed");
         }
 
-        _digits = digits;
-    }
-
-    protected override async ValueTask<Number> CalculateAsync(Func<Task<Number>> getValue)
-    {
-        Number value = await getValue();
+        Number value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
         if (value.Int != null)
         {
@@ -29,7 +42,7 @@ public sealed class RoundExpression : AbstractUnaryExpression<Number>
 
         if (value.Double != null)
         {
-            return new Number(Math.Round(value.Double.Value, _digits));
+            return new Number(Math.Round(value.Double.Value, digits));
         }
 
         throw new NotImplementedException();

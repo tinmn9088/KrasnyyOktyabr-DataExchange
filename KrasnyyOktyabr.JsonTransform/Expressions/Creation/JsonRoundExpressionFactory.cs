@@ -16,9 +16,7 @@ public sealed class JsonRoundExpressionFactory(IJsonAbstractExpressionFactory fa
                 'additionalProperties': false,
                 'properties': {
                 '" + JsonSchemaPropertyValue + @"': {},
-                '" + JsonSchemaPropertyDigits + @"': {
-                    type: 'integer'
-                }
+                '" + JsonSchemaPropertyDigits + @"': {}
                 },
                 'required': [
                 '" + JsonSchemaPropertyValue + @"'
@@ -46,13 +44,15 @@ public sealed class JsonRoundExpressionFactory(IJsonAbstractExpressionFactory fa
 
         JObject instruction = (JObject)input[JsonSchemaPropertyRound]!;
         JToken valueInstruction = instruction[JsonSchemaPropertyValue]!;
-        int? digits = instruction[JsonSchemaPropertyDigits]?.Value<int>();
+        JToken? digitsInstruction = instruction[JsonSchemaPropertyDigits];
 
         IExpression<Task<Number>> valueExpression = _factory.Create<IExpression<Task<Number>>>(valueInstruction);
 
-        if (digits != null)
+        if (digitsInstruction != null)
         {
-            return new(valueExpression, digits.Value);
+            IExpression<Task<int>> digitsExpression = _factory.Create<IExpression<Task<int>>>(digitsInstruction);
+
+            return new(valueExpression, digitsExpression);
         }
         else
         {
