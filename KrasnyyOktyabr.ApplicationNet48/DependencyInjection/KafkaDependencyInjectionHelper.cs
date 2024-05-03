@@ -4,6 +4,7 @@ using KrasnyyOktyabr.ApplicationNet48.Services;
 using KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.DependencyInjection;
+using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 
 namespace KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
 
@@ -38,6 +39,8 @@ public static class KafkaDependencyInjectionHelper
         services.AddJsonTransform();
 
         services.AddSingleton<IV77ApplicationLogService, V77ApplicationLogService>();
+
+        healthChecksBuilder.AddCheck<ComV77ApplicationConnectionFactoryHealthChecker>(nameof(ComV77ApplicationConnectionFactoryStatus));
 
         services.AddV77ApplicationProducerService(healthChecksBuilder);
 
