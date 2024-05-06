@@ -40,7 +40,17 @@ public class WebApiApplication : HttpApplication
             GlobalConfiguration.Configure(WebApiConfig.Register(provider: app.Services));
 
             _hostCancellation = new();
-            _hostTask = app.RunAsync(_hostCancellation.Token);
+            _hostTask = Task.Run(() =>
+            {
+                try
+                {
+                    app.RunAsync(_hostCancellation.Token);
+                }
+                catch (Exception ex)
+                {
+                    s_logger.Error(ex);
+                }
+            });
         }
         catch (Exception ex)
         {
