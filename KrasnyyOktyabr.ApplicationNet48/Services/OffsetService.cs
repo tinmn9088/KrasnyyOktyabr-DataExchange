@@ -9,7 +9,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
 public sealed class OffsetService : IOffsetService
 {
-    public static string OffsetsFilePath => "offsets.json";
+    public static string OffsetsFilePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "offsets.json");
 
     private static readonly JsonSerializerOptions s_jsonSerializedOptions = new()
     {

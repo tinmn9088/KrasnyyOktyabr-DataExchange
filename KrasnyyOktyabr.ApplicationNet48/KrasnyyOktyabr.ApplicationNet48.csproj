@@ -353,6 +353,7 @@
   <ItemGroup>
     <Content Include="appsettings.json" />
     <Content Include="nlog.config" />
+    <Content Include="offsets.json" />
     <None Include="packages.config" />
     <Content Include="README.md" />
     <None Include="web.Debug.config">
