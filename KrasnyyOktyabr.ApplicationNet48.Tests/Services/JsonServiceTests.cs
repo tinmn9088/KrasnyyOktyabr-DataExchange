@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
@@ -14,6 +15,8 @@ public class JsonServiceTests
 {
     private static Mock<IJsonAbstractExpressionFactory>? s_factoryMock;
 
+    private static Mock<ILogger<JsonService>>? s_loggerMock;
+
     private static JsonService? s_jsonService;
 
     [TestInitialize]
@@ -21,7 +24,9 @@ public class JsonServiceTests
     {
         s_factoryMock = new();
 
-        s_jsonService = new(s_factoryMock.Object);
+        s_loggerMock = new();
+
+        s_jsonService = new(s_factoryMock.Object, s_loggerMock.Object);
     }
 
     [TestMethod]

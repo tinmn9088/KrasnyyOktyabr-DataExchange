@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using KrasnyyOktyabr.JsonTransform;
 using KrasnyyOktyabr.JsonTransform.Expressions;
 using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
@@ -15,7 +16,7 @@ using static KrasnyyOktyabr.JsonTransform.JsonHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
-public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonService
+public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<JsonService> logger) : IJsonService
 {
     public static string ConsumerInstructionsPath => Path.Combine("Properties", "ConsumerInstructions");
 
@@ -34,6 +35,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
         return instructionsCount;
     }
 
+#nullable enable
     public KafkaProducerMessageData BuildKafkaProducerMessageData(
         string objectJson,
         Dictionary<string, object?> propertiesToAdd,
@@ -68,6 +70,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
             dataType: dataType
         );
     }
+#nullable disable
 
     /// <param name="outputStream">Is written synchronously.</param>
     public async ValueTask RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
@@ -186,7 +189,14 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
 
         Context context = new(input);
 
-        await expression.InterpretAsync(context, cancellationToken);
+        try
+        {
+            await expression.InterpretAsync(context, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            throw new JsonTransformException(instructionName, ex);
+        }
 
         return context.OutputGet().Select(Unflatten).ToList();
     }
@@ -209,6 +219,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
         }
     }
 
+#nullable enable
     private static void AddProperties(JObject jObject, Dictionary<string, object?> propertiesToAdd)
     {
         foreach (KeyValuePair<string, object?> property in propertiesToAdd)
@@ -216,15 +227,22 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
             jObject[property.Key] = JToken.FromObject(property.Value ?? JValue.CreateNull());
         }
     }
+#nullable disable
 
     private async ValueTask<IExpression<Task>> GetExpressionAsync(string instructionName)
     {
+#nullable enable
         if (_instructionNamesExpressions.TryGetValue(instructionName, out IExpression<Task>? cachedExpression))
         {
             return cachedExpression;
         }
+#nullable disable
 
-        JToken instructions = await LoadInstructionAsync(Path.Combine(ConsumerInstructionsPath, instructionName));
+        string instructionFilePath = Path.Combine(ConsumerInstructionsPath, instructionName);
+
+        logger.LogTrace("{InstructionName} not found in cache, loading from '{FilePath}'", instructionName, instructionFilePath);
+
+        JToken instructions = await LoadInstructionAsync(instructionFilePath);
 
         IExpression<Task> expression = factory.Create<IExpression<Task>>(instructions);
 
@@ -241,6 +259,10 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory) : IJsonS
     }
 
     public class TablePropertyNotFoundException(string tablePropertyName) : Exception($"'{tablePropertyName}' property not found")
+    {
+    }
+
+    public class JsonTransformException(string instructionName, Exception exception) : Exception($"At '{instructionName}'", exception)
     {
     }
 }
