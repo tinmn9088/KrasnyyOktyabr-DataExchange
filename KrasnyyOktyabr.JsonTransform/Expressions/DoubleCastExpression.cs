@@ -22,11 +22,17 @@ public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : Ab
         }
         else if (double.TryParse(
             innerExpressionTaskResult?.ToString(),
+            out double parse1Result))
+        {
+            return parse1Result;
+        }
+        else if (double.TryParse(
+            innerExpressionTaskResult?.ToString(),
             style: NumberStyles.Any,
             provider: CultureInfo.InvariantCulture,
-            out double parseResult))
+            out double parse2Result))
         {
-            return parseResult;
+            return parse2Result;
         }
         else
         {
