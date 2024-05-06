@@ -18,7 +18,7 @@ public class KafkaLoggingHelperTests
     {
         string message = "TestMessage";
 
-        string expected = "Tes ... ge";
+        string expected = "Te ... age";
 
         string actual = KafkaLoggingHelper.ShortenMessage(message, message.Length - 1);
 

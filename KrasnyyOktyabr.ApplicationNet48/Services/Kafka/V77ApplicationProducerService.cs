@@ -57,7 +57,7 @@ public sealed partial class V77ApplicationProducerService(
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
 
-    private static readonly char[] s_offsetValuesSeparator = ['&'];
+    private static readonly char s_offsetValuesSeparator = '&';
 
     /// <summary>
     /// <para>
@@ -252,7 +252,7 @@ public sealed partial class V77ApplicationProducerService(
             foreach (string objectId in objectIds)
             {
                 int depth = objectFilters
-                .Where(f => f.Id == objectId)
+                .Where(f => objectId.StartsWith(f.Id))
                 .Select(f => f.Depth)
                 .FirstOrDefault();
 
@@ -338,6 +338,8 @@ public sealed partial class V77ApplicationProducerService(
             string topicName = kafkaService.BuildTopicName(infobasePubName, messageData.DataType);
 
             await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken);
+
+            logger.LogProducedMessage(topicName, kafkaMessage.Key, kafkaMessage.Value);
 
             sentObjectsCount++;
         }
@@ -545,7 +547,17 @@ public sealed partial class V77ApplicationProducerService(
                 _cancellationTokenSource.Cancel();
                 _cancellationTokenSource.Dispose();
 
-                _currentProcessingTask?.Wait();
+                try
+                {
+                    _currentProcessingTask?.Wait();
+                }
+                catch (OperationCanceledException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error on dispose");
+                }
 
                 _isDisposed = true;
             }
@@ -688,7 +700,7 @@ public sealed partial class V77ApplicationProducerService(
             );
         }
 
-        string[] positionAndLineStrings = commitedOffsetString.Split(s_offsetValuesSeparator, 2);
+        string[] positionAndLineStrings = commitedOffsetString.Split(s_offsetValuesSeparator);
 
         if (positionAndLineStrings.Length != 2)
         {

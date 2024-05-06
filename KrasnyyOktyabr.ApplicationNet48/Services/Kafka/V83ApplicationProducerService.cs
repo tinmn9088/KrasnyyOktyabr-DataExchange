@@ -336,7 +336,17 @@ public sealed class V83ApplicationProducerService(
 
             _cancellationTokenSource.Cancel();
 
-            await _producerTask.ConfigureAwait(false);
+            try
+            {
+                await _producerTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error on dispose");
+            }
 
             _logger.LogDisposed(Key);
         }

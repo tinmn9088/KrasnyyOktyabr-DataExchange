@@ -111,6 +111,16 @@ public static class KafkaLoggingHelper
         logger.LogTrace("Sending {objectsCount} objects", objectsCount);
     }
 
+    public static void LogProducedMessage(this ILogger logger, string topic, string key, string message)
+    {
+        logger.LogTrace(
+            "Message sent to '{Topic}' (key: '{Key}', length: {Length}): {ShortenedMessage}",
+            topic,
+            key,
+            message.Length,
+            ShortenMessage(message, 400));
+    }
+
     public static void LogConsumedMessage(this ILogger logger, string consumerGroup, string topic, string key, int length, string message)
     {
         logger.LogTrace(
@@ -248,18 +258,11 @@ public static class KafkaLoggingHelper
 
         StringBuilder stringBuilder = new();
 
-        int leftOffset = (message.Length - startEndSeparator.Length) / 2;
+        int leftOffset = (lengthLimit - startEndSeparator.Length) / 2;
+        int rightOffset = message.Length - (lengthLimit - (leftOffset + startEndSeparator.Length));
+
         stringBuilder.Append(message.Substring(0, leftOffset));
-
         stringBuilder.Append(startEndSeparator);
-
-        int rightOffset = (message.Length + startEndSeparator.Length) / 2;
-
-        if (stringBuilder.Length + (message.Length - rightOffset) > lengthLimit)
-        {
-            rightOffset++;
-        }
-
         stringBuilder.Append(message.Substring(rightOffset));
 
         return stringBuilder.ToString();

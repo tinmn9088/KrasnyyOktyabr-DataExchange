@@ -145,7 +145,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
             foreach (string objectId in objectIds)
             {
                 int depth = objectFilters
-                .Where(f => f.Id == objectId)
+                .Where(f => objectId.StartsWith(f.Id))
                 .Select(f => f.Depth)
                 .FirstOrDefault();
 
@@ -227,6 +227,8 @@ public sealed class V77ApplicationPeriodProduceJobService(
             string topicName = kafkaService.BuildTopicName(infobasePubName, messageData.DataType);
 
             await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken);
+
+            logger.LogProducedMessage(topicName, kafkaMessage.Key, kafkaMessage.Value);
 
             sentObjectsCount++;
         }

@@ -444,7 +444,17 @@ public sealed class V77ApplicationConsumerService(
 
             _cancellationTokenSource.Cancel();
 
-            await _consumerTask.ConfigureAwait(false);
+            try
+            {
+                await _consumerTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error on dispose");
+            }
 
             _logger.LogDisposed(Key);
         }

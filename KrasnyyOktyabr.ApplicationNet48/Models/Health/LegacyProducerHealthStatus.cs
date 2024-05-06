@@ -19,8 +19,8 @@ public class LegacyProducerHealthStatus
     [JsonProperty("errorMessage")]
     public string? ErrorMessage { get; set; }
 
-    [JsonProperty("objectIds")]
-    public string[]? ObjectIds { get; set; }
+    [JsonProperty("objectFilters")]
+    public string[]? ObjectFilters { get; set; }
 
     [JsonProperty("transactionTypes")]
     public string[]? TransactionTypes { get; set; }
