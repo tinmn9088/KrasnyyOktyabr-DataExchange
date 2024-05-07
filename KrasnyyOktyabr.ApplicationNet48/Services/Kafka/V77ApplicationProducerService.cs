@@ -640,6 +640,13 @@ public sealed partial class V77ApplicationProducerService(
 
             if (getLogTransactionsResult.Transactions.Count == 0)
             {
+                await CommitOffset(
+                    _offsetService,
+                    InfobaseFullPath,
+                    position: getLogTransactionsResult.LastReadOffset.Position,
+                    lastReadLine: getLogTransactionsResult.LastReadOffset.LastReadLine,
+                    cancellationToken);
+
                 return;
             }
 

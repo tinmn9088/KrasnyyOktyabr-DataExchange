@@ -57,7 +57,7 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
 
             if (endLine == filter.CommittedLine)
             {
-                logger.LogTrace("Committed line found '{committedLine} ({transactionsCleared} found transactions cleared)'", filter.CommittedLine, logTransactions.Count);
+                logger.LogTrace("Committed line found '{committedLine}' ({transactionsCleared} found transactions cleared)", filter.CommittedLine, logTransactions.Count);
                 logTransactions.Clear();
             }
         }
