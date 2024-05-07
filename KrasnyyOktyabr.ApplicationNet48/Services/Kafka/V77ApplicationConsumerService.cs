@@ -397,6 +397,8 @@ public sealed class V77ApplicationConsumerService(
 
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);
 
+                    Consumed++;
+
                     _logger.LogConsumedMessage(
                         ConsumerGroup,
                         topic: consumeResult.Topic,
@@ -424,6 +426,8 @@ public sealed class V77ApplicationConsumerService(
                         Settings,
                         _connectionFactory,
                         cancellationToken);
+
+                    Saved += jsonTransformResults.Count;
                 }
             }
             catch (OperationCanceledException)

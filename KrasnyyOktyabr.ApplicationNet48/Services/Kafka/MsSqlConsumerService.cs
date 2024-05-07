@@ -376,6 +376,8 @@ public sealed class MsSqlConsumerService(
 
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);
 
+                    Consumed++;
+
                     _logger.LogConsumedMessage(
                         consumerGroup: ConsumerGroup,
                         topic: consumeResult.Topic,
@@ -403,6 +405,8 @@ public sealed class MsSqlConsumerService(
                         Settings,
                         _msSqlService,
                         cancellationToken);
+
+                    Saved += jsonTransformResults.Count;
                 }
             }
             catch (OperationCanceledException)

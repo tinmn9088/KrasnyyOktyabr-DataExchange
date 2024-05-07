@@ -18,7 +18,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
 public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<JsonService> logger) : IJsonService
 {
-    public static string ConsumerInstructionsPath => Path.Combine("Properties", "ConsumerInstructions");
+    public static string ConsumerInstructionsPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "ConsumerInstructions");
 
     public static string InstructionsPropertyName => "instructions";
 

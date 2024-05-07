@@ -369,6 +369,8 @@ public sealed partial class V83ApplicationConsumerService(
 
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);
 
+                    Consumed++;
+
                     _logger.LogConsumedMessage(
                         ConsumerGroup,
                         topic: consumeResult.Topic,
@@ -396,6 +398,8 @@ public sealed partial class V83ApplicationConsumerService(
                         Settings,
                         _httpClientFactory,
                         cancellationToken);
+
+                    Saved += jsonTransformResults.Count;
                 }
             }
             catch (OperationCanceledException)
