@@ -50,6 +50,9 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
 
         foreach (IExpression<Task> uncheckedExpression in uncheckedExpressions)
         {
+            // Mark before it is wrapped into any other expression
+            uncheckedExpression.Mark = instruction.Path;
+
             if (uncheckedExpression is TOut checkedExpression)
             {
                 resultExpression = checkedExpression;
@@ -60,6 +63,8 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
                 {
                     if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
                     {
+                        numberCastExpression!.Mark = instruction.Path;
+
                         resultExpression = numberCastExpression!;
                     }
                 }
@@ -67,6 +72,8 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
                 {
                     if (TryWrapInNumberCastExpression(uncheckedExpression, out NumberCastExpression? numberCastExpression))
                     {
+                        numberCastExpression!.Mark = instruction.Path;
+
                         resultExpression = numberCastExpression!;
                     }
 
