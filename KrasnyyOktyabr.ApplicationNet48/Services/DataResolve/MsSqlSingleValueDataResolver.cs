@@ -1,12 +1,15 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
 
 /// <exception cref="ArgumentNullException"></exception>
-public class MsSqlSingleValueDataResolver(IMsSqlService service, string connectionString, string query) : IDataResolver
+public class MsSqlSingleValueDataResolver(IMsSqlService service, string connectionString, string query, ConnectionType? connectionType) : IDataResolver
 {
     private readonly IMsSqlService _service = service ?? throw new ArgumentNullException(nameof(service));
 
@@ -14,10 +17,10 @@ public class MsSqlSingleValueDataResolver(IMsSqlService service, string connecti
 
     private readonly string _query = query ?? throw new ArgumentNullException(nameof(query));
 
-#nullable enable
     public async ValueTask<object?> ResolveAsync(CancellationToken cancellationToken)
     {
-        object? value = await _service.SelectSingleValueAsync(_connectionString, _query);
-        return value;
+        return connectionType != null
+            ? await _service.SelectSingleValueAsync(_connectionString, _query, connectionType.Value)
+            : await _service.SelectSingleValueAsync(_connectionString, _query);
     }
 }

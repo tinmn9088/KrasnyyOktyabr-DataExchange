@@ -210,7 +210,14 @@ public sealed class MsSqlConsumerService(
     {
         foreach (JsonTransformMsSqlResult result in jsonTransformResults)
         {
-            await msSqlService.InsertAsync(settings.ConnectionString, result.Table, result.ColumnValues);
+            if (settings.ConnectionType != null)
+            {
+                await msSqlService.InsertAsync(settings.ConnectionString, result.Table, result.ColumnValues, settings.ConnectionType.Value);
+            }
+            else
+            {
+                await msSqlService.InsertAsync(settings.ConnectionString, result.Table, result.ColumnValues);
+            }
         }
     };
 

@@ -7,6 +7,9 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
+using static KrasnyyOktyabr.ApplicationNet48.Logging.MsSqlLoggingHelper;
+using System.Data.SqlClient;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
@@ -46,15 +49,26 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
     /// <exception cref="MsSqlException"></exception>
     public async Task<object?> SelectSingleValueAsync(string connectionString, string query)
     {
+        return await SelectSingleValueAsync(connectionString, query, ConnectionType.OleDbConnection);
+    }
+
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="MsSqlException"></exception>
+    public async Task<object?> SelectSingleValueAsync(string connectionString, string query, ConnectionType connectionType)
+    {
         ValidateSelectQueryCommandText(query);
 
         try
         {
-            using OleDbConnection connection = new(connectionString);
+            logger.LogConnecting(connectionType);
+
+            IDbConnectionFactory factory = DbConnectionAbstractFactory.GetConnectionFactory(connectionType);
+
+            using DbConnection connection = factory.CreateConnection(connectionString);
 
             await connection.OpenAsync().ConfigureAwait(false);
 
-            using OleDbCommand command = new(query, connection);
+            using DbCommand command = factory.CreateCommand(query, connection);
 
             await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
@@ -69,21 +83,32 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
             throw new MsSqlException(ex.Message, ex);
         }
     }
-#nullable disable
 
+#nullable disable
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="MsSqlException"></exception>
     public async Task InsertAsync(string connectionString, string table, Dictionary<string, dynamic> columnsValues)
+    {
+        await InsertAsync(connectionString, table, columnsValues, ConnectionType.OleDbConnection);
+    }
+
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="MsSqlException"></exception>
+    public async Task InsertAsync(string connectionString, string table, Dictionary<string, dynamic> columnsValues, ConnectionType connectionType)
     {
         string commandText = BuildInsertQueryText(table, columnsValues);
 
         try
         {
-            using OleDbConnection connection = new(connectionString);
+            logger.LogConnecting(connectionType);
+
+            IDbConnectionFactory factory = DbConnectionAbstractFactory.GetConnectionFactory(connectionType);
+
+            using DbConnection connection = factory.CreateConnection(connectionString);
 
             await connection.OpenAsync().ConfigureAwait(false);
 
-            using OleDbCommand command = new(commandText, connection);
+            using DbCommand command = factory.CreateCommand(commandText, connection);
 
             int insertedRowsCount = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
@@ -165,6 +190,56 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
         internal MsSqlException(string message, Exception inner)
         : base(message, inner)
         {
+        }
+    }
+
+    private class DbConnectionAbstractFactory
+    {
+        internal static IDbConnectionFactory GetConnectionFactory(ConnectionType connectionType)
+        {
+            return connectionType switch
+            {
+                ConnectionType.SqlConnection => new SqlConnectionFactory(),
+                ConnectionType.OleDbConnection => new OleDbConnectionFactory(),
+                _ => throw new NotImplementedException(),
+            };
+        }
+    }
+
+    private interface IDbConnectionFactory
+    {
+        DbConnection CreateConnection(string connectionString);
+
+        DbCommand CreateCommand(string commandText, DbConnection connection);
+    }
+
+    private class SqlConnectionFactory : IDbConnectionFactory
+    {
+        public DbConnection CreateConnection(string connectionString) => new SqlConnection(connectionString);
+
+        public DbCommand CreateCommand(string commandText, DbConnection connection)
+        {
+            if (connection is SqlConnection sqlConnection)
+            {
+                return new SqlCommand(commandText, sqlConnection);
+            }
+
+            throw new NotImplementedException();
+        }
+    }
+
+    private class OleDbConnectionFactory : IDbConnectionFactory
+    {
+        public DbConnection CreateConnection(string connectionString) => new OleDbConnection(connectionString);
+
+        public DbCommand CreateCommand(string commandText, DbConnection connection)
+        {
+            if (connection is OleDbConnection sqlConnection)
+            {
+                return new OleDbCommand(commandText, sqlConnection);
+            }
+
+            throw new NotImplementedException();
         }
     }
 }

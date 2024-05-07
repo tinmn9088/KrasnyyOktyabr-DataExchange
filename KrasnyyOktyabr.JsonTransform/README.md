@@ -824,6 +824,7 @@ Available resolvers (i.e. `resolver` parameter values) with parameters for now:
 
 * _"MsSqlSingleValueDataResolver"_
   * `connectionString` - `string`
+  * `connectionType` - `string` (_"OleDbConnection"_ or _"SqlConnection"_)
   * `query` - `string` (_SELECT_ SQL-query)
 
 * _"ComV77ApplicationResolver"_

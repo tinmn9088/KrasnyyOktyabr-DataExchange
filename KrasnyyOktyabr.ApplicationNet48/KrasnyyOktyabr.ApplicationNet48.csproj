@@ -285,6 +285,7 @@
     <Compile Include="Health\V83ApplicationProducerServiceHealthChecker.cs" />
     <Compile Include="Linq\Chunk.cs" />
     <Compile Include="Logging\KafkaLoggingHelper.cs" />
+    <Compile Include="Logging\MsSqlLoggingHelper.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationProducerSettings.cs" />

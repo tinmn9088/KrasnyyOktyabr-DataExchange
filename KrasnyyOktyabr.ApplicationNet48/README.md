@@ -203,6 +203,7 @@ Example:
 ```json
 {
   "ConnectionString": "Provider=MSOLEDBSQL;Server=<serverAddress>;Database=<dbName>;UID=<username>;PWD=<password>;",
+  "ConnectionType": "OleDbConnection",
   "TablePropertyName": "table",
   "Topics": [
     "Topic1"
@@ -216,9 +217,9 @@ Example:
 
 Properties:
 
-1. `InfobaseUrl` - 1C8 infobase HTTP-service endpoint for saving data.
-1. `Username` - infobase user name.
-1. `Password` - infobase user password.
+1. `ConnectionString` - connection string.
+1. `TablePropertyName` - name of the property which stores table name.
 1. `Topics` - topic names.
 1. `Instructions` - _topic names_ -> names of _instructions_ stored in `Properties/ConsumerInstructions` directory.
+1. (_optional_) `ConnectionType` - _"OleDbConnection"_ or _"SqlConnection"_.
 1. (_optional_) `ConsumerGroup` - consumer group (__database name__ by default).

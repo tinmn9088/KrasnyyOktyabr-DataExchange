@@ -14,6 +14,7 @@ using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
 using static KrasnyyOktyabr.ApplicationNet48.Services.JsonHelper;
 using static KrasnyyOktyabr.JsonTransform.Expressions.DataResolve.IDataResolveService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
 
@@ -87,7 +88,14 @@ public class DataResolveService : IDataResolveService
         string connectionString = GetRequired<string>(args, "connectionString");
         string query = GetRequired<string>(args, "query");
 
-        return new(msSqlService, connectionString, query);
+        string connectionTypeString = GetOptional(args, "connectionType", string.Empty);
+
+        if (Enum.TryParse(connectionTypeString, out ConnectionType connectionType))
+        {
+            return new(msSqlService, connectionString, query, connectionType);
+        }
+
+        return new(msSqlService, connectionString, query, null);
     }
 
     /// <exception cref="ArgumentException"></exception>
