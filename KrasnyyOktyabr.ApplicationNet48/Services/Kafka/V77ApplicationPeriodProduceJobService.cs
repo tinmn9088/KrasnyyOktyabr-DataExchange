@@ -7,7 +7,7 @@ using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationProducersHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;

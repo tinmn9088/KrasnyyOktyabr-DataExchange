@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationProducersHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
@@ -27,6 +27,7 @@ public sealed partial class V77ApplicationProducerService(
     ILoggerFactory loggerFactory,
     IOffsetService offsetService,
     IV77ApplicationLogService logService,
+    IWmiService wmiService,
     IComV77ApplicationConnectionFactory connectionFactory,
     IJsonService jsonService,
     IKafkaService kafkaService)
@@ -385,6 +386,7 @@ public sealed partial class V77ApplicationProducerService(
             settings,
             logger: loggerFactory.CreateLogger<V77ApplicationProducer>(),
             logService,
+            wmiService,
             offsetService,
             connectionFactory,
             jsonService,
@@ -421,6 +423,8 @@ public sealed partial class V77ApplicationProducerService(
         private readonly ILogger<V77ApplicationProducer> _logger;
 
         private readonly IV77ApplicationLogService _logService;
+
+        private readonly IWmiService _wmiService;
 
         private readonly IOffsetService _offsetService;
 
@@ -460,6 +464,7 @@ public sealed partial class V77ApplicationProducerService(
             V77ApplicationProducerSettings settings,
             ILogger<V77ApplicationProducer> logger,
             IV77ApplicationLogService logService,
+            IWmiService wmiService,
             IOffsetService offsetService,
             IComV77ApplicationConnectionFactory connectionFactory,
             IJsonService jsonService,
@@ -471,6 +476,7 @@ public sealed partial class V77ApplicationProducerService(
             _logger = logger;
             Settings = settings;
             _logService = logService;
+            _wmiService = wmiService;
             _offsetService = offsetService;
             _connectionFactory = connectionFactory;
             _jsonService = jsonService;
@@ -593,6 +599,8 @@ public sealed partial class V77ApplicationProducerService(
                             _logger.LogProcessingInfobaseChanges(Key);
 
                             await Task.Delay(MinChangesInterval, cancellationToken).ConfigureAwait(false);
+
+                            await WaitRdSessionsAllowed(_wmiService, _logger);
 
                             _currentProcessingTask = ProcessChanges(cancellationToken);
 

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
-public static class V77ApplicationProducersHelper
+public static class V77ApplicationHelper
 {
     public readonly struct ObjectFilter(string id, int depth)
     {
@@ -20,6 +22,27 @@ public static class V77ApplicationProducersHelper
     public static string TransactionTypePropertyName => "ТипТранзакции";
 
     public static string ObjectDatePropertyName => "ДатаДокИзЛогов";
+
+    public static async ValueTask WaitRdSessionsAllowed(IWmiService wmiService, ILogger logger)
+    {
+        try
+        {
+            bool? areRdSessionsAllowed = wmiService.AreRdSessionsAllowed();
+
+            while (areRdSessionsAllowed == false)
+            {
+                logger.LogTrace("Wait until RDP is allowed");
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
+                areRdSessionsAllowed = wmiService.AreRdSessionsAllowed();
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to check is RDP allowed");
+        }
+    }
 
     public class FailedToGetObjectException : Exception
     {

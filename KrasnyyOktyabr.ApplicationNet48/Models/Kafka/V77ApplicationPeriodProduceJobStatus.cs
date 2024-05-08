@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationProducersHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 

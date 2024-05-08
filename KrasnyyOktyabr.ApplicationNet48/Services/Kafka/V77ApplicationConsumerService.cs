@@ -12,12 +12,14 @@ using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
 public sealed class V77ApplicationConsumerService(
     IConfiguration configuration,
+    IWmiService wmiService,
     IJsonService jsonService,
     IComV77ApplicationConnectionFactory connectionFactory,
     IKafkaService kafkaService,
@@ -275,6 +277,7 @@ public sealed class V77ApplicationConsumerService(
         V77ApplicationConsumer consumer = new(
             loggerFactory.CreateLogger<V77ApplicationConsumer>(),
             settings,
+            wmiService,
             kafkaService,
             jsonService,
             connectionFactory,
@@ -307,6 +310,8 @@ public sealed class V77ApplicationConsumerService(
     {
         private readonly ILogger<V77ApplicationConsumer> _logger;
 
+        private readonly IWmiService _wmiService;
+
         private readonly IKafkaService _kafkaService;
 
         private readonly IJsonService _jsonService;
@@ -327,6 +332,7 @@ public sealed class V77ApplicationConsumerService(
         internal V77ApplicationConsumer(
             ILogger<V77ApplicationConsumer> logger,
             V77ApplicationConsumerSettings settings,
+            IWmiService wmiService,
             IKafkaService kafkaService,
             IJsonService jsonService,
             IComV77ApplicationConnectionFactory connectionFactory,
@@ -336,6 +342,7 @@ public sealed class V77ApplicationConsumerService(
         {
             _logger = logger;
             Settings = settings;
+            _wmiService = wmiService;
             _kafkaService = kafkaService;
             _jsonService = jsonService;
             _connectionFactory = connectionFactory;
@@ -394,6 +401,8 @@ public sealed class V77ApplicationConsumerService(
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     LastActivity = DateTimeOffset.Now;
+
+                    await WaitRdSessionsAllowed(_wmiService, _logger);
 
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);
 

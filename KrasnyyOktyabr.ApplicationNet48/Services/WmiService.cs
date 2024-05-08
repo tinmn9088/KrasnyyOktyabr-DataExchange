@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Management;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -46,9 +48,9 @@ public class WmiService(IMemoryCache cache, ILogger<WmiService> logger) : IWmiSe
 
         logons = managementObject[LogonsPropertyName];
 
-        logger.LogTrace("Reading property '{PropertyName}' from WMI object '{WmiPath}'", LogonsPropertyName, Win32TerminalServicesWmiPath);
+        logger.LogTrace("RDP is enabled: '{Value}'", logons);
 
-        cache.Set(CacheKeys.Logons, logons, TimeSpan.FromMinutes(2));
+        cache.Set(CacheKeys.Logons, logons, TimeSpan.FromMinutes(1));
 
         return logons;
     }

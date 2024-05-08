@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationProducersHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka.Tests;
 
@@ -30,6 +30,8 @@ public class V77ApplicationProducerServiceTests
 
     private static readonly Mock<IV77ApplicationLogService> s_logServiceMock = new();
 
+    private static readonly Mock<IWmiService> s_wmiServiceMock = new();
+
     private static readonly Mock<IComV77ApplicationConnectionFactory> s_connectionFactoryMock = new();
 
     private static readonly Mock<IJsonService> s_jsonServiceMock = new();
@@ -42,6 +44,7 @@ public class V77ApplicationProducerServiceTests
         s_loggerFactoryMock.Object,
         s_offsetServiceMock.Object,
         s_logServiceMock.Object,
+        s_wmiServiceMock.Object,
         s_connectionFactoryMock.Object,
         s_jsonServiceMock.Object,
         s_kafkaServiceMock.Object);

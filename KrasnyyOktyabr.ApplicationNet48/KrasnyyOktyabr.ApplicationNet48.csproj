@@ -340,7 +340,7 @@
     <Compile Include="Services\Kafka\V77ApplicationConsumerService.cs" />
     <Compile Include="Services\Kafka\V77ApplicationPeriodProduceJobService.cs" />
     <Compile Include="Services\Kafka\V77ApplicationProducerService.cs" />
-    <Compile Include="Services\Kafka\V77ApplicationProducersHelper.cs" />
+    <Compile Include="Services\Kafka\V77ApplicationHelper.cs" />
     <Compile Include="Services\Kafka\V83ApplicationConsumerService.cs" />
     <Compile Include="Services\Kafka\V83ApplicationProducerService.cs" />
     <Compile Include="Services\MsSqlService.cs" />
