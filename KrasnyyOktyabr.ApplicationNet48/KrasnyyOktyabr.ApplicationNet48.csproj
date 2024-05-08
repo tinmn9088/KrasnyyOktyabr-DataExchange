@@ -267,6 +267,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HealthController.cs" />
     <Compile Include="Controllers\JsonTransformController.cs" />
+    <Compile Include="Controllers\KafkaController.cs" />
     <Compile Include="Controllers\RestartController.cs" />
     <Compile Include="Controllers\V77ApplicationPeriodProduceJobController.cs" />
     <Compile Include="DependencyInjection\DependencyResolver.cs" />

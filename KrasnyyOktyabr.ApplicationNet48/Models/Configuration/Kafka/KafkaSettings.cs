@@ -13,4 +13,6 @@ public class KafkaSettings
     public int? MessageMaxBytes { get; set; }
 
     public int? MaxPollIntervalMs { get; set; }
+
+    public int? MessageTimeoutMs { get; set; }
 }

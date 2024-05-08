@@ -10,6 +10,7 @@ See [appsettings.json](appsettings.json).
     "Socket": "<socket>",
     "MessageMaxBytes": 1048588,
     "MaxPollIntervalMs": 300000,
+    "MessageTimeoutMs": null,
     "Clients": {
       "Producers": {
         "1C7": [],
@@ -30,6 +31,7 @@ Properties:
 1. `Socket` - Kafka broker address.
 1. (_optional_) `MessageMaxBytes` - the largest record batch size allowed by Kafka.
 1. (_optional_) `MaxPollIntervalMs` - the maximum delay between poll requests.
+1. (_optional_) `MessageTimeoutMs` - limits the time a produced message waits for successful delivery.
 
 
 

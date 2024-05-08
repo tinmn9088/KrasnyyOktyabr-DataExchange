@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable enable
+
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
 using Confluent.Kafka;
@@ -50,6 +52,7 @@ public sealed partial class KafkaService : IKafkaService
         {
             BootstrapServers = _settings.Socket,
             MessageMaxBytes = _settings.MessageMaxBytes,
+            MessageTimeoutMs = _settings.MessageTimeoutMs,
         };
 
         return new ProducerBuilder<TKey, TValue>(config).Build();

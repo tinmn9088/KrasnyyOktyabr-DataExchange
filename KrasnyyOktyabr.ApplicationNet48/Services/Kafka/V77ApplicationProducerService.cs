@@ -338,7 +338,7 @@ public sealed partial class V77ApplicationProducerService(
 
             string topicName = kafkaService.BuildTopicName(infobasePubName, messageData.DataType);
 
-            await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken);
+            await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken).ConfigureAwait(false);
 
             logger.LogProducedMessage(topicName, kafkaMessage.Key, kafkaMessage.Value);
 
