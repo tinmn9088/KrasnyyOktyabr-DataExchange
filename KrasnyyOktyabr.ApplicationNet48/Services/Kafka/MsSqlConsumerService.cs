@@ -196,7 +196,7 @@ public sealed class MsSqlConsumerService(
         {
             logger.LogJsonTransformError(ex);
 
-            return null;
+            throw;
         }
 
         return jsonTransformResults;

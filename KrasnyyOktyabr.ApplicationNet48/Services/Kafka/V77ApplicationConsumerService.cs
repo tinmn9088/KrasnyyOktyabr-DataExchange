@@ -202,7 +202,7 @@ public sealed class V77ApplicationConsumerService(
         {
             logger.LogJsonTransformError(ex);
 
-            return null;
+            throw;
         }
 
         return jsonTransformResults;

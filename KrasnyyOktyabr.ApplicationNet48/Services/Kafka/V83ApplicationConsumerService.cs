@@ -199,7 +199,7 @@ public sealed partial class V83ApplicationConsumerService(
         {
             logger.LogJsonTransformError(ex);
 
-            return null;
+            throw;
         }
 
         return jsonTransformResults;
