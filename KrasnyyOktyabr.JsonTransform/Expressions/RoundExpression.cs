@@ -42,7 +42,7 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
 
         if (value.Double != null)
         {
-            return new Number(Math.Round(value.Double.Value, digits));
+            return new Number(Math.Round(value.Double.Value, digits, MidpointRounding.AwayFromZero));
         }
 
         throw new NotImplementedException();
