@@ -8,12 +8,23 @@ public abstract class AbstractBinaryExpression<TLeft, TRight, TResult>(IExpressi
 
     private readonly IExpression<Task<TRight>> _rightExpression = rightExpression ?? throw new ArgumentNullException(nameof(rightExpression));
 
-    protected override async Task<TResult> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<TResult> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        Task<TLeft> getLeft() => _leftExpression.InterpretAsync(context, cancellationToken);
-        Task<TRight> getRight() => _rightExpression.InterpretAsync(context, cancellationToken);
+        try
+        {
+            Task<TLeft> getLeft() => _leftExpression.InterpretAsync(context, cancellationToken);
+            Task<TRight> getRight() => _rightExpression.InterpretAsync(context, cancellationToken);
 
-        return await CalculateAsync(getLeft, getRight);
+            return await CalculateAsync(getLeft, getRight);
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 
     protected abstract ValueTask<TResult> CalculateAsync(Func<Task<TLeft>> getLeft, Func<Task<TRight>> getRight);

@@ -101,8 +101,8 @@ public class RegexGetGroupValueExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public async Task InterpretAsync_WhenRegexExpressionResultNull_ShouldThrowNullReferenceException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenRegexExpressionResultNull_ShouldThrowInterpretException()
     {
         // Setting up null regex expression
         Mock<IExpression<Task<string>>> nullRegexExpressionMock = new();
@@ -124,8 +124,8 @@ public class RegexGetGroupValueExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public async Task InterpretAsync_WhenInputExpressionResultNull_ShouldThrowNullReferenceException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenInputExpressionResultNull_ShouldThrowInterpretException()
     {
         // Setting up regex expression
         Mock<IExpression<Task<string>>> regexExpressionMock = new();

@@ -21,21 +21,32 @@ public sealed class IfElseExpression : AbstractExpression<Task>
     }
 
     /// <exception cref="OperationCanceledException"></exception>
-    protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (await _conditionExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
+        try
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _thenExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            if (await _conditionExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await _thenExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            }
+            else if (_elseExpression != null)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await _elseExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            }
         }
-        else if (_elseExpression != null)
+        catch (InterpretException)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await _elseExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
         }
     }
 }

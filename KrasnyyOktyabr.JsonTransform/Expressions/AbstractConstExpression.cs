@@ -7,7 +7,7 @@ public abstract class AbstractConstExpression<T>(T value) : AbstractExpression<T
 {
     private readonly Task<T> _valueTask = Task.FromResult(value);
 
-    protected sealed override Task<T> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public sealed override Task<T> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         return _valueTask;
     }

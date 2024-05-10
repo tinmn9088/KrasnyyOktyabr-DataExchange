@@ -14,19 +14,30 @@ public sealed class CursorIndexExpression : AbstractExpression<Task<int>>
 
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
-    protected override async Task<int> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<int> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (_cursorNameExpression != null)
+        try
         {
-            string name = await _cursorNameExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            cancellationToken.ThrowIfCancellationRequested();
 
-            return context.GetCursorIndex(name);
+            if (_cursorNameExpression != null)
+            {
+                string name = await _cursorNameExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+
+                return context.GetCursorIndex(name);
+            }
+            else
+            {
+                return context.GetCursorIndex();
+            }
         }
-        else
+        catch (InterpretException)
         {
-            return context.GetCursorIndex();
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
         }
     }
 }

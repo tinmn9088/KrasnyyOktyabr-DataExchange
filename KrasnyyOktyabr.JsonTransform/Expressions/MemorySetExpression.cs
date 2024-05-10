@@ -8,11 +8,22 @@ public sealed class MemorySetExpression(IExpression<Task<string>> nameExpression
     private readonly IExpression<Task<object?>> _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
     /// <exception cref="NullReferenceException"></exception>
-    protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        string name = await _nameExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
-        object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            string name = await _nameExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-        context.MemorySet(name, value);
+            context.MemorySet(name, value);
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }

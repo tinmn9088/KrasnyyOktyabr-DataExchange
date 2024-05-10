@@ -18,19 +18,30 @@ public sealed class ArrayExpression : AbstractExpression<Task<object?[]>>
         }
     }
 
-    protected override async Task<object?[]> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<object?[]> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        object?[] result = new object?[_expressions.Count];
-
-        for (int i = 0; i < _expressions.Count; i++)
+        try
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            result[i] = await _expressions[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
-        }
+            object?[] result = new object?[_expressions.Count];
 
-        return result;
+            for (int i = 0; i < _expressions.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                result[i] = await _expressions[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            }
+
+            return result;
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }

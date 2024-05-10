@@ -30,22 +30,33 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
 
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
-    protected override async Task<string> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<string> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        string regexString = await _regexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
-        string input = await _inputExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            string regexString = await _regexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            string input = await _inputExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-        int groupNumber = _groupNumberExpression != null
-            ? await _groupNumberExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
-            : 1;
+            int groupNumber = _groupNumberExpression != null
+                ? await _groupNumberExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
+                : 1;
 
-        Regex regex = new(regexString);
-        Match match = regex.Match(input);
+            Regex regex = new(regexString);
+            Match match = regex.Match(input);
 
-        return match.Success
-            ? match.Groups[groupNumber].Value
-            : string.Empty;
+            return match.Success
+                ? match.Groups[groupNumber].Value
+                : string.Empty;
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }

@@ -14,8 +14,8 @@ public class BoolCastExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
-    public async Task InterpretAsync_WhenInnerExpressionResultNull_ShouldThrowBoolNullReferenceException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenInnerExpressionResultNull_ShouldThrowBoolInterpretException()
     {
         // Setting up inner expression mock that returns null
         Mock<IExpression<Task<object?>>> innerExpressionMock = new();

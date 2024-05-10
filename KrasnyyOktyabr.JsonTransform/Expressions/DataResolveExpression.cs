@@ -23,14 +23,25 @@ public sealed class DataResolveExpression : AbstractExpression<Task<object?>>
 
     /// <exception cref="IDataResolveService.ResolverNotFoundException"></exception>
     /// <exception cref="NullReferenceException"></exception>
-    protected override async Task<object?> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<object?> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        string resolver = await _resolverExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            string resolver = await _resolverExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-        Dictionary<string, object?> args = await _argsExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            Dictionary<string, object?> args = await _argsExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-        return await _dataResolveService.ResolveAsync(resolver, args, cancellationToken).ConfigureAwait(false);
+            return await _dataResolveService.ResolveAsync(resolver, args, cancellationToken).ConfigureAwait(false);
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }

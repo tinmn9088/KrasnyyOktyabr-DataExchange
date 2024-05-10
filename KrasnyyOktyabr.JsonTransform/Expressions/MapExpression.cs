@@ -15,19 +15,30 @@ public sealed class MapExpression : AbstractExpression<Task<Dictionary<string, o
         }
     }
 
-    protected override async Task<Dictionary<string, object?>> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<Dictionary<string, object?>> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        Dictionary<string, object?> keysAndResults = [];
-
-        foreach (KeyValuePair<string, IExpression<Task<object?>>> keyAndExpression in _keysAndExpressions)
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            Dictionary<string, object?> keysAndResults = [];
 
-            object? result = await keyAndExpression.Value.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            foreach (KeyValuePair<string, IExpression<Task<object?>>> keyAndExpression in _keysAndExpressions)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            keysAndResults.Add(keyAndExpression.Key, result);
+                object? result = await keyAndExpression.Value.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+
+                keysAndResults.Add(keyAndExpression.Key, result);
+            }
+
+            return keysAndResults;
         }
-
-        return keysAndResults;
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }

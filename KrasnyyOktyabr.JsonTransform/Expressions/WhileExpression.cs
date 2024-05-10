@@ -7,15 +7,26 @@ public class WhileExpression(IExpression<Task<bool>> conditionExpression, IExpre
     private readonly IExpression<Task> _innerExpression = innerExpression ?? throw new ArgumentNullException(nameof(innerExpression));
 
     /// <exception cref="OperationCanceledException"></exception>
-    protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        while (await _conditionExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
+        try
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _innerExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            while (await _conditionExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await _innerExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
         }
     }
 }

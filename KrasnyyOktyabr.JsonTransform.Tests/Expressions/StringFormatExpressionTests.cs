@@ -63,8 +63,8 @@ public class StringFormatExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public async Task InterpretAsync_WhenFormatExpressionResultNull_ShouldThrowNullReferenceException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenFormatExpressionResultNull_ShouldThrowInterpretException()
     {
         // Setting up format expression
         Mock<IExpression<Task<string>>> nullFormatExpressionMock = new();

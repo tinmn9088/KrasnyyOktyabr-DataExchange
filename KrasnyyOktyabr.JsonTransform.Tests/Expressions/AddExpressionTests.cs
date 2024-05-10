@@ -106,8 +106,8 @@ public class AddExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public async Task InterpretAsync_WhenKeyNull_ShouldThrowNullReferenceException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenKeyNull_ShouldThrowInterpretException()
     {
         // Setting up null key expression
         Mock<IExpression<Task<string>>> keyExpressionMock = new();

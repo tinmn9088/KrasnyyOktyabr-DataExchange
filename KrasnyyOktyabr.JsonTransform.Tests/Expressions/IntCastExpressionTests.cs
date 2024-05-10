@@ -14,8 +14,8 @@ public class IntCastExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
-    public async Task InterpretAsync_WhenInnerExpressionResultNull_ShouldThrowIntCastExpressionException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenInnerExpressionResultNull_ShouldThrowInterpretException()
     {
         // Setting up inner expression mock that returns null
         Mock<IExpression<Task<object?>>> innerExpressionMock = new();

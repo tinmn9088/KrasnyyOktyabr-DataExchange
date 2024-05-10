@@ -5,11 +5,22 @@ public abstract class AbstractCastExpression<T>(IExpression<Task> innerExpressio
 {
     private readonly IExpression<Task> _innerExpression = innerExpression ?? throw new ArgumentNullException(nameof(innerExpression));
 
-    protected override async Task<T> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<T> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        object? innerExpressionTaskResult = await ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken)).ConfigureAwait(false);
+        try
+        {
+            object? innerExpressionTaskResult = await ExtractTaskResultAsync(_innerExpression.InterpretAsync(context, cancellationToken)).ConfigureAwait(false);
 
-        return Cast(innerExpressionTaskResult);
+            return Cast(innerExpressionTaskResult);
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 
     public abstract T Cast(object? innerExpressionTaskResult);

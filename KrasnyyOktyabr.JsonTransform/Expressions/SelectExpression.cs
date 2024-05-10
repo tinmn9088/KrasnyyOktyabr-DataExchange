@@ -21,16 +21,27 @@ public sealed class SelectExpression : AbstractExpression<Task<JToken?>>
 
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
-    protected override async Task<JToken?> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<JToken?> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        string path = await _pathExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            string path = await _pathExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-        bool isOptional = _isOptionalExpression != null
-            && await _isOptionalExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            bool isOptional = _isOptionalExpression != null
+                && await _isOptionalExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-        return context.InputSelect(path) ?? (isOptional ? null : throw new PathReturnedNothingException(path, Mark));
+            return context.InputSelect(path) ?? (isOptional ? null : throw new PathReturnedNothingException(path, Mark));
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 
     public class PathReturnedNothingException(string path, string? mark)

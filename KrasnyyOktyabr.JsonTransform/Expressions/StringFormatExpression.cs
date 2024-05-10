@@ -22,23 +22,34 @@ public sealed class StringFormatExpression : AbstractExpression<Task<string>>
     }
 
     /// <exception cref="NullReferenceException"></exception>
-    protected override async Task<string> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<string> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        string format = await _formatExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
-
-        int argsCount = _argsExpression.Count;
-
-        object?[] args = new object?[argsCount];
-
-        for (int i = 0; i < argsCount; i++)
+        try
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            args[i] = await _argsExpression[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
-        }
+            string format = await _formatExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-        return string.Format(format, args);
+            int argsCount = _argsExpression.Count;
+
+            object?[] args = new object?[argsCount];
+
+            for (int i = 0; i < argsCount; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                args[i] = await _argsExpression[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            }
+
+            return string.Format(format, args);
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }

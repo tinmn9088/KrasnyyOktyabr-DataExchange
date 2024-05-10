@@ -19,32 +19,43 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
         }
     }
 
-    protected override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        int digits = 0;
-
-        if (_digitsExpression != null)
+        try
         {
-            digits = await _digitsExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
-        }
+            int digits = 0;
 
-        if (digits < 0)
+            if (_digitsExpression != null)
+            {
+                digits = await _digitsExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (digits < 0)
+            {
+                throw new ArgumentException($"Negative digits ({digits}) not allowed");
+            }
+
+            Number value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+
+            if (value.Int != null)
+            {
+                return value;
+            }
+
+            if (value.Double != null)
+            {
+                return new Number(Math.Round(value.Double.Value, digits, MidpointRounding.AwayFromZero));
+            }
+
+            throw new NotImplementedException();
+        }
+        catch (InterpretException)
         {
-            throw new ArgumentException($"Negative digits ({digits}) not allowed");
+            throw;
         }
-
-        Number value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
-
-        if (value.Int != null)
+        catch (Exception ex)
         {
-            return value;
+            throw new InterpretException(ex.Message, Mark);
         }
-
-        if (value.Double != null)
-        {
-            return new Number(Math.Round(value.Double.Value, digits, MidpointRounding.AwayFromZero));
-        }
-
-        throw new NotImplementedException();
     }
 }

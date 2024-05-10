@@ -18,15 +18,26 @@ public sealed class ExpressionsBlock : AbstractExpression<Task>
         }
     }
 
-    protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        for (int i = 0; i < _expressions.Count; i++)
+        try
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _expressions[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            for (int i = 0; i < _expressions.Count; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await _expressions[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
         }
     }
 }

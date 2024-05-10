@@ -25,17 +25,28 @@ public sealed class AddExpression : AbstractExpression<Task>
 
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
-    protected override async Task InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        string key = await _keyExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
-        object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            string key = await _keyExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-        int index = _indexExpression != null
-            ? await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
-            : 0;
+            int index = _indexExpression != null
+                ? await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
+                : 0;
 
-        context.OutputAdd(key, value, index);
+            context.OutputAdd(key, value, index);
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }

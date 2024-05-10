@@ -66,8 +66,8 @@ public class DataResolveExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public async Task InterpretAsync_WhenResolverExpressionResultNull_ShouldThrowNullReferenceException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenResolverExpressionResultNull_ShouldThrowInterpretException()
     {
         // Setting up null resolver expression
         Mock<IExpression<Task<string>>> nullResolverExpressionMock = new();
@@ -92,8 +92,8 @@ public class DataResolveExpressionTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public async Task InterpretAsync_WhenFormatExpressionResultNull_ShouldThrowNullReferenceException()
+    [ExpectedException(typeof(InterpretException))]
+    public async Task InterpretAsync_WhenFormatExpressionResultNull_ShouldThrowInterpretException()
     {
         // Setting up resolver expression
         Mock<IExpression<Task<string>>> nullResolverExpressionMock = new();

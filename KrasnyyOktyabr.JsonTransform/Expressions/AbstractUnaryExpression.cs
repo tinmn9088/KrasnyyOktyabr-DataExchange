@@ -5,11 +5,22 @@ public abstract class AbstractUnaryExpression<TValue, TResult>(IExpression<Task<
 {
     private readonly IExpression<Task<TValue>> _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
-    protected override async Task<TResult> InnerInterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<TResult> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        async Task<TValue> getValue() => await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            async Task<TValue> getValue() => await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-        return await CalculateAsync(getValue).ConfigureAwait(false);
+            return await CalculateAsync(getValue).ConfigureAwait(false);
+        }
+        catch (InterpretException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 
     protected abstract ValueTask<TResult> CalculateAsync(Func<Task<TValue>> value);

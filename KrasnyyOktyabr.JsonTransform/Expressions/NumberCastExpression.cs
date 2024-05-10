@@ -23,18 +23,29 @@ public sealed class NumberCastExpression : AbstractExpression<Task<Number>>
         _innerDoubleExpression = innerDoubleExpression ?? throw new ArgumentNullException(nameof(innerDoubleExpression));
     }
 
-    protected override async Task<Number> InnerInterpretAsync(IContext context, CancellationToken cancellationToken)
+    public override async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken)
     {
-        if (_innerIntExpression != null)
+        try
         {
-            return new Number(await _innerIntExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
-        }
+            if (_innerIntExpression != null)
+            {
+                return new Number(await _innerIntExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
+            }
 
-        if (_innerDoubleExpression != null)
+            if (_innerDoubleExpression != null)
+            {
+                return new Number(await _innerDoubleExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
+            }
+
+            throw new NotImplementedException();
+        }
+        catch (InterpretException)
         {
-            return new Number(await _innerDoubleExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
+            throw;
         }
-
-        throw new NotImplementedException();
+        catch (Exception ex)
+        {
+            throw new InterpretException(ex.Message, Mark);
+        }
     }
 }
