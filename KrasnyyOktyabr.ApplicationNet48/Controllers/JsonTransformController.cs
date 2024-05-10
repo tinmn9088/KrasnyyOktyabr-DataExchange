@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -11,10 +12,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.Services;
+using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
-public class JsonTransformController(IJsonService jsonService) : ApiController
+public class JsonTransformController(IJsonService jsonService, ILogger<JsonTransformController> logger) : ApiController
 {
     [HttpPost]
     public async Task<IHttpActionResult> Run(HttpRequestMessage request, HttpResponseMessage response, CancellationToken cancellationToken)
@@ -36,6 +38,8 @@ public class JsonTransformController(IJsonService jsonService) : ApiController
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Json Transform error");
+
             return RunError(ex);
         }
 
@@ -54,9 +58,14 @@ public class JsonTransformController(IJsonService jsonService) : ApiController
         {
             HttpResponseMessage response = new(HttpStatusCode.BadRequest);
 
-            response.Content = JsonContent.Create(new Dictionary<string, string>()
+            IEnumerable<string> stacktrace = exception.StackTrace
+                .Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+
+            response.Content = JsonContent.Create(new Dictionary<string, object>()
             {
                 { exception.GetType().Name, exception.Message },
+                { "stacktrace", stacktrace },
             });
 
             return Task.FromResult(response);
