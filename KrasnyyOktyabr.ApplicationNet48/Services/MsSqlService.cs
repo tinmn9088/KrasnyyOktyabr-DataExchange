@@ -221,7 +221,12 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
         {
             if (connection is SqlConnection sqlConnection)
             {
-                return new SqlCommand(commandText, sqlConnection);
+                SqlCommand command = new(commandText, sqlConnection)
+                {
+                    CommandTimeout = 0, // Disable timeout
+                };
+
+                return command;
             }
 
             throw new NotImplementedException();
@@ -236,7 +241,12 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
         {
             if (connection is OleDbConnection sqlConnection)
             {
-                return new OleDbCommand(commandText, sqlConnection);
+                OleDbCommand command = new(commandText, sqlConnection)
+                {
+                    CommandTimeout = 0, // Disable timeout
+                };
+
+                return command;
             }
 
             throw new NotImplementedException();
