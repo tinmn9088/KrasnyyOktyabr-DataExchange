@@ -176,7 +176,7 @@ Sums operands.
 
 ```json
 {
-  "$mul": {
+  "$sum": {
     "left": 4,
     "right": 3
   }
@@ -207,7 +207,7 @@ Substracts operands.
 
 ```json
 {
-  "$mul": {
+  "$substract": {
     "left": 4,
     "right": 3
   }
