@@ -407,6 +407,8 @@ public sealed class MsSqlConsumerService(
                         cancellationToken);
 
                     Saved += jsonTransformResults.Count;
+
+                    consumer.Commit();
                 }
             }
             catch (OperationCanceledException)

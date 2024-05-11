@@ -437,6 +437,8 @@ public sealed class V77ApplicationConsumerService(
                         cancellationToken);
 
                     Saved += jsonTransformResults.Count;
+
+                    consumer.Commit();
                 }
             }
             catch (OperationCanceledException)

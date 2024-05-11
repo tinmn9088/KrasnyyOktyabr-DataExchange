@@ -400,6 +400,8 @@ public sealed partial class V83ApplicationConsumerService(
                         cancellationToken);
 
                     Saved += jsonTransformResults.Count;
+
+                    consumer.Commit();
                 }
             }
             catch (OperationCanceledException)
