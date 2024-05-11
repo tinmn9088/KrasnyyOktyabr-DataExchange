@@ -318,6 +318,7 @@
     <Compile Include="Services\DataResolve\DataResolveService.cs" />
     <Compile Include="Services\DataResolve\HttpDataResolver.cs" />
     <Compile Include="Services\DataResolve\MsSqlSingleValueDataResolver.cs" />
+    <Compile Include="Services\HttpClientHelper.cs" />
     <Compile Include="Services\IJsonService.cs" />
     <Compile Include="Services\IMsSqlService.cs" />
     <Compile Include="Services\IOffsetService.cs" />

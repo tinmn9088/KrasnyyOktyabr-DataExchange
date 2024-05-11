@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +13,7 @@ using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
 using static KrasnyyOktyabr.ApplicationNet48.Services.JsonHelper;
 using static KrasnyyOktyabr.JsonTransform.Expressions.DataResolve.IDataResolveService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.HttpClientHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
 
@@ -30,22 +29,8 @@ public class DataResolveService : IDataResolveService
         {
             { nameof(HttpDataResolver), args => CreateHttpDataResolver(args, httpClient) },
             { nameof(MsSqlSingleValueDataResolver), args => CreateMsSqlSingleValueDataResolver(args, msSqlService) },
+            { nameof(ComV77ApplicationResolver), args => CreateComV77ApplicationResolver(args, connectionFactory) },
         };
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            _resolverFactories.Add(
-                key: nameof(ComV77ApplicationResolver),
-                value: args =>
-                {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    {
-                        return CreateComV77ApplicationResolver(args, connectionFactory);
-                    }
-
-                    throw new NotSupportedException();
-                });
-        }
     }
 
     public async ValueTask<object?> ResolveAsync(string resolverName, Dictionary<string, object?> args, CancellationToken cancellationToken)
@@ -195,12 +180,5 @@ public class DataResolveService : IDataResolveService
         return contentType == null
             ? new StringContent(body)
             : new StringContent(body, Encoding.UTF8, contentType);
-    }
-
-    private static AuthenticationHeaderValue GetAuthenticationHeaderValue(string username, string? password)
-    {
-        string credential = $"{username}:{password}";
-        string encodedCredential = Convert.ToBase64String(Encoding.UTF8.GetBytes(credential));
-        return new AuthenticationHeaderValue("Basic", encodedCredential);
     }
 }

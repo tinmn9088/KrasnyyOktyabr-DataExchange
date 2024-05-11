@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.HttpClientHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
@@ -205,13 +207,30 @@ public sealed partial class V83ApplicationConsumerService(
         return jsonTransformResults;
     };
 
-    public V83ApplicationSaveAsync V83ApplicationSaveTask => (
+    public V83ApplicationSaveAsync V83ApplicationSaveTask => async (
         List<string> jsonTransformResults,
         V83ApplicationConsumerSettings settings,
         IHttpClientFactory httpClientFactory,
         CancellationToken cancellationToken) =>
     {
-        throw new NotImplementedException(); // TODO: send objects to infobase
+        using HttpClient httpClient = httpClientFactory.CreateClient();
+
+        foreach (string result in jsonTransformResults)
+        {
+            HttpRequestMessage request = new(HttpMethod.Post, settings.InfobaseUrl)
+            {
+                Content = new StringContent(result, Encoding.UTF8, "application/json"),
+            };
+
+            if (settings.Username != null)
+            {
+                request.Headers.Authorization = GetAuthenticationHeaderValue(settings.Username, settings.Password);
+            }
+
+            HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+        }
     };
 
     private void StartConsumers()
