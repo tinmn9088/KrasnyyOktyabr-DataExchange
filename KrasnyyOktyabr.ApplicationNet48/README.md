@@ -39,7 +39,7 @@ Properties:
 
 #### 1C7
 
-__Producer__ reads infobase log file looking for new transactions that match `ObjectFilters` and `TransactionTypeFilters`.
+__Producer__ reads infobase log file (__10 000__ KB from the end (it is also the limit) when offset is not specified in _offsets.json_) looking for new transactions that match `ObjectFilters` and `TransactionTypeFilters`.
 
 When transactions are found __producer__ retrieves corresponding __objects JSONs__ from infobase by calling ERT specified  in `ErtRelativePath`.
 
