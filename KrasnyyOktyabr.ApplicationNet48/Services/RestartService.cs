@@ -16,7 +16,7 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
     /// <summary>
     /// Minimout timeout before inactive service has to be restarted.
     /// </summary>
-    public static TimeSpan MinRestartTimeout => TimeSpan.FromMinutes(15);
+    public static TimeSpan MinRestartTimeout => TimeSpan.FromHours(1);
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
