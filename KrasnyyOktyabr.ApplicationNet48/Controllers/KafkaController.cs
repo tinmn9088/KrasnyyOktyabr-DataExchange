@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#nullable enable
+
+using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Logging;
+using static KrasnyyOktyabr.ApplicationNet48.Controllers.ControllersHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
@@ -23,7 +24,7 @@ public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController
         try
         {
             string topic = GetRequiredQueryParameter(request, "topic");
-            string key = GetRequiredQueryParameter(request, "key");
+            string? key = GetOptionalQueryParameter(request, "key");
 
             using Stream bodyStream = await request.Content.ReadAsStreamAsync();
 
@@ -34,9 +35,9 @@ public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController
 
             using StreamReader reader = new(bodyStream);
 
-            using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
+            using IProducer<string?, string> producer = kafkaService.GetProducer<string?, string>();
 
-            Message<string, string> message = new()
+            Message<string?, string> message = new()
             {
                 Key = key,
                 Value = await reader.ReadToEndAsync().ConfigureAwait(false),
@@ -57,22 +58,6 @@ public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
-        }
-    }
-
-    private static string GetRequiredQueryParameter(HttpRequestMessage request, string name)
-    {
-        try
-        {
-            return request.GetQueryNameValuePairs()
-                .Where(p => p.Key == name)
-                .Select(p => p.Value)
-                .First()
-                .ToString();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentException($"'{name}' query parameter missing");
         }
     }
 }

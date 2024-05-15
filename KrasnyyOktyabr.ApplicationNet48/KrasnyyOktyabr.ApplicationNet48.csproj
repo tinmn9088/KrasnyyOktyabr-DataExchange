@@ -265,6 +265,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ControllersHelper.cs" />
     <Compile Include="Controllers\HealthController.cs" />
     <Compile Include="Controllers\JsonTransformController.cs" />
     <Compile Include="Controllers\KafkaController.cs" />
