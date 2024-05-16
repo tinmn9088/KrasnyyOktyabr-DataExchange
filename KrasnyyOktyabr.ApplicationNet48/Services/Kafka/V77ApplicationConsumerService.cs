@@ -396,7 +396,7 @@ public sealed class V77ApplicationConsumerService(
         {
             try
             {
-                IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
+                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {

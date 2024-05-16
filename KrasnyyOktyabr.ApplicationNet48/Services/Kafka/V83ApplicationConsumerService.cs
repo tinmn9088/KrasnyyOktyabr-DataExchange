@@ -380,7 +380,7 @@ public sealed partial class V83ApplicationConsumerService(
         {
             try
             {
-                IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
+                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
