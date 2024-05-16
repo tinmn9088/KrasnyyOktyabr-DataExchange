@@ -427,6 +427,8 @@ public sealed class V77ApplicationConsumerService(
 
                     if (jsonTransformResults == null || jsonTransformResults.Count == 0)
                     {
+                        consumer.Commit();
+
                         continue;
                     }
 

@@ -397,6 +397,8 @@ public sealed class MsSqlConsumerService(
 
                     if (jsonTransformResults == null || jsonTransformResults.Count == 0)
                     {
+                        consumer.Commit();
+
                         continue;
                     }
 
