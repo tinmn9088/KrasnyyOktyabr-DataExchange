@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
 public abstract class AbstractProducerStatus : AbstractStatus
 {
-    [JsonPropertyName("transactionTypeFilters")]
+    [JsonProperty("transactionTypeFilters")]
     public IReadOnlyList<string> TransactionTypeFilters { get; set; }
 
-    [JsonPropertyName("produced")]
+    [JsonProperty("produced")]
     public int Produced { get; set; }
 
-    [JsonPropertyName("dataTypePropertyName")]
+    [JsonProperty("dataTypePropertyName")]
     public string DataTypePropertyName { get; set; }
 }

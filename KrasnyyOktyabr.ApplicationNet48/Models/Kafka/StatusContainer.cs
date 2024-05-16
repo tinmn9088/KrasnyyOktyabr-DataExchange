@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
@@ -8,6 +8,6 @@ public class StatusContainer<TStatus> : IStatusContainer<TStatus> where TStatus 
     public static readonly StatusContainer<TStatus> Empty = new() { Statuses = null, };
 
 #nullable enable
-    [JsonPropertyName("statuses")]
+    [JsonProperty("statuses")]
     public IReadOnlyList<TStatus>? Statuses { get; set; }
 }

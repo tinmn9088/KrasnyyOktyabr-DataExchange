@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Configuration;

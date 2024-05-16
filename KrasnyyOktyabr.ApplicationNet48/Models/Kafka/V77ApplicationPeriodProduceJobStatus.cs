@@ -1,45 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
 public class V77ApplicationPeriodProduceJobStatus
 {
-    [JsonPropertyName("lastActivity")]
+    [JsonProperty("lastActivity")]
     public DateTimeOffset LastActivity { get; set; }
 
-    [JsonPropertyName("isCancellationRequested")]
+    [JsonProperty("isCancellationRequested")]
     public bool IsCancellationRequested { get; set; }
 
 #nullable enable
-    [JsonPropertyName("errorMessage")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonProperty("errorMessage")]
     public string? ErrorMessage { get; set; }
 #nullable disable
 
-    [JsonPropertyName("objectFilters")]
+    [JsonProperty("objectFilters")]
     public IReadOnlyList<ObjectFilter> ObjectFilters { get; set; }
 
-    [JsonPropertyName("transactionTypeFilters")]
+    [JsonProperty("transactionTypeFilters")]
     public IReadOnlyList<string> TransactionTypeFilters { get; set; }
 
-    [JsonPropertyName("produced")]
+    [JsonProperty("produced")]
     public int Produced { get; set; }
 
-    [JsonPropertyName("dataTypePropertyName")]
+    [JsonProperty("dataTypePropertyName")]
     public string DataTypePropertyName { get; set; }
 
-    [JsonPropertyName("foundLogTransactions")]
+    [JsonProperty("foundLogTransactions")]
     public int FoundLogTransactions { get; set; }
 
-    [JsonPropertyName("fetched")]
+    [JsonProperty("fetched")]
     public int Fetched { get; set; }
 
-    [JsonPropertyName("username")]
+    [JsonProperty("username")]
     public string Username { get; set; }
 
-    [JsonPropertyName("infobasePath")]
+    [JsonProperty("infobasePath")]
     public string InfobasePath { get; set; }
 }

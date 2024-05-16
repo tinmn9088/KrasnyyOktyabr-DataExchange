@@ -6,13 +6,6 @@ namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
 public static class V77ApplicationHelper
 {
-    public readonly struct ObjectFilter(string id, int depth)
-    {
-        public string Id { get; } = id;
-
-        public int Depth { get; } = depth;
-    }
-
     public static string DefaultErtRelativePath => @"ExtForms\EDO\Test\UN_JSON_Synch.ert";
 
     public static char ObjectFilterValuesSeparator => ':';

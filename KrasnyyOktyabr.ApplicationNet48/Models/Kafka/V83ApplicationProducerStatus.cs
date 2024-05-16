@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
 public class V83ApplicationProducerStatus : AbstractProducerStatus
 {
-    [JsonPropertyName("objectFilters")]
+    [JsonProperty("objectFilters")]
     public IReadOnlyList<string> ObjectFilters { get; set; }
 
-    [JsonPropertyName("fetched")]
+    [JsonProperty("fetched")]
     public int Fetched { get; set; }
 
-    [JsonPropertyName("username")]
+    [JsonProperty("username")]
     public string Username { get; set; }
 
-    [JsonPropertyName("infobaseUrl")]
+    [JsonProperty("infobaseUrl")]
     public string InfobaseUrl { get; set; }
 }

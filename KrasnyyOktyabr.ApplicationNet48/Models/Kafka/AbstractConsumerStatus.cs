@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
 public class AbstractConsumerStatus : AbstractStatus
 {
-    [JsonPropertyName("consumed")]
+    [JsonProperty("consumed")]
     public int Consumed { get; set; }
 
-    [JsonPropertyName("topics")]
+    [JsonProperty("topics")]
     public IReadOnlyList<string> Topics { get; set; }
 
-    [JsonPropertyName("consumerGroup")]
+    [JsonProperty("consumerGroup")]
     public string ConsumerGroup { get; set; }
 }

@@ -1,38 +1,38 @@
 ﻿using System;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
 public class V77ApplicationPeriodProduceJobRequest
 {
-    [JsonPropertyName("start")]
+    [JsonProperty("start")]
     public DateTimeOffset Start { get; set; }
 
-    [JsonPropertyName("duration")]
+    [JsonProperty("duration")]
     public TimeSpan Duration { get; set; }
 
-    [JsonPropertyName("objectFilters")]
+    [JsonProperty("objectFilters")]
     public string[] ObjectFilters { get; set; }
 
-    [JsonPropertyName("transactionTypeFilters")]
+    [JsonProperty("transactionTypeFilters")]
     public string[] TransactionTypeFilters { get; set; }
 
-    [JsonPropertyName("infobasePath")]
+    [JsonProperty("infobasePath")]
     public string InfobasePath { get; set; }
 
-    [JsonPropertyName("username")]
+    [JsonProperty("username")]
     public string Username { get; set; }
 
-    [JsonPropertyName("password")]
+    [JsonProperty("password")]
     public string Password { get; set; }
 
-    [JsonPropertyName("dataTypePropertyName")]
+    [JsonProperty("dataTypePropertyName")]
     public string DataTypePropertyName { get; set; }
 
 #nullable enable
-    [JsonPropertyName("ertRelativePath")]
+    [JsonProperty("ertRelativePath")]
     public string? ErtRelativePath { get; set; }
 
-    [JsonPropertyName("documentGuidsDatabaseConnectionString")]
+    [JsonProperty("documentGuidsDatabaseConnectionString")]
     public string? DocumentGuidsDatabaseConnectionString { get; set; }
 }

@@ -306,6 +306,7 @@
     <Compile Include="Models\Kafka\AbstractStatus.cs" />
     <Compile Include="Models\Kafka\IStatusContainer.cs" />
     <Compile Include="Models\Kafka\MsSqlConsumerStatus.cs" />
+    <Compile Include="Models\Kafka\ObjectFilter.cs" />
     <Compile Include="Models\Kafka\StatusContainer.cs" />
     <Compile Include="Models\Kafka\V77ApplicationConsumerStatus.cs" />
     <Compile Include="Models\Kafka\V77ApplicationPeriodProduceJobRequest.cs" />

@@ -1,12 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
 public class MsSqlConsumerStatus : AbstractConsumerStatus
 {
-    [JsonPropertyName("saved")]
+    [JsonProperty("saved")]
     public int Saved { get; set; }
 
-    [JsonPropertyName("tablePropertyName")]
+    [JsonProperty("tablePropertyName")]
     public string TablePropertyName { get; set; }
 }

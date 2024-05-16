@@ -1,20 +1,31 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
 [RoutePrefix("api/producers/v77application/jobs")]
-public class V77ApplicationPeriodProduceJobController(IV77ApplicationPeriodProduceJobService service) : ApiController
+public class V77ApplicationPeriodProduceJobController(IV77ApplicationPeriodProduceJobService service, ILogger<V77ApplicationPeriodProduceJobController> logger) : ApiController
 {
     [Route("start")]
     [HttpPost]
     public IHttpActionResult StartJob([FromBody] V77ApplicationPeriodProduceJobRequest request)
     {
-        service.StartJob(request);
+        try
+        {
+            service.StartJob(request);
 
-        return Ok();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to start period produce job");
+
+            return BadRequest(ex.Message);
+        }
     }
 
     [Route("cancel")]

@@ -176,7 +176,7 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
     {
         List<LogTransaction> logTransactions = [];
 
-        using FileStream fileStream = File.OpenRead(logFilePath);
+        using FileStream fileStream = File.Open(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
         string startPrefix = FormatDateTime(start);
 

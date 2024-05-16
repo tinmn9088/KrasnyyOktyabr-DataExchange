@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
 public class V77ApplicationProducerStatus : AbstractProducerStatus
 {
-    [JsonPropertyName("objectFilters")]
+    [JsonProperty("objectFilters")]
     public IReadOnlyList<ObjectFilter> ObjectFilters { get; set; }
 
-    [JsonPropertyName("gotLogTransactions")]
+    [JsonProperty("gotLogTransactions")]
     public int GotLogTransactions { get; set; }
 
-    [JsonPropertyName("fetched")]
+    [JsonProperty("fetched")]
     public int Fetched { get; set; }
 
-    [JsonPropertyName("username")]
+    [JsonProperty("username")]
     public string Username { get; set; }
 
-    [JsonPropertyName("infobasePath")]
+    [JsonProperty("infobasePath")]
     public string InfobasePath { get; set; }
 }
