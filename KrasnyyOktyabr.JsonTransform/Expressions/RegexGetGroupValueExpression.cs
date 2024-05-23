@@ -11,13 +11,13 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
 
     private readonly IExpression<Task<string>> _inputExpression;
 
-    private readonly IExpression<Task<int>>? _groupNumberExpression;
+    private readonly IExpression<Task<long>>? _groupNumberExpression;
 
     /// <exception cref="ArgumentNullException"></exception>
     public RegexGetGroupValueExpression(
         IExpression<Task<string>> regexExpression,
         IExpression<Task<string>> inputExpression,
-        IExpression<Task<int>>? groupNumberExpression = null)
+        IExpression<Task<long>>? groupNumberExpression = null)
     {
         _regexExpression = regexExpression ?? throw new ArgumentNullException(nameof(regexExpression));
         _inputExpression = inputExpression ?? throw new ArgumentNullException(nameof(inputExpression));
@@ -40,7 +40,7 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
             string input = await _inputExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
             int groupNumber = _groupNumberExpression != null
-                ? await _groupNumberExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
+                ? Convert.ToInt32(await _groupNumberExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
                 : 1;
 
             Regex regex = new(regexString);

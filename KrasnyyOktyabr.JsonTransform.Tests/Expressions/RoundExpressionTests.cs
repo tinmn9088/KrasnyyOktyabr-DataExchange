@@ -17,7 +17,7 @@ public class RoundExpressionTests
     [TestMethod]
     public async Task InterpretAsync_ShouldReturnRounded()
     {
-        Number valueExpressionResult = new(2.4);
+        Number valueExpressionResult = new(2.4M);
 
         // Setting up value expression
         Mock<IExpression<Task<Number>>> valueExpressionMock = new();
@@ -37,7 +37,7 @@ public class RoundExpressionTests
     [TestMethod]
     public async Task InterpretAsync_ShouldReturnRoundAwayFromZero()
     {
-        Number valueExpressionResult = new(2.5);
+        Number valueExpressionResult = new(2.5M);
 
         // Setting up value expression
         Mock<IExpression<Task<Number>>> valueExpressionMock = new();
@@ -57,7 +57,7 @@ public class RoundExpressionTests
     [TestMethod]
     public async Task InterpretAsync_WhenDigitsSpecified_ShouldReturnRounded()
     {
-        Number valueExpressionResult = new(2.666);
+        Number valueExpressionResult = new(2.666M);
 
         // Setting up value expression
         Mock<IExpression<Task<Number>>> valueExpressionMock = new();
@@ -66,14 +66,14 @@ public class RoundExpressionTests
             .Returns(Task.FromResult(valueExpressionResult));
 
         // Setting up digits expression
-        Mock<IExpression<Task<int>>> digitsExpressionMock = new();
+        Mock<IExpression<Task<long>>> digitsExpressionMock = new();
         digitsExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(2);
 
         RoundExpression roundExpression = new(valueExpressionMock.Object, digitsExpressionMock.Object);
 
-        Number expected = new(2.67);
+        Number expected = new(2.67M);
 
         Number actual = await roundExpression.InterpretAsync(CreateEmptyExpressionContext());
 

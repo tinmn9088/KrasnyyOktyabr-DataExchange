@@ -195,15 +195,15 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     {
         numberCastExpression = null;
 
-        if (uncheckedExpression is IExpression<Task<int>> intExpression)
+        if (uncheckedExpression is IExpression<Task<long>> longExpression)
         {
-            numberCastExpression = new NumberCastExpression(intExpression);
+            numberCastExpression = new NumberCastExpression(longExpression);
             return true;
         }
 
-        if (uncheckedExpression is IExpression<Task<double>> doubleExpression)
+        if (uncheckedExpression is IExpression<Task<decimal>> decimalExpression)
         {
-            numberCastExpression = new NumberCastExpression(doubleExpression);
+            numberCastExpression = new NumberCastExpression(decimalExpression);
             return true;
         }
 

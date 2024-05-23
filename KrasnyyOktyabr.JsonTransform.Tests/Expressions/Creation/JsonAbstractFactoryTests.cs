@@ -110,17 +110,17 @@ public class JsonAbstractFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldWrapIntExpressionInNumberCastExpression()
+    public void Create_ShouldWrapLongExpressionInNumberCastExpression()
     {
         // Setting up expression factory mock
-        Mock<IJsonExpressionFactory<IExpression<Task<int>>>> factoryMock = new();
-        Mock<IExpression<Task<int>>> createdIntExpressionMock = new();
+        Mock<IJsonExpressionFactory<IExpression<Task<long>>>> factoryMock = new();
+        Mock<IExpression<Task<long>>> createdLongExpressionMock = new();
         factoryMock
             .Setup(mf => mf.Match(It.IsAny<JToken>()))
             .Returns(true);
         factoryMock
             .Setup(mf => mf.Create(It.IsAny<JToken>()))
-            .Returns(createdIntExpressionMock.Object);
+            .Returns(createdLongExpressionMock.Object);
 
         _abstractFactory!.ExpressionFactories = [factoryMock.Object];
 
@@ -132,17 +132,17 @@ public class JsonAbstractFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldWrapDoubleExpressionInNumberCastExpression()
+    public void Create_ShouldWrapDecimalExpressionInNumberCastExpression()
     {
         // Setting up expression factory mock
-        Mock<IJsonExpressionFactory<IExpression<Task<double>>>> factoryMock = new();
-        Mock<IExpression<Task<double>>> createdDoubleExpressionMock = new();
+        Mock<IJsonExpressionFactory<IExpression<Task<decimal>>>> factoryMock = new();
+        Mock<IExpression<Task<decimal>>> createdDecimalExpressionMock = new();
         factoryMock
             .Setup(mf => mf.Match(It.IsAny<JToken>()))
             .Returns(true);
         factoryMock
             .Setup(mf => mf.Create(It.IsAny<JToken>()))
-            .Returns(createdDoubleExpressionMock.Object);
+            .Returns(createdDecimalExpressionMock.Object);
 
         _abstractFactory!.ExpressionFactories = [factoryMock.Object];
 
@@ -213,8 +213,8 @@ public class JsonAbstractFactoryTests
     [TestMethod]
     public async Task Create_ShouldCreateComplexExpression2()
     {
-        JsonConstIntExpressionFactory constIntExpressionFactory = new();
-        JsonConstDoubleExpressionFactory constDoubleExpressionFactory = new();
+        JsonConstLongExpressionFactory constIntExpressionFactory = new();
+        JsonConstDecimalExpressionFactory constDoubleExpressionFactory = new();
         JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
         JsonMultiplyExpressionFactory multiplyExpressionFactory = new(_abstractFactory!);
         JsonDivideExpressionFactory divideExpressionFactory = new(_abstractFactory!);
@@ -232,7 +232,7 @@ public class JsonAbstractFactoryTests
 
         SumExpression expression = _abstractFactory.Create<SumExpression>(input);
 
-        Number expected = new((12.5 * 2) + (34 / 2));
+        Number expected = new((12.5M * 2) + (34 / 2));
 
         Number actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
@@ -275,7 +275,7 @@ public class JsonAbstractFactoryTests
     [TestMethod]
     public async Task Create_ShouldCreateComplexExpression4()
     {
-        JsonConstIntExpressionFactory constIntExpressionFactory = new();
+        JsonConstLongExpressionFactory constIntExpressionFactory = new();
         JsonAreEqualExpressionFactory areEqualExpressionFactory = new(_abstractFactory!);
         JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
 
@@ -302,7 +302,7 @@ public class JsonAbstractFactoryTests
     public async Task Create_ShouldCreateComplexExpression5()
     {
         JsonExpressionsBlockFactory expressionsBlockExpressionFactory = new(_abstractFactory!);
-        JsonConstIntExpressionFactory constIntExpressionFactory = new();
+        JsonConstLongExpressionFactory constIntExpressionFactory = new();
         JsonConstStringExpressionFactory constStringExpressionFactory = new();
         JsonSumExpressionFactory sumExpressionFactory = new(_abstractFactory!);
         JsonMemorySetExpressionFactory memorySetExpressionFactory = new(_abstractFactory!);
@@ -340,7 +340,7 @@ public class JsonAbstractFactoryTests
     [TestMethod]
     public async Task Create_ShouldCreateComplexExpression6()
     {
-        JsonConstIntExpressionFactory constIntExpressionFactory = new();
+        JsonConstLongExpressionFactory constIntExpressionFactory = new();
         JsonConstStringExpressionFactory constStringExpressionFactory = new();
         JsonMemorySetExpressionFactory memorySetExpressionFactory = new(_abstractFactory!);
         JsonMemoryGetExpressionFactory memoryGetExpressionFactory = new(_abstractFactory!);

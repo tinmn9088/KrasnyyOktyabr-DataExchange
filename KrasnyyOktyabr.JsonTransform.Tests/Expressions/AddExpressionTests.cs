@@ -83,11 +83,11 @@ public class AddExpressionTests
             .Returns(Task.FromResult((object?)expectedValue));
 
         // Setting up index expression
-        Mock<IExpression<Task<int>>> indexExpressionMock = new();
+        Mock<IExpression<Task<long>>> indexExpressionMock = new();
         int index = 2;
         indexExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(index));
+            .ReturnsAsync(Convert.ToInt64(index));
 
         // Setting up select expression
         AddExpression addExpression = new(keyExpressionMock.Object, valueExpressionMock.Object, indexExpressionMock.Object);

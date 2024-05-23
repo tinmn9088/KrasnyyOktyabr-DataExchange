@@ -46,7 +46,7 @@ public class IntCastExpressionTests
     [TestMethod]
     public async Task InterpretAsync_WhenInnerExpressionResultIntString_ShouldParseStringAndReturnInt()
     {
-        int expected = 66;
+        long expected = 66;
 
         // Setting up inner expression mock that returns integer string
         Mock<IExpression<Task<string>>> innerExpressionMock = new();
@@ -56,7 +56,7 @@ public class IntCastExpressionTests
 
         IntCastExpression expression = new(innerExpressionMock.Object);
 
-        int actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
+        long actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }
@@ -64,17 +64,17 @@ public class IntCastExpressionTests
     [TestMethod]
     public async Task InterpretAsync_ShouldReturnInt()
     {
-        int expected = 99;
+        long expected = 99;
 
         // Setting up inner expression mock that returns integer
-        Mock<IExpression<Task<int>>> innerExpressionMock = new();
+        Mock<IExpression<Task<long>>> innerExpressionMock = new();
         innerExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(expected));
+            .ReturnsAsync(expected);
 
         IntCastExpression expression = new(innerExpressionMock.Object);
 
-        int actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
+        long actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

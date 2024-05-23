@@ -24,7 +24,7 @@ public class CursorIndexExpressionTests
             .Setup(c => c.GetCursorIndex())
             .Returns(cursorIndex);
 
-        int actual = await cursorIndexExpression.InterpretAsync(contextMock.Object);
+        long actual = await cursorIndexExpression.InterpretAsync(contextMock.Object);
 
         contextMock.Verify(c => c.GetCursorIndex(), Times.Once);
     }
@@ -49,7 +49,7 @@ public class CursorIndexExpressionTests
             .Setup(c => c.GetCursorIndex(It.Is<string>(n => n == cursorName)))
             .Returns(cursorIndex);
 
-        int actual = await cursorIndexExpression.InterpretAsync(contextMock.Object);
+        long actual = await cursorIndexExpression.InterpretAsync(contextMock.Object);
 
         nameExpressionMock.Verify(e => e.InterpretAsync(contextMock.Object, It.IsAny<CancellationToken>()), Times.Once);
         contextMock.Verify(c => c.GetCursorIndex(It.Is<string>(n => n == cursorName)), Times.Once);

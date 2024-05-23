@@ -80,11 +80,11 @@ public class RegexGetGroupValueExpressionTests
             .Returns(Task.FromResult(input));
 
         // Setting up group number expression
-        Mock<IExpression<Task<int>>> groupNumberExpressionMock = new();
+        Mock<IExpression<Task<long>>> groupNumberExpressionMock = new();
         int groupNumber = 2;
         groupNumberExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(groupNumber));
+            .ReturnsAsync(groupNumber);
 
         // Setting up regex get group value expression
         RegexGetGroupValueExpression regexGetGroupValueExpression = new(regexExpressionMock.Object, inputExpressionMock.Object, groupNumberExpressionMock.Object);

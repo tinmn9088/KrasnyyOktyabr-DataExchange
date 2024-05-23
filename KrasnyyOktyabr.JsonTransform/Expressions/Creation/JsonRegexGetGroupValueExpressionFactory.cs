@@ -58,7 +58,7 @@ public sealed class JsonRegexGetGroupValueExpressionFactory(IJsonAbstractExpress
 
         if (groupNumberInstruction != null)
         {
-            IExpression<Task<int>> groupNumberExpression = _factory.Create<IExpression<Task<int>>>(groupNumberInstruction);
+            IExpression<Task<long>> groupNumberExpression = _factory.Create<IExpression<Task<long>>>(groupNumberInstruction);
 
             return new(regexExpression, inputExpression, groupNumberExpression);
         }

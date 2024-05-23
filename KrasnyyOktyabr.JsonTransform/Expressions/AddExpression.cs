@@ -6,13 +6,13 @@ public sealed class AddExpression : AbstractExpression<Task>
 
     private readonly IExpression<Task<object?>> _valueExpression;
 
-    private readonly IExpression<Task<int>>? _indexExpression;
+    private readonly IExpression<Task<long>>? _indexExpression;
 
     /// <exception cref="ArgumentNullException"></exception>
     public AddExpression(
         IExpression<Task<string>> keyExpression,
         IExpression<Task<object?>> valueExpression,
-        IExpression<Task<int>>? indexExpression = null)
+        IExpression<Task<long>>? indexExpression = null)
     {
         _keyExpression = keyExpression ?? throw new ArgumentNullException(nameof(keyExpression));
         _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
@@ -35,7 +35,7 @@ public sealed class AddExpression : AbstractExpression<Task>
             object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
             int index = _indexExpression != null
-                ? await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false)
+                ? Convert.ToInt32(await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
                 : 0;
 
             context.OutputAdd(key, value, index);

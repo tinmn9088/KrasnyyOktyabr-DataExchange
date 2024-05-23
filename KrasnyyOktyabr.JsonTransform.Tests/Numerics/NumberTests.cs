@@ -10,19 +10,19 @@ public class NumberTests
 
         Number intNumber = new(value);
 
-        Assert.IsNull(intNumber.Double);
-        Assert.AreEqual(intNumber.Int, value);
+        Assert.IsNull(intNumber.Decimal);
+        Assert.AreEqual(intNumber.Long, value);
     }
 
     [TestMethod]
     public void Number_WhenDouble_ShouldCreateDouble()
     {
-        double value = 66.6;
+        decimal value = 66.6M;
 
         Number intNumber = new(value);
 
-        Assert.IsNull(intNumber.Int);
-        Assert.AreEqual(intNumber.Double, value);
+        Assert.IsNull(intNumber.Long);
+        Assert.AreEqual(intNumber.Decimal, value);
     }
 
     [TestMethod]
@@ -33,44 +33,44 @@ public class NumberTests
 
         Number result = left + right;
 
-        Assert.IsNull(result.Double);
-        Assert.AreEqual(5, result.Int);
+        Assert.IsNull(result.Decimal);
+        Assert.AreEqual(5, result.Long);
     }
 
     [TestMethod]
     public void Addition_WhenIntAndDouble_ShouldReturnDouble()
     {
         Number left = new(3);
-        Number right = new(2.1);
+        Number right = new(2.1M);
 
         Number result = left + right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(5.1, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(5.1M, result.Decimal);
     }
 
     [TestMethod]
     public void Addition_WhenDoubleAndInt_ShouldReturnDouble()
     {
-        Number left = new(3.1);
+        Number left = new(3.1M);
         Number right = new(2);
 
         Number result = left + right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(5.1, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(5.1M, result.Decimal);
     }
 
     [TestMethod]
     public void Addition_WhenDoubleAndDouble_ShouldReturnDouble()
     {
-        Number left = new(3.1);
-        Number right = new(2.5);
+        Number left = new(3.1M);
+        Number right = new(2.5M);
 
         Number result = left + right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(5.6, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(5.6M, result.Decimal);
     }
 
     [TestMethod]
@@ -81,44 +81,44 @@ public class NumberTests
 
         Number result = left - right;
 
-        Assert.IsNull(result.Double);
-        Assert.AreEqual(1, result.Int);
+        Assert.IsNull(result.Decimal);
+        Assert.AreEqual(1, result.Long);
     }
 
     [TestMethod]
     public void Subtraction_WhenIntAndDouble_ShouldReturnDouble()
     {
         Number left = new(3);
-        Number right = new(2.5);
+        Number right = new(2.5M);
 
         Number result = left - right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(0.5, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(0.5M, result.Decimal);
     }
 
     [TestMethod]
     public void Subtraction_WhenDoubleAndInt_ShouldReturnDouble()
     {
-        Number left = new(3.1);
+        Number left = new(3.1M);
         Number right = new(2);
 
         Number result = left - right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(1.1, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(1.1M, result.Decimal);
     }
 
     [TestMethod]
     public void Subtraction_WhenDoubleAndDouble_ShouldReturnDouble()
     {
-        Number left = new(3.6);
-        Number right = new(2.5);
+        Number left = new(3.6M);
+        Number right = new(2.5M);
 
         Number result = left - right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(1.1, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(1.1M, result.Decimal);
     }
 
     [TestMethod]
@@ -129,44 +129,44 @@ public class NumberTests
 
         Number result = left * right;
 
-        Assert.IsNull(result.Double);
-        Assert.AreEqual(6, result.Int);
+        Assert.IsNull(result.Decimal);
+        Assert.AreEqual(6, result.Long);
     }
 
     [TestMethod]
     public void Multiplication_WhenIntAndDouble_ShouldReturnDouble()
     {
         Number left = new(3);
-        Number right = new(2.5);
+        Number right = new(2.5M);
 
         Number result = left * right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(7.5, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(7.5M, result.Decimal);
     }
 
     [TestMethod]
     public void Multiplication_WhenDoubleAndInt_ShouldReturnDouble()
     {
-        Number left = new(3.1);
+        Number left = new(3.1M);
         Number right = new(2);
 
         Number result = left * right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(6.2, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(6.2M, result.Decimal);
     }
 
     [TestMethod]
     public void Multiplication_WhenDoubleAndDouble_ShouldReturnDouble()
     {
-        Number left = new(0.5);
-        Number right = new(2.5);
+        Number left = new(0.5M);
+        Number right = new(2.5M);
 
         Number result = left * right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(1.25, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(1.25M, result.Decimal);
     }
 
     [TestMethod]
@@ -177,8 +177,8 @@ public class NumberTests
 
         Number result = left / right;
 
-        Assert.IsNull(result.Double);
-        Assert.AreEqual(3, result.Int);
+        Assert.IsNull(result.Decimal);
+        Assert.AreEqual(3, result.Long);
     }
 
     [TestMethod]
@@ -189,8 +189,8 @@ public class NumberTests
 
         Number result = left / right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(1.5, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(1.5M, result.Decimal);
     }
 
     [TestMethod]
@@ -207,12 +207,12 @@ public class NumberTests
     public void Division_WhenIntAndDouble_ShouldReturnDouble()
     {
         Number left = new(5);
-        Number right = new(2.0);
+        Number right = new(2.0M);
 
         Number result = left / right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(2.5, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(2.5M, result.Decimal);
     }
 
     [TestMethod]
@@ -220,7 +220,7 @@ public class NumberTests
     public void Division_WhenIntAndDoubleZero_ShouldThrowDivideByZeroException()
     {
         Number left = new(5);
-        Number right = new(0.0);
+        Number right = new(0.0M);
 
         Number _ = left / right;
     }
@@ -228,20 +228,20 @@ public class NumberTests
     [TestMethod]
     public void Division_WhenDoubleAndInt_ShouldReturnDouble()
     {
-        Number left = new(2.4);
+        Number left = new(2.4M);
         Number right = new(2);
 
         Number result = left / right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(1.2, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(1.2M, result.Decimal);
     }
 
     [TestMethod]
     [ExpectedException(typeof(DivideByZeroException))]
     public void Division_WhenDoubleAndIntZero_ShouldThrowDivideByZeroException()
     {
-        Number left = new(2.4);
+        Number left = new(2.4M);
         Number right = new(0);
 
         Number _ = left / right;
@@ -250,21 +250,21 @@ public class NumberTests
     [TestMethod]
     public void Division_WhenDoubleAndDouble_ShouldReturnDouble()
     {
-        Number left = new(2.4);
-        Number right = new(0.5);
+        Number left = new(2.4M);
+        Number right = new(0.5M);
 
         Number result = left / right;
 
-        Assert.IsNull(result.Int);
-        Assert.AreEqual(4.8, result.Double);
+        Assert.IsNull(result.Long);
+        Assert.AreEqual(4.8M, result.Decimal);
     }
 
     [TestMethod]
     [ExpectedException(typeof(DivideByZeroException))]
     public void Division_WhenDoubleAndDoubleZero_ShouldThrowDivideByZeroException()
     {
-        Number left = new(2.4);
-        Number right = new(0.0);
+        Number left = new(2.4M);
+        Number right = new(0.0M);
 
         Number _ = left / right;
     }
@@ -275,14 +275,14 @@ public class NumberTests
         Assert.IsTrue(new Number(1) == new Number(1));
         Assert.IsFalse(new Number(1) != new Number(1));
 
-        Assert.IsTrue(new Number(1) == new Number(1.0));
-        Assert.IsFalse(new Number(1) != new Number(1.0));
+        Assert.IsTrue(new Number(1) == new Number(1.0M));
+        Assert.IsFalse(new Number(1) != new Number(1.0M));
 
-        Assert.IsTrue(new Number(1.0) == new Number(1));
-        Assert.IsFalse(new Number(1.0) != new Number(1));
+        Assert.IsTrue(new Number(1.0M) == new Number(1));
+        Assert.IsFalse(new Number(1.0M) != new Number(1));
 
-        Assert.IsTrue(new Number(1.0) == new Number(1.0));
-        Assert.IsFalse(new Number(1.0) != new Number(1.0));
+        Assert.IsTrue(new Number(1.0M) == new Number(1.0M));
+        Assert.IsFalse(new Number(1.0M) != new Number(1.0M));
     }
 
     [TestMethod]
@@ -291,14 +291,14 @@ public class NumberTests
         Assert.IsTrue(new Number(1) != new Number(2));
         Assert.IsFalse(new Number(1) == new Number(2));
 
-        Assert.IsTrue(new Number(1) != new Number(2.0));
-        Assert.IsFalse(new Number(1) == new Number(2.0));
+        Assert.IsTrue(new Number(1) != new Number(2.0M));
+        Assert.IsFalse(new Number(1) == new Number(2.0M));
 
-        Assert.IsTrue(new Number(1.0) != new Number(2));
-        Assert.IsFalse(new Number(1.0) == new Number(2));
+        Assert.IsTrue(new Number(1.0M) != new Number(2));
+        Assert.IsFalse(new Number(1.0M) == new Number(2));
 
-        Assert.IsTrue(new Number(1.0) != new Number(2.0));
-        Assert.IsFalse(new Number(1.0) == new Number(2.0));
+        Assert.IsTrue(new Number(1.0M) != new Number(2.0M));
+        Assert.IsFalse(new Number(1.0M) == new Number(2.0M));
     }
 
     [TestMethod]
@@ -307,14 +307,14 @@ public class NumberTests
         Assert.IsTrue(new Number(1) < new Number(2));
         Assert.IsFalse(new Number(2) < new Number(1));
 
-        Assert.IsTrue(new Number(1) < new Number(2.0));
-        Assert.IsFalse(new Number(2) < new Number(1.0));
+        Assert.IsTrue(new Number(1) < new Number(2.0M));
+        Assert.IsFalse(new Number(2) < new Number(1.0M));
 
-        Assert.IsTrue(new Number(1.0) < new Number(2));
-        Assert.IsFalse(new Number(2.0) < new Number(1));
+        Assert.IsTrue(new Number(1.0M) < new Number(2));
+        Assert.IsFalse(new Number(2.0M) < new Number(1));
 
-        Assert.IsTrue(new Number(1.0) < new Number(2.0));
-        Assert.IsFalse(new Number(2.0) < new Number(1.0));
+        Assert.IsTrue(new Number(1.0M) < new Number(2.0M));
+        Assert.IsFalse(new Number(2.0M) < new Number(1.0M));
     }
 
     [TestMethod]
@@ -323,39 +323,39 @@ public class NumberTests
         Assert.IsTrue(new Number(2) > new Number(1));
         Assert.IsFalse(new Number(1) > new Number(2));
 
-        Assert.IsTrue(new Number(2) > new Number(1.0));
-        Assert.IsFalse(new Number(1) > new Number(2.0));
+        Assert.IsTrue(new Number(2) > new Number(1.0M));
+        Assert.IsFalse(new Number(1) > new Number(2.0M));
 
-        Assert.IsTrue(new Number(2.0) > new Number(1));
-        Assert.IsFalse(new Number(1.0) > new Number(2));
+        Assert.IsTrue(new Number(2.0M) > new Number(1));
+        Assert.IsFalse(new Number(1.0M) > new Number(2));
 
-        Assert.IsTrue(new Number(2.0) > new Number(1.0));
-        Assert.IsFalse(new Number(1.0) > new Number(2.0));
+        Assert.IsTrue(new Number(2.0M) > new Number(1.0M));
+        Assert.IsFalse(new Number(1.0M) > new Number(2.0M));
     }
 
     [TestMethod]
     public void LessOrEqual_ShouldReturnTrueIfLess()
     {
         Assert.IsTrue(new Number(2) <= new Number(2));
-        Assert.IsTrue(new Number(2) <= new Number(2.0));
-        Assert.IsTrue(new Number(2.0) <= new Number(2));
-        Assert.IsTrue(new Number(2.0) <= new Number(2.0));
+        Assert.IsTrue(new Number(2) <= new Number(2.0M));
+        Assert.IsTrue(new Number(2.0M) <= new Number(2));
+        Assert.IsTrue(new Number(2.0M) <= new Number(2.0M));
     }
 
     [TestMethod]
     public void GreaterOrEqual_ShouldReturnTrueIfGreater()
     {
         Assert.IsTrue(new Number(2) >= new Number(2));
-        Assert.IsTrue(new Number(2) >= new Number(2.0));
-        Assert.IsTrue(new Number(2.0) >= new Number(2));
-        Assert.IsTrue(new Number(2.0) >= new Number(2.0));
+        Assert.IsTrue(new Number(2) >= new Number(2.0M));
+        Assert.IsTrue(new Number(2.0M) >= new Number(2));
+        Assert.IsTrue(new Number(2.0M) >= new Number(2.0M));
     }
 
     [TestMethod]
     public void ToString_ShouldReturnString()
     {
         Assert.AreEqual("1", new Number(1).ToString());
-        Assert.AreEqual("1", new Number(1.0).ToString());
-        Assert.AreEqual("1.5", new Number(1.5).ToString());
+        Assert.AreEqual("1", new Number(1.0M).ToString());
+        Assert.AreEqual("1.5", new Number(1.5M).ToString());
     }
 }

@@ -47,7 +47,7 @@ public class DoubleCastExpressionTests
     [TestMethod]
     public async Task InterpretAsync_WhenInnerExpressionResultDoubleString_ShouldParseStringAndReturnDouble()
     {
-        double expected = 66.6;
+        decimal expected = 66.6M;
 
         // Setting up inner expression mock that returns double string
         Mock<IExpression<Task<string>>> innerExpressionMock = new();
@@ -57,7 +57,7 @@ public class DoubleCastExpressionTests
 
         DoubleCastExpression expression = new(innerExpressionMock.Object);
 
-        double actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
+        decimal actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }
@@ -65,17 +65,17 @@ public class DoubleCastExpressionTests
     [TestMethod]
     public async Task InterpretAsync_ShouldReturnDouble()
     {
-        double expected = 99.9;
+        decimal expected = 99.9M;
 
         // Setting up inner expression mock that returns integer
-        Mock<IExpression<Task<double>>> innerExpressionMock = new();
+        Mock<IExpression<Task<decimal>>> innerExpressionMock = new();
         innerExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(expected));
+            .ReturnsAsync(expected);
 
         DoubleCastExpression expression = new(innerExpressionMock.Object);
 
-        double actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
+        decimal actual = await expression.InterpretAsync(CreateEmptyExpressionContext());
 
         Assert.AreEqual(expected, actual);
     }

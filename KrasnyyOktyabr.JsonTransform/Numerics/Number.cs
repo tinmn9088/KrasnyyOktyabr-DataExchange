@@ -7,12 +7,12 @@ namespace KrasnyyOktyabr.JsonTransform.Numerics;
 /// </remarks>
 public readonly struct Number : IEquatable<Number>, IComparable<Number>
 {
-    public double? Double
+    public decimal? Decimal
     {
         get;
     }
 
-    public int? Int
+    public long? Long
     {
         get;
     }
@@ -22,39 +22,39 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
     /// </summary>
     public Number()
     {
-        Int = 0;
+        Long = 0;
     }
 
-    public Number(double value)
+    public Number(decimal value)
     {
-        Double = value;
+        Decimal = value;
     }
 
-    public Number(int value)
+    public Number(long value)
     {
-        Int = value;
+        Long = value;
     }
 
     public static Number operator +(Number a, Number b)
     {
-        if (a.Int != null && b.Int != null)
+        if (a.Long != null && b.Long != null)
         {
-            return new Number((int)(a.Int + b.Int));
+            return new Number(a.Long.Value + b.Long.Value);
         }
 
-        if (a.Int != null && b.Double != null)
+        if (a.Long != null && b.Decimal != null)
         {
-            return new Number((double)(a.Int + b.Double));
+            return new Number(Convert.ToDecimal(a.Long) + b.Decimal.Value);
         }
 
-        if (a.Double != null && b.Int != null)
+        if (a.Decimal != null && b.Long != null)
         {
-            return new Number((double)(a.Double + b.Int));
+            return new Number(a.Decimal.Value + Convert.ToDecimal(b.Long));
         }
 
-        if (a.Double != null && b.Double != null)
+        if (a.Decimal != null && b.Decimal != null)
         {
-            return new Number((double)(a.Double + b.Double));
+            return new Number(a.Decimal.Value + b.Decimal.Value);
         }
 
         throw new NotImplementedException();
@@ -62,24 +62,24 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public static Number operator -(Number a, Number b)
     {
-        if (a.Int != null && b.Int != null)
+        if (a.Long != null && b.Long != null)
         {
-            return new Number((int)(a.Int - b.Int));
+            return new Number(a.Long.Value - b.Long.Value);
         }
 
-        if (a.Int != null && b.Double != null)
+        if (a.Long != null && b.Decimal != null)
         {
-            return new Number((double)(a.Int - b.Double));
+            return new Number(Convert.ToDecimal(a.Long) - b.Decimal.Value);
         }
 
-        if (a.Double != null && b.Int != null)
+        if (a.Decimal != null && b.Long != null)
         {
-            return new Number((double)(a.Double - b.Int));
+            return new Number(a.Decimal.Value - Convert.ToDecimal(b.Long));
         }
 
-        if (a.Double != null && b.Double != null)
+        if (a.Decimal != null && b.Decimal != null)
         {
-            return new Number((double)(a.Double - b.Double));
+            return new Number(a.Decimal.Value - b.Decimal.Value);
         }
 
         throw new NotImplementedException();
@@ -87,24 +87,24 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public static Number operator *(Number a, Number b)
     {
-        if (a.Int != null && b.Int != null)
+        if (a.Long != null && b.Long != null)
         {
-            return new Number((int)(a.Int * b.Int));
+            return new Number(a.Long.Value * b.Long.Value);
         }
 
-        if (a.Int != null && b.Double != null)
+        if (a.Long != null && b.Decimal != null)
         {
-            return new Number((double)(a.Int * b.Double));
+            return new Number(Convert.ToDecimal(a.Long) * b.Decimal.Value);
         }
 
-        if (a.Double != null && b.Int != null)
+        if (a.Decimal != null && b.Long != null)
         {
-            return new Number((double)(a.Double * b.Int));
+            return new Number(a.Decimal.Value * Convert.ToDecimal(b.Long));
         }
 
-        if (a.Double != null && b.Double != null)
+        if (a.Decimal != null && b.Decimal != null)
         {
-            return new Number((double)(a.Double * b.Double));
+            return new Number(a.Decimal.Value * b.Decimal.Value);
         }
 
         throw new NotImplementedException();
@@ -112,51 +112,51 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public static Number operator /(Number a, Number b)
     {
-        if (a.Int != null && b.Int != null)
+        if (a.Long != null && b.Long != null)
         {
-            if (b.Int == 0)
+            if (b.Long == 0)
             {
                 throw new DivideByZeroException();
             }
 
-            if (a.Int % b.Int == 0)
+            if (a.Long % b.Long == 0)
             {
-                return new Number((int)(a.Int / b.Int));
+                return new Number(a.Long.Value / b.Long.Value);
             }
             else
             {
-                return new Number((double)a.Int / (double)b.Int);
+                return new Number(Convert.ToDecimal(a.Long) / Convert.ToDecimal(b.Long));
             }
         }
 
-        if (a.Int != null && b.Double != null)
+        if (a.Long != null && b.Decimal != null)
         {
-            if (b.Double == 0)
+            if (b.Decimal == 0)
             {
                 throw new DivideByZeroException();
             }
 
-            return new Number((double)(a.Int / b.Double));
+            return new Number(Convert.ToDecimal(a.Long) / b.Decimal.Value);
         }
 
-        if (a.Double != null && b.Int != null)
+        if (a.Decimal != null && b.Long != null)
         {
-            if (b.Int == 0)
+            if (b.Long == 0)
             {
                 throw new DivideByZeroException();
             }
 
-            return new Number((double)(a.Double / b.Int));
+            return new Number(a.Decimal.Value / Convert.ToDecimal(b.Long));
         }
 
-        if (a.Double != null && b.Double != null)
+        if (a.Decimal != null && b.Decimal != null)
         {
-            if (b.Double == 0)
+            if (b.Decimal == 0)
             {
                 throw new DivideByZeroException();
             }
 
-            return new Number((double)(a.Double / b.Double));
+            return new Number(a.Decimal.Value / b.Decimal.Value);
         }
 
         throw new NotImplementedException();
@@ -178,50 +178,50 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
     {
         if (obj is Number other)
         {
-            if (Int != null && other.Int != null)
+            if (Long != null && other.Long != null)
             {
-                return Int == other.Int;
+                return Long == other.Long;
             }
 
-            if (Int != null && other.Double != null)
+            if (Long != null && other.Decimal != null)
             {
-                return Int == other.Double;
+                return Long == other.Decimal;
             }
 
-            if (Double != null && other.Int != null)
+            if (Decimal != null && other.Long != null)
             {
-                return Double == other.Int;
+                return Decimal == other.Long;
             }
 
-            if (Double != null && other.Double != null)
+            if (Decimal != null && other.Decimal != null)
             {
-                return Double == other.Double;
-            }
-        }
-
-        if (obj is int i)
-        {
-            if (Int != null)
-            {
-                return Int == i;
-            }
-
-            if (Double != null)
-            {
-                return Convert.ToInt32(Double) == i;
+                return Decimal == other.Decimal;
             }
         }
 
-        if (obj is double d)
+        if (obj is long i)
         {
-            if (Double != null)
+            if (Long != null)
             {
-                return Double == d;
+                return Long == i;
             }
 
-            if (Int != null)
+            if (Decimal != null)
             {
-                return Convert.ToDouble(Int) == d;
+                return Convert.ToInt64(Decimal) == i;
+            }
+        }
+
+        if (obj is decimal d)
+        {
+            if (Decimal != null)
+            {
+                return Decimal == d;
+            }
+
+            if (Long != null)
+            {
+                return Convert.ToDecimal(Long) == d;
             }
         }
 
@@ -232,24 +232,24 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public int CompareTo(Number other)
     {
-        if (Int != null && other.Int != null)
+        if (Long != null && other.Long != null)
         {
-            return Math.Sign(Int.Value - other.Int.Value);
+            return Math.Sign(Long.Value - other.Long.Value);
         }
 
-        if (Int != null && other.Double != null)
+        if (Long != null && other.Decimal != null)
         {
-            return Math.Sign(Int.Value - other.Double.Value);
+            return Math.Sign(Long.Value - other.Decimal.Value);
         }
 
-        if (Double != null && other.Int != null)
+        if (Decimal != null && other.Long != null)
         {
-            return Math.Sign(Double.Value - other.Int.Value);
+            return Math.Sign(Decimal.Value - other.Long.Value);
         }
 
-        if (Double != null && other.Double != null)
+        if (Decimal != null && other.Decimal != null)
         {
-            return Math.Sign(Double.Value - other.Double.Value);
+            return Math.Sign(Decimal.Value - other.Decimal.Value);
         }
 
         throw new NotImplementedException();
@@ -257,14 +257,14 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public override string ToString()
     {
-        if (Int != null)
+        if (Long != null)
         {
-            return Int.ToString() ?? throw new NullReferenceException();
+            return Long.ToString() ?? throw new NullReferenceException();
         }
 
-        if (Double != null)
+        if (Decimal != null)
         {
-            return Double?.ToString(CultureInfo.InvariantCulture) ?? throw new NullReferenceException();
+            return Decimal?.ToString("G29", CultureInfo.InvariantCulture) ?? throw new NullReferenceException();
         }
 
         throw new NotImplementedException();
@@ -272,14 +272,14 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public override int GetHashCode()
     {
-        if (Int != null)
+        if (Long != null)
         {
-            return Int.GetHashCode();
+            return Long.GetHashCode();
         }
 
-        if (Double != null)
+        if (Decimal != null)
         {
-            return Double.GetHashCode();
+            return Decimal.GetHashCode();
         }
 
         throw new NotImplementedException();

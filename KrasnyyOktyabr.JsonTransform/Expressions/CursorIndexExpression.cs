@@ -1,6 +1,6 @@
 ﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public sealed class CursorIndexExpression : AbstractExpression<Task<int>>
+public sealed class CursorIndexExpression : AbstractExpression<Task<long>>
 {
     private readonly IExpression<Task<string>>? _cursorNameExpression;
 
@@ -14,7 +14,7 @@ public sealed class CursorIndexExpression : AbstractExpression<Task<int>>
 
     /// <exception cref="NullReferenceException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
-    public override async Task<int> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<long> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         try
         {

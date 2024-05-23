@@ -50,7 +50,7 @@ public sealed class JsonRoundExpressionFactory(IJsonAbstractExpressionFactory fa
 
         if (digitsInstruction != null)
         {
-            IExpression<Task<int>> digitsExpression = _factory.Create<IExpression<Task<int>>>(digitsInstruction);
+            IExpression<Task<long>> digitsExpression = _factory.Create<IExpression<Task<long>>>(digitsInstruction);
 
             return new(valueExpression, digitsExpression);
         }

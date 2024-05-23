@@ -5,14 +5,14 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation.Tests;
 [TestClass]
 public class JsonConstIntExpressionFactoryTests
 {
-    private static readonly JsonConstIntExpressionFactory s_constIntExpressionFactory = new();
+    private static readonly JsonConstLongExpressionFactory s_constIntExpressionFactory = new();
 
     [TestMethod]
     public void Create_ShouldCreateConstIntExpression()
     {
         JToken input = 66;
 
-        ConstIntExpression expression = s_constIntExpressionFactory.Create(input);
+        ConstLongExpression expression = s_constIntExpressionFactory.Create(input);
 
         Assert.IsNotNull(expression);
     }

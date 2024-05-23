@@ -54,7 +54,7 @@ public sealed class JsonAddExpressionFactory(IJsonAbstractExpressionFactory fact
 
         if (indexInstruction != null)
         {
-            IExpression<Task<int>> indexExpression = _factory.Create<IExpression<Task<int>>>(indexInstruction);
+            IExpression<Task<long>> indexExpression = _factory.Create<IExpression<Task<long>>>(indexInstruction);
 
             return new(keyExpression, valueExpression, indexExpression);
         }

@@ -7,34 +7,34 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 /// </summary>
 public sealed class NumberCastExpression : AbstractExpression<Task<Number>>
 {
-    private readonly IExpression<Task<int>>? _innerIntExpression;
+    private readonly IExpression<Task<long>>? _innerLongExpression;
 
-    private readonly IExpression<Task<double>>? _innerDoubleExpression;
+    private readonly IExpression<Task<decimal>>? _innerDecimalExpression;
 
     /// <exception cref="ArgumentNullException"></exception>
-    public NumberCastExpression(IExpression<Task<int>> innerIntExpression)
+    public NumberCastExpression(IExpression<Task<long>> innerLongExpression)
     {
-        _innerIntExpression = innerIntExpression ?? throw new ArgumentNullException(nameof(innerIntExpression));
+        _innerLongExpression = innerLongExpression ?? throw new ArgumentNullException(nameof(innerLongExpression));
     }
 
     /// <exception cref="ArgumentNullException"></exception>
-    public NumberCastExpression(IExpression<Task<double>> innerDoubleExpression)
+    public NumberCastExpression(IExpression<Task<decimal>> innerDecimalExpression)
     {
-        _innerDoubleExpression = innerDoubleExpression ?? throw new ArgumentNullException(nameof(innerDoubleExpression));
+        _innerDecimalExpression = innerDecimalExpression ?? throw new ArgumentNullException(nameof(innerDecimalExpression));
     }
 
     public override async Task<Number> InterpretAsync(IContext context, CancellationToken cancellationToken)
     {
         try
         {
-            if (_innerIntExpression != null)
+            if (_innerLongExpression != null)
             {
-                return new Number(await _innerIntExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
+                return new Number(await _innerLongExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
             }
 
-            if (_innerDoubleExpression != null)
+            if (_innerDecimalExpression != null)
             {
-                return new Number(await _innerDoubleExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
+                return new Number(await _innerDecimalExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
             }
 
             throw new NotImplementedException();

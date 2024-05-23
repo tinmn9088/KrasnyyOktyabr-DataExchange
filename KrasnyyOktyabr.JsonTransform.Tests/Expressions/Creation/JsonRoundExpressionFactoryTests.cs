@@ -121,7 +121,7 @@ public class JsonRoundExpressionFactoryTests
 
         Assert.IsNotNull(expression);
         _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<Number>>>(It.Is<JToken>(i => i == fakeValueInstruction)), Times.Once);
-        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<int>>>(It.Is<JToken>(i => i == fakeDigitsInstruction)), Times.Once);
+        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task<long>>>(It.Is<JToken>(i => i == fakeDigitsInstruction)), Times.Once);
         _abstractFactoryMock.VerifyNoOtherCalls();
     }
 }

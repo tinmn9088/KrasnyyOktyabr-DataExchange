@@ -7,9 +7,9 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
 {
     private readonly IExpression<Task<Number>> _valueExpression;
 
-    private readonly IExpression<Task<int>>? _digitsExpression;
+    private readonly IExpression<Task<long>>? _digitsExpression;
 
-    public RoundExpression(IExpression<Task<Number>> valueExpression, IExpression<Task<int>>? digitsExpression = null)
+    public RoundExpression(IExpression<Task<Number>> valueExpression, IExpression<Task<long>>? digitsExpression = null)
     {
         _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
@@ -23,7 +23,7 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
     {
         try
         {
-            int digits = 0;
+            long digits = 0;
 
             if (_digitsExpression != null)
             {
@@ -37,14 +37,14 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
 
             Number value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-            if (value.Int != null)
+            if (value.Long != null)
             {
                 return value;
             }
 
-            if (value.Double != null)
+            if (value.Decimal != null)
             {
-                return new Number(Math.Round(value.Double.Value, digits, MidpointRounding.AwayFromZero));
+                return new Number(Convert.ToDecimal(Math.Round(Convert.ToDouble(value.Decimal.Value), Convert.ToInt32(digits), MidpointRounding.AwayFromZero)));
             }
 
             throw new NotImplementedException();

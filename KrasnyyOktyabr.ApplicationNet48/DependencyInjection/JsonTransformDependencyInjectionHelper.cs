@@ -30,8 +30,8 @@ public static class JsonTransformDependencyInjectionHelper
                 // Const
                 new JsonConstExpressionFactory(),
                 new JsonConstBoolExpressionFactory(),
-                new JsonConstIntExpressionFactory(),
-                new JsonConstDoubleExpressionFactory(), // Must be below JsonConstIntExpressionFactory (JSON Schema overlaps)
+                new JsonConstLongExpressionFactory(),
+                new JsonConstDecimalExpressionFactory(), // Must be below JsonConstIntExpressionFactory (JSON Schema overlaps)
                 new JsonConstStringExpressionFactory(),
 
                 // Memory

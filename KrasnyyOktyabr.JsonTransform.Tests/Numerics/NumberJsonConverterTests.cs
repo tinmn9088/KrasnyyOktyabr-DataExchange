@@ -22,7 +22,7 @@ public class NumberJsonConverterTests
     [TestMethod]
     public void WriteJson_ShouldWriteDouble()
     {
-        double expected = 5.5;
+        decimal expected = 5.5M;
         Number number = new(expected);
 
         JToken actual = JToken.FromObject(number, s_jsonSerializer);

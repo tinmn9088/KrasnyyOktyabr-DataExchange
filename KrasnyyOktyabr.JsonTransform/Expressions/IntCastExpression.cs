@@ -3,11 +3,11 @@
 /// <summary>
 /// Casts inner expression result to <see cref="int"/> or translates it to <see cref="string"/> and parses.
 /// </summary>
-public sealed class IntCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<int>(innerExpression)
+public sealed class IntCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<long>(innerExpression)
 {
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="IntCastExpressionException"></exception>
-    public override int Cast(object? innerExpressionTaskResult)
+    public override long Cast(object? innerExpressionTaskResult)
     {
         if (innerExpressionTaskResult == null)
         {
@@ -18,7 +18,7 @@ public sealed class IntCastExpression(IExpression<Task> innerExpression) : Abstr
         {
             return intResult;
         }
-        else if (int.TryParse(innerExpressionTaskResult?.ToString(), out int parseResult))
+        else if (long.TryParse(innerExpressionTaskResult?.ToString(), out long parseResult))
         {
             return parseResult;
         }

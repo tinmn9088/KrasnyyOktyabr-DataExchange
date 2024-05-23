@@ -3,34 +3,34 @@
 namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 /// <summary>
-/// Casts inner expression result to <see cref="double"/> or translates it to <see cref="string"/> and parses.
+/// Casts inner expression result to <see cref="decimal"/> or translates it to <see cref="string"/> and parses.
 /// </summary>
-public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<double>(innerExpression)
+public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<decimal>(innerExpression)
 {
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="DoubleCastExpressionException"></exception>
-    public override double Cast(object? innerExpressionTaskResult)
+    public override decimal Cast(object? innerExpressionTaskResult)
     {
         if (innerExpressionTaskResult == null)
         {
             throw new ArgumentNullException(nameof(innerExpressionTaskResult));
         }
 
-        if (innerExpressionTaskResult is double doubleResult)
+        if (innerExpressionTaskResult is decimal doubleResult)
         {
             return doubleResult;
         }
-        else if (double.TryParse(
+        else if (decimal.TryParse(
             innerExpressionTaskResult?.ToString(),
-            out double parse1Result))
+            out decimal parse1Result))
         {
             return parse1Result;
         }
-        else if (double.TryParse(
+        else if (decimal.TryParse(
             innerExpressionTaskResult?.ToString(),
             style: NumberStyles.Any,
             provider: CultureInfo.InvariantCulture,
-            out double parse2Result))
+            out decimal parse2Result))
         {
             return parse2Result;
         }
