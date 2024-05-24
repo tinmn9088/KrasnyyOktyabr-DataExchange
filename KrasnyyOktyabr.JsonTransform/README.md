@@ -915,8 +915,10 @@ Available resolvers (i.e. `resolver` parameter values) with parameters for now:
 
 ```json
 {
-  "regex": "Hello (.*)?"
-  "input": "Hello World"
+  "$regexgetgroup": {
+    "regex": "Hello (.*)?",
+    "input": "Hello World"
+  }
 }
 ```
 
@@ -940,8 +942,10 @@ Returns _"World"_.
 
 ```json
 {
-  "value": "Hello {0}"
-  "args": ["World"]
+  "$strformat": {
+    "value": "Hello {0}",
+    "args": ["World"]
+  }
 }
 ```
 
