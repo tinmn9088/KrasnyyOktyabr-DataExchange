@@ -80,7 +80,9 @@ Gets value from _memory_ by name.
 
 ```json
 {
-  "$mget": "variableName"
+  "$mget": {
+    "name": "variableName"
+  }
 }
 ```
 
