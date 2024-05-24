@@ -31,13 +31,15 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
         using FileStream fileStream = File.Open(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using StreamReader reader = new(fileStream, Encoding.GetEncoding(1251));
 
-        fileStream.Position = CalculateStartPosition(fileStream.Length, filter.SeekBackPosition);
+        fileStream.Position = CalculateStartPosition(fileStream.Length, filter.StartPosition);
 
         logger.LogTrace("Start reading from position {Position}", fileStream.Position);
 
         int lineReadCount = 0;
         long endPosition = fileStream.Position;
         string endLine = string.Empty;
+
+        bool wasCommittedLineFound = false;
 
         while (!reader.EndOfStream)
         {
@@ -55,9 +57,12 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
                 logTransactions.Add(logTransaction!.Value);
             }
 
-            if (endLine == filter.CommittedLine)
+            if (endLine == filter.CommittedLine && !wasCommittedLineFound)
             {
-                logger.LogTrace("Committed line found '{committedLine}' ({transactionsCleared} found transactions cleared)", filter.CommittedLine, logTransactions.Count);
+                logger.LogTrace("Committed line found '{CommittedLine}' ({TransactionsCleared} found transactions cleared)", filter.CommittedLine, logTransactions.Count);
+
+                wasCommittedLineFound = true;
+
                 logTransactions.Clear();
             }
         }

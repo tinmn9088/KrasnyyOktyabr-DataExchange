@@ -20,11 +20,11 @@ public partial interface IV77ApplicationLogService
     public class TransactionFilterWithCommit(
         string[] objectIds,
         string[] transactionTypes,
-        long? seekBackPosition,
+        long? startPosition,
         string committedLine)
         : TransactionFilter(objectIds, transactionTypes)
     {
-        public long? SeekBackPosition { get; } = seekBackPosition;
+        public long? StartPosition { get; } = startPosition;
 
         public string CommittedLine { get; } = committedLine;
     }

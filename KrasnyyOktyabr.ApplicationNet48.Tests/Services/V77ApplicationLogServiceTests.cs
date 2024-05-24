@@ -34,7 +34,7 @@ public class V77ApplicationLogServiceTests
             objectIds: ["O/666/", "O/999/"],
             transactionTypes: ["DocWrite"],
             committedLine: "20230301;09:49:24;Пользователь_6;E;Docs;DocBackPassed;2;;O/666/444007;Документ3 96569 01.03.2023 09:49:22",
-            seekBackPosition: 100
+            startPosition: 100
         );
 
         GetLogTransactionsResult result = await s_logService.GetLogTransactionsAsync(

@@ -208,7 +208,7 @@ public sealed partial class V77ApplicationProducerService(
         LogOffset commitedOffset = await GetCommitedOffset(offsetService, infobaseFullPath, logger, cancellationToken).ConfigureAwait(false);
 
         TransactionFilterWithCommit filter = new(
-            seekBackPosition: commitedOffset.Position,
+            startPosition: commitedOffset.Position,
             committedLine: commitedOffset.LastReadLine,
             objectIds: objectFilters.Select(f => f.Id).ToArray(),
             transactionTypes: settings.TransactionTypeFilters
