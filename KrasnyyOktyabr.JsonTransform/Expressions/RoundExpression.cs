@@ -44,7 +44,7 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
 
             if (value.Decimal != null)
             {
-                return new Number(Convert.ToDecimal(Math.Round(Convert.ToDouble(value.Decimal.Value), Convert.ToInt32(digits), MidpointRounding.AwayFromZero)));
+                return new Number(decimal.Round(value.Decimal.Value, Convert.ToInt32(digits), MidpointRounding.AwayFromZero));
             }
 
             throw new NotImplementedException();
