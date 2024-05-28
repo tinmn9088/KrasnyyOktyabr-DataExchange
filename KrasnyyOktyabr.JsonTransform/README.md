@@ -299,7 +299,7 @@ Returns _2_.
 ```json
 {
   "$round": {
-    "value": 4.6666
+    "value": 4.6666,
     "digits": 2
   }
 }
