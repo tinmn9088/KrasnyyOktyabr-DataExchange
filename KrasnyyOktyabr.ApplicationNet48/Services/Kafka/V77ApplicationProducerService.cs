@@ -717,7 +717,7 @@ public sealed partial class V77ApplicationProducerService(
 
         string[] positionAndLineStrings = commitedOffsetString.Split(s_offsetValuesSeparator);
 
-        if (positionAndLineStrings.Length != 2)
+        if (positionAndLineStrings.Length < 2)
         {
             logger.LogOffsetInvalidFormat(commitedOffsetString);
 
