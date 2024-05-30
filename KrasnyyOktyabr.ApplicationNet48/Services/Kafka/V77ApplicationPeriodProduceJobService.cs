@@ -358,6 +358,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         public async ValueTask DisposeAsync()
         {
             _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
 
             _logger.LogDisposingPeriodProduceJob(InfobasePath, Start, End);
 
@@ -397,6 +398,8 @@ public sealed class V77ApplicationPeriodProduceJobService(
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
+                await Task.Delay(TimeSpan.FromSeconds(2)); // Prevent spamming start requests
 
                 GetLogTransactionsResult getLogTransactionsResult = await _produceFromPeriodTask(
                     _logger,

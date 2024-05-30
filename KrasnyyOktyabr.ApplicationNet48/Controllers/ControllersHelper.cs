@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿#nullable enable
+
+using System.Net.Http;
 using System;
 using System.Linq;
 

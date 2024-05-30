@@ -334,10 +334,11 @@ public sealed class V83ApplicationProducerService(
         {
             _logger.LogDisposing(Key);
 
-            _cancellationTokenSource.Cancel();
-
             try
             {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+
                 await _producerTask.ConfigureAwait(false);
             }
             catch (OperationCanceledException)

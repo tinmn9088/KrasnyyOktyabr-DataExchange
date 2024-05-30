@@ -441,10 +441,11 @@ public sealed partial class V83ApplicationConsumerService(
         {
             _logger.LogDisposing(Key);
 
-            _cancellationTokenSource.Cancel();
-
             try
             {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+
                 await _consumerTask.ConfigureAwait(false);
             }
             catch (OperationCanceledException)
