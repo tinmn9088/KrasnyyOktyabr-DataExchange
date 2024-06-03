@@ -43,7 +43,7 @@ public sealed class Context : IContext
 
     public void MemorySet(string name, object? value)
     {
-        _memory[name] = value ?? throw new ArgumentNullException(nameof(name));
+        _memory[name] = value;
     }
 
     public object? MemoryGet(string name)
