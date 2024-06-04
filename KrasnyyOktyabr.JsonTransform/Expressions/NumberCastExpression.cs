@@ -27,12 +27,12 @@ public sealed class NumberCastExpression : AbstractExpression<Task<Number>>
     {
         try
         {
-            if (_innerLongExpression != null)
+            if (_innerLongExpression is not null)
             {
                 return new Number(await _innerLongExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
             }
 
-            if (_innerDecimalExpression != null)
+            if (_innerDecimalExpression is not null)
             {
                 return new Number(await _innerDecimalExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false));
             }

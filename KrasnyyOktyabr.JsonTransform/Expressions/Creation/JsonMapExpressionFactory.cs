@@ -27,7 +27,7 @@ public sealed class JsonMapExpressionFactory(IJsonAbstractExpressionFactory fact
     /// <exception cref="ArgumentNullException"></exception>
     public override MapExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

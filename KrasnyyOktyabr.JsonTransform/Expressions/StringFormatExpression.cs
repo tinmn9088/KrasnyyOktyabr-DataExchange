@@ -15,7 +15,7 @@ public sealed class StringFormatExpression : AbstractExpression<Task<string>>
         _formatExpression = formatExpression ?? throw new ArgumentNullException(nameof(formatExpression));
         _argsExpression = argExpressions ?? throw new ArgumentNullException(nameof(argExpressions));
 
-        if (argExpressions.Any(e => e == null))
+        if (argExpressions.Any(e => e is null))
         {
             throw new ArgumentNullException(nameof(argExpressions));
         }

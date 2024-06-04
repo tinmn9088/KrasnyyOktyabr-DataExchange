@@ -11,7 +11,7 @@ public sealed class DoubleCastExpression(IExpression<Task> innerExpression) : Ab
     /// <exception cref="DoubleCastExpressionException"></exception>
     public override decimal Cast(object? innerExpressionTaskResult)
     {
-        if (innerExpressionTaskResult == null)
+        if (innerExpressionTaskResult is null)
         {
             throw new ArgumentNullException(nameof(innerExpressionTaskResult));
         }

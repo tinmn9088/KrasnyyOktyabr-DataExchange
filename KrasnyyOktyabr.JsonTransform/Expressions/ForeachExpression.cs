@@ -14,7 +14,7 @@ public class ForeachExpression : AbstractExpression<Task>
         _itemsExpression = itemsExpression ?? throw new ArgumentNullException(nameof(itemsExpression));
         _innerExpression = innerExpression ?? throw new ArgumentNullException(nameof(innerExpression));
 
-        if (name != null)
+        if (name is not null)
         {
             _name = name;
         }

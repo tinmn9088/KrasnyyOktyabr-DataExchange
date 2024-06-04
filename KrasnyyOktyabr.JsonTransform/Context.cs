@@ -48,7 +48,7 @@ public sealed class Context : IContext
 
     public object? MemoryGet(string name)
     {
-        if (name == null)
+        if (name is null)
         {
             throw new ArgumentNullException(nameof(name));
         }
@@ -60,7 +60,7 @@ public sealed class Context : IContext
 
     public JToken? InputSelect(string path)
     {
-        if (path == null || string.IsNullOrEmpty(path))
+        if (path is null || string.IsNullOrEmpty(path))
         {
             throw new ArgumentNullException(path);
         }
@@ -82,7 +82,7 @@ public sealed class Context : IContext
 
     public void OutputAdd(string key, object? value, int index)
     {
-        if (key == null)
+        if (key is null)
         {
             throw new ArgumentNullException(nameof(key));
         }
@@ -109,7 +109,7 @@ public sealed class Context : IContext
 
         outputItem = _output[index];
 
-        outputItem.Add(key, value != null ? JToken.FromObject(value, s_jsonSerializer) : JValue.CreateNull());
+        outputItem.Add(key, value is not null ? JToken.FromObject(value, s_jsonSerializer) : JValue.CreateNull());
     }
 
     public List<JObject> OutputGet()
@@ -119,7 +119,7 @@ public sealed class Context : IContext
 
     public void UpdateCursor(string name, object? cursor, int index)
     {
-        if (name == null)
+        if (name is null)
         {
             throw new ArgumentNullException(nameof(name));
         }
@@ -144,7 +144,7 @@ public sealed class Context : IContext
 
     public object? GetCursor(string name)
     {
-        if (name == null)
+        if (name is null)
         {
             throw new ArgumentNullException(nameof(name));
         }
@@ -169,7 +169,7 @@ public sealed class Context : IContext
 
     public int GetCursorIndex(string name)
     {
-        if (name == null)
+        if (name is null)
         {
             throw new ArgumentNullException(nameof(name));
         }

@@ -13,7 +13,7 @@ public sealed class JsonArrayExpressionFactory(IJsonAbstractExpressionFactory fa
     /// <exception cref="ArgumentException"><paramref name="input"/> is not <see cref="JArray"/>.</exception>
     public override ArrayExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

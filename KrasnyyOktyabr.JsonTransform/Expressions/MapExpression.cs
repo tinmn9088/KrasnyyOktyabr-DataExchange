@@ -9,7 +9,7 @@ public sealed class MapExpression : AbstractExpression<Task<Dictionary<string, o
     {
         _keysAndExpressions = keysAndExpressions ?? throw new ArgumentNullException(nameof(keysAndExpressions));
 
-        if (keysAndExpressions.Any(e => e.Value == null))
+        if (keysAndExpressions.Any(e => e.Value is null))
         {
             throw new ArgumentNullException(nameof(keysAndExpressions));
         }

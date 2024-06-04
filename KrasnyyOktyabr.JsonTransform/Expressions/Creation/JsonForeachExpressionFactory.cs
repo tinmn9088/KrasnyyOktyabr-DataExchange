@@ -42,7 +42,7 @@ public sealed class JsonForeachExpressionFactory(IJsonAbstractExpressionFactory 
     /// <exception cref="ArgumentNullException"></exception>
     public override ForeachExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
@@ -55,7 +55,7 @@ public sealed class JsonForeachExpressionFactory(IJsonAbstractExpressionFactory 
         IExpression<Task<object?[]>> itemsExpression = _factory.Create<IExpression<Task<object?[]>>>(itemsInstruction);
         IExpression<Task> innerExpression = _factory.Create<IExpression<Task>>(instructionsInstruction);
 
-        if (name != null)
+        if (name is not null)
         {
             return new(itemsExpression, innerExpression, name);
         }

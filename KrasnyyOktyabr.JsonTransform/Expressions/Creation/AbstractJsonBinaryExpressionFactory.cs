@@ -38,7 +38,7 @@ public abstract class AbstractJsonBinaryExpressionFactory<TLeft, TRight, TOut>(s
 
     public override TOut Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

@@ -43,7 +43,7 @@ public sealed class JsonRegexGetGroupValueExpressionFactory(IJsonAbstractExpress
     /// <exception cref="ArgumentNullException"></exception>
     public override RegexGetGroupValueExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
@@ -56,7 +56,7 @@ public sealed class JsonRegexGetGroupValueExpressionFactory(IJsonAbstractExpress
         IExpression<Task<string>> regexExpression = _factory.Create<IExpression<Task<string>>>(regexInstruction);
         IExpression<Task<string>> inputExpression = _factory.Create<IExpression<Task<string>>>(inputInstruction);
 
-        if (groupNumberInstruction != null)
+        if (groupNumberInstruction is not null)
         {
             IExpression<Task<long>> groupNumberExpression = _factory.Create<IExpression<Task<long>>>(groupNumberInstruction);
 

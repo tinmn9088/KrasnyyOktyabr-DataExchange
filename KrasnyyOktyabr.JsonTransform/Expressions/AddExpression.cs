@@ -17,7 +17,7 @@ public sealed class AddExpression : AbstractExpression<Task>
         _keyExpression = keyExpression ?? throw new ArgumentNullException(nameof(keyExpression));
         _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
-        if (indexExpression != null)
+        if (indexExpression is not null)
         {
             _indexExpression = indexExpression;
         }
@@ -34,7 +34,7 @@ public sealed class AddExpression : AbstractExpression<Task>
             string key = await _keyExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
             object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-            int index = _indexExpression != null
+            int index = _indexExpression is not null
                 ? Convert.ToInt32(await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
                 : 0;
 

@@ -13,7 +13,7 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
     {
         _valueExpression = valueExpression ?? throw new ArgumentNullException(nameof(valueExpression));
 
-        if (digitsExpression != null)
+        if (digitsExpression is not null)
         {
             _digitsExpression = digitsExpression;
         }
@@ -25,7 +25,7 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
         {
             long digits = 0;
 
-            if (_digitsExpression != null)
+            if (_digitsExpression is not null)
             {
                 digits = await _digitsExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
             }
@@ -37,12 +37,12 @@ public sealed class RoundExpression : AbstractExpression<Task<Number>>
 
             Number value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-            if (value.Long != null)
+            if (value.Long is not null)
             {
                 return value;
             }
 
-            if (value.Decimal != null)
+            if (value.Decimal is not null)
             {
                 return new Number(decimal.Round(value.Decimal.Value, Convert.ToInt32(digits), MidpointRounding.AwayFromZero));
             }

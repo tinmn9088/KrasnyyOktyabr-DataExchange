@@ -18,7 +18,7 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     {
         set
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -27,7 +27,7 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
 
             foreach (IJsonExpressionFactory<IExpression<Task>> expressionFactory in value)
             {
-                if (expressionFactory == null)
+                if (expressionFactory is null)
                 {
                     throw new ArgumentNullException(nameof(expressionFactory));
                 }
@@ -82,7 +82,7 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
             }
         }
 
-        if (resultExpression == null)
+        if (resultExpression is null)
         {
             throw new InvalidExpressionReturnTypeException(instruction, typeof(TOut), uncheckedExpressions[0].GetType());
         }
@@ -140,7 +140,7 @@ public sealed class JsonAbstractExpressionFactory : IJsonAbstractExpressionFacto
     /// <exception cref="UnknownInstructionException"></exception>
     private List<IJsonExpressionFactory<IExpression<Task>>> GetMatchingJsonExpressionFactories(JToken instruction)
     {
-        if (instruction == null)
+        if (instruction is null)
         {
             throw new ArgumentNullException(nameof(instruction));
         }

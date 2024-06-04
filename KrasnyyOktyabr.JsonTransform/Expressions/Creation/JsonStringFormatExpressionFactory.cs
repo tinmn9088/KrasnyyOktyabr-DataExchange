@@ -40,7 +40,7 @@ public sealed class JsonStringFormatExpressionFactory(IJsonAbstractExpressionFac
     /// <exception cref="ArgumentNullException"></exception>
     public override StringFormatExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

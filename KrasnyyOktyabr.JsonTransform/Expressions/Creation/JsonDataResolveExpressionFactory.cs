@@ -43,7 +43,7 @@ public sealed class JsonDataResolveExpressionFactory(IJsonAbstractExpressionFact
     /// <exception cref="ArgumentNullException"></exception>
     public override DataResolveExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

@@ -51,7 +51,7 @@ public sealed class JsonCastExpressionsFactory(IJsonAbstractExpressionFactory fa
     /// <exception cref="ArgumentException"></exception>
     public override IExpression<Task> Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

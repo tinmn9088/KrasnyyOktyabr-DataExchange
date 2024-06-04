@@ -36,7 +36,7 @@ public abstract class AbstractJsonUnaryExpressionFactory<TValue, TOut>(string ex
 
     public override TOut Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

@@ -9,7 +9,7 @@ public sealed class IntCastExpression(IExpression<Task> innerExpression) : Abstr
     /// <exception cref="IntCastExpressionException"></exception>
     public override long Cast(object? innerExpressionTaskResult)
     {
-        if (innerExpressionTaskResult == null)
+        if (innerExpressionTaskResult is null)
         {
             throw new ArgumentNullException(nameof(innerExpressionTaskResult));
         }

@@ -39,7 +39,7 @@ public sealed class JsonAddExpressionFactory(IJsonAbstractExpressionFactory fact
     /// <exception cref="ArgumentNullException"></exception>
     public override AddExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
@@ -52,7 +52,7 @@ public sealed class JsonAddExpressionFactory(IJsonAbstractExpressionFactory fact
         IExpression<Task<string>> keyExpression = _factory.Create<IExpression<Task<string>>>(keyInstruction);
         IExpression<Task<object?>> valueExpression = _factory.Create<IExpression<Task<object?>>>(valueInstruction);
 
-        if (indexInstruction != null)
+        if (indexInstruction is not null)
         {
             IExpression<Task<long>> indexExpression = _factory.Create<IExpression<Task<long>>>(indexInstruction);
 

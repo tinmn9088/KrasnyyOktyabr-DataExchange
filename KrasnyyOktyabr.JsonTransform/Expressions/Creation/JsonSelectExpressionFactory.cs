@@ -39,7 +39,7 @@ public sealed class JsonSelectExpressionFactory(IJsonAbstractExpressionFactory f
     /// <exception cref="ArgumentNullException"></exception>
     public override SelectExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
@@ -50,7 +50,7 @@ public sealed class JsonSelectExpressionFactory(IJsonAbstractExpressionFactory f
 
         IExpression<Task<string>> pathExpression = _factory.Create<IExpression<Task<string>>>(pathInstruction);
 
-        if (isOptionalInstruction != null)
+        if (isOptionalInstruction is not null)
         {
             IExpression<Task<bool>> isOptionalExpression = _factory.Create<IExpression<Task<bool>>>(isOptionalInstruction!);
 

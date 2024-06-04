@@ -31,7 +31,7 @@ public sealed class JsonCursorExpressionFactory(IJsonAbstractExpressionFactory f
     /// <exception cref="ArgumentNullException"></exception>
     public override CursorExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
@@ -39,7 +39,7 @@ public sealed class JsonCursorExpressionFactory(IJsonAbstractExpressionFactory f
         JObject instruction = (JObject)input[JsonSchemaPropertyCur]!;
         JToken? nameInstruction = instruction[JsonSchemaPropertyName];
 
-        if (nameInstruction != null)
+        if (nameInstruction is not null)
         {
             IExpression<Task<string>> nameExpression = _factory.Create<IExpression<Task<string>>>(nameInstruction);
 

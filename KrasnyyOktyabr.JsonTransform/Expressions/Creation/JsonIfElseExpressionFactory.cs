@@ -41,7 +41,7 @@ public sealed class JsonIfElseExpressionFactory(IJsonAbstractExpressionFactory f
     /// <exception cref="ArgumentNullException"></exception>
     public override IfElseExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
@@ -54,7 +54,7 @@ public sealed class JsonIfElseExpressionFactory(IJsonAbstractExpressionFactory f
         IExpression<Task<bool>> conditionExpression = _factory.Create<IExpression<Task<bool>>>(conditionInstruction);
         IExpression<Task> thenExpression = _factory.Create<IExpression<Task>>(thenInstruction);
 
-        if (elseInstruction != null)
+        if (elseInstruction is not null)
         {
             IExpression<Task> elseExpression = _factory.Create<IExpression<Task>>(elseInstruction);
 

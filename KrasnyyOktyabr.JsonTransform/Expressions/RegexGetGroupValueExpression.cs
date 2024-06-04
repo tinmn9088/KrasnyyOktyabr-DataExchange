@@ -22,7 +22,7 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
         _regexExpression = regexExpression ?? throw new ArgumentNullException(nameof(regexExpression));
         _inputExpression = inputExpression ?? throw new ArgumentNullException(nameof(inputExpression));
 
-        if (groupNumberExpression != null)
+        if (groupNumberExpression is not null)
         {
             _groupNumberExpression = groupNumberExpression;
         }
@@ -39,7 +39,7 @@ public sealed class RegexGetGroupValueExpression : AbstractExpression<Task<strin
             string regexString = await _regexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
             string input = await _inputExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-            int groupNumber = _groupNumberExpression != null
+            int groupNumber = _groupNumberExpression is not null
                 ? Convert.ToInt32(await _groupNumberExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false))
                 : 1;
 

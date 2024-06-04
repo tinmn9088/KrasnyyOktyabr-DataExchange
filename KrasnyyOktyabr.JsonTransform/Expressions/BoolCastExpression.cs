@@ -9,7 +9,7 @@ public sealed class BoolCastExpression(IExpression<Task> innerExpression) : Abst
     /// <exception cref="BoolCastExpressionException"></exception>
     public override bool Cast(object? innerExpressionTaskResult)
     {
-        if (innerExpressionTaskResult == null)
+        if (innerExpressionTaskResult is null)
         {
             throw new ArgumentNullException(nameof(innerExpressionTaskResult));
         }

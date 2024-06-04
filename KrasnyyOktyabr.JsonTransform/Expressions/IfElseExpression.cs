@@ -14,7 +14,7 @@ public sealed class IfElseExpression : AbstractExpression<Task>
         _conditionExpression = conditionExpression ?? throw new ArgumentNullException(nameof(conditionExpression));
         _thenExpression = thenExpression ?? throw new ArgumentNullException(nameof(thenExpression));
 
-        if (elseExpression != null)
+        if (elseExpression is not null)
         {
             _elseExpression = elseExpression;
         }
@@ -33,7 +33,7 @@ public sealed class IfElseExpression : AbstractExpression<Task>
 
                 await _thenExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
             }
-            else if (_elseExpression != null)
+            else if (_elseExpression is not null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 

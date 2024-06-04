@@ -21,7 +21,7 @@ public static class JsonHelper
 
                 if (propertyValue is JValue primitiveValue)
                 {
-                    if (primitiveValue.Value == null)
+                    if (primitiveValue.Value is null)
                     {
                         jsonObject.Remove(key);
                     }
@@ -54,7 +54,7 @@ public static class JsonHelper
     /// <exception cref="ArgumentNullException"></exception>
     public static JObject Unflatten(JObject flatJson)
     {
-        if (flatJson == null)
+        if (flatJson is null)
         {
             throw new ArgumentNullException(nameof(flatJson));
         }
@@ -118,7 +118,7 @@ public static class JsonHelper
     /// <exception cref="ArgumentNullException"></exception>
     public static JObject Flatten(JObject structuredJson, string keyPrefix = "")
     {
-        if (structuredJson == null)
+        if (structuredJson is null)
         {
             throw new ArgumentNullException(nameof(structuredJson));
         }

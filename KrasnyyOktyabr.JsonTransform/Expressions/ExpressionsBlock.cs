@@ -12,7 +12,7 @@ public sealed class ExpressionsBlock : AbstractExpression<Task>
     {
         _expressions = expressions ?? throw new ArgumentNullException(nameof(expressions));
 
-        if (expressions.Any(e => e == null))
+        if (expressions.Any(e => e is null))
         {
             throw new ArgumentNullException(nameof(expressions));
         }

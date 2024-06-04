@@ -34,7 +34,7 @@ public sealed class JsonMemoryGetExpressionFactory(IJsonAbstractExpressionFactor
     /// <exception cref="ArgumentNullException"></exception>
     public override MemoryGetExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

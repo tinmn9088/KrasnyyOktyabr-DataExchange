@@ -37,22 +37,22 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public static Number operator +(Number a, Number b)
     {
-        if (a.Long != null && b.Long != null)
+        if (a.Long is not null && b.Long is not null)
         {
             return new Number(a.Long.Value + b.Long.Value);
         }
 
-        if (a.Long != null && b.Decimal != null)
+        if (a.Long is not null && b.Decimal is not null)
         {
             return new Number(Convert.ToDecimal(a.Long) + b.Decimal.Value);
         }
 
-        if (a.Decimal != null && b.Long != null)
+        if (a.Decimal is not null && b.Long is not null)
         {
             return new Number(a.Decimal.Value + Convert.ToDecimal(b.Long));
         }
 
-        if (a.Decimal != null && b.Decimal != null)
+        if (a.Decimal is not null && b.Decimal is not null)
         {
             return new Number(a.Decimal.Value + b.Decimal.Value);
         }
@@ -62,22 +62,22 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public static Number operator -(Number a, Number b)
     {
-        if (a.Long != null && b.Long != null)
+        if (a.Long is not null && b.Long is not null)
         {
             return new Number(a.Long.Value - b.Long.Value);
         }
 
-        if (a.Long != null && b.Decimal != null)
+        if (a.Long is not null && b.Decimal is not null)
         {
             return new Number(Convert.ToDecimal(a.Long) - b.Decimal.Value);
         }
 
-        if (a.Decimal != null && b.Long != null)
+        if (a.Decimal is not null && b.Long is not null)
         {
             return new Number(a.Decimal.Value - Convert.ToDecimal(b.Long));
         }
 
-        if (a.Decimal != null && b.Decimal != null)
+        if (a.Decimal is not null && b.Decimal is not null)
         {
             return new Number(a.Decimal.Value - b.Decimal.Value);
         }
@@ -87,22 +87,22 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public static Number operator *(Number a, Number b)
     {
-        if (a.Long != null && b.Long != null)
+        if (a.Long is not null && b.Long is not null)
         {
             return new Number(a.Long.Value * b.Long.Value);
         }
 
-        if (a.Long != null && b.Decimal != null)
+        if (a.Long is not null && b.Decimal is not null)
         {
             return new Number(Convert.ToDecimal(a.Long) * b.Decimal.Value);
         }
 
-        if (a.Decimal != null && b.Long != null)
+        if (a.Decimal is not null && b.Long is not null)
         {
             return new Number(a.Decimal.Value * Convert.ToDecimal(b.Long));
         }
 
-        if (a.Decimal != null && b.Decimal != null)
+        if (a.Decimal is not null && b.Decimal is not null)
         {
             return new Number(a.Decimal.Value * b.Decimal.Value);
         }
@@ -112,7 +112,7 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public static Number operator /(Number a, Number b)
     {
-        if (a.Long != null && b.Long != null)
+        if (a.Long is not null && b.Long is not null)
         {
             if (b.Long == 0)
             {
@@ -129,7 +129,7 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
             }
         }
 
-        if (a.Long != null && b.Decimal != null)
+        if (a.Long is not null && b.Decimal is not null)
         {
             if (b.Decimal == 0)
             {
@@ -139,7 +139,7 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
             return new Number(Convert.ToDecimal(a.Long) / b.Decimal.Value);
         }
 
-        if (a.Decimal != null && b.Long != null)
+        if (a.Decimal is not null && b.Long is not null)
         {
             if (b.Long == 0)
             {
@@ -149,7 +149,7 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
             return new Number(a.Decimal.Value / Convert.ToDecimal(b.Long));
         }
 
-        if (a.Decimal != null && b.Decimal != null)
+        if (a.Decimal is not null && b.Decimal is not null)
         {
             if (b.Decimal == 0)
             {
@@ -178,22 +178,22 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
     {
         if (obj is Number other)
         {
-            if (Long != null && other.Long != null)
+            if (Long is not null && other.Long is not null)
             {
                 return Long == other.Long;
             }
 
-            if (Long != null && other.Decimal != null)
+            if (Long is not null && other.Decimal is not null)
             {
                 return Long == other.Decimal;
             }
 
-            if (Decimal != null && other.Long != null)
+            if (Decimal is not null && other.Long is not null)
             {
                 return Decimal == other.Long;
             }
 
-            if (Decimal != null && other.Decimal != null)
+            if (Decimal is not null && other.Decimal is not null)
             {
                 return Decimal == other.Decimal;
             }
@@ -201,12 +201,12 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
         if (obj is long i)
         {
-            if (Long != null)
+            if (Long is not null)
             {
                 return Long == i;
             }
 
-            if (Decimal != null)
+            if (Decimal is not null)
             {
                 return Convert.ToInt64(Decimal) == i;
             }
@@ -214,12 +214,12 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
         if (obj is decimal d)
         {
-            if (Decimal != null)
+            if (Decimal is not null)
             {
                 return Decimal == d;
             }
 
-            if (Long != null)
+            if (Long is not null)
             {
                 return Convert.ToDecimal(Long) == d;
             }
@@ -232,22 +232,22 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public int CompareTo(Number other)
     {
-        if (Long != null && other.Long != null)
+        if (Long is not null && other.Long is not null)
         {
             return Math.Sign(Long.Value - other.Long.Value);
         }
 
-        if (Long != null && other.Decimal != null)
+        if (Long is not null && other.Decimal is not null)
         {
             return Math.Sign(Long.Value - other.Decimal.Value);
         }
 
-        if (Decimal != null && other.Long != null)
+        if (Decimal is not null && other.Long is not null)
         {
             return Math.Sign(Decimal.Value - other.Long.Value);
         }
 
-        if (Decimal != null && other.Decimal != null)
+        if (Decimal is not null && other.Decimal is not null)
         {
             return Math.Sign(Decimal.Value - other.Decimal.Value);
         }
@@ -257,12 +257,12 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public override string ToString()
     {
-        if (Long != null)
+        if (Long is not null)
         {
             return Long.ToString() ?? throw new NullReferenceException();
         }
 
-        if (Decimal != null)
+        if (Decimal is not null)
         {
             return Decimal?.ToString("G29", CultureInfo.InvariantCulture) ?? throw new NullReferenceException();
         }
@@ -272,12 +272,12 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
 
     public override int GetHashCode()
     {
-        if (Long != null)
+        if (Long is not null)
         {
             return Long.GetHashCode();
         }
 
-        if (Decimal != null)
+        if (Decimal is not null)
         {
             return Decimal.GetHashCode();
         }

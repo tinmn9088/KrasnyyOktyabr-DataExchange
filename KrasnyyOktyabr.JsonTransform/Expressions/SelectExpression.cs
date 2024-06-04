@@ -13,7 +13,7 @@ public sealed class SelectExpression : AbstractExpression<Task<JToken?>>
     {
         _pathExpression = pathExpression ?? throw new ArgumentNullException(nameof(pathExpression));
 
-        if (isOptionalExpression != null)
+        if (isOptionalExpression is not null)
         {
             _isOptionalExpression = isOptionalExpression;
         }
@@ -29,7 +29,7 @@ public sealed class SelectExpression : AbstractExpression<Task<JToken?>>
 
             string path = await _pathExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-            bool isOptional = _isOptionalExpression != null
+            bool isOptional = _isOptionalExpression is not null
                 && await _isOptionalExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
             return context.InputSelect(path) ?? (isOptional ? null : throw new PathReturnedNothingException(path, Mark));

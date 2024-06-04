@@ -16,7 +16,7 @@ public sealed class JsonExpressionsBlockFactory(IJsonAbstractExpressionFactory f
     /// <exception cref="ArgumentException"><paramref name="input"/> is not <see cref="JArray"/>.</exception>
     public override ExpressionsBlock Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

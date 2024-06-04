@@ -37,7 +37,7 @@ public sealed class JsonRoundExpressionFactory(IJsonAbstractExpressionFactory fa
     /// <exception cref="ArgumentNullException"
     public override RoundExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }
@@ -48,7 +48,7 @@ public sealed class JsonRoundExpressionFactory(IJsonAbstractExpressionFactory fa
 
         IExpression<Task<Number>> valueExpression = _factory.Create<IExpression<Task<Number>>>(valueInstruction);
 
-        if (digitsInstruction != null)
+        if (digitsInstruction is not null)
         {
             IExpression<Task<long>> digitsExpression = _factory.Create<IExpression<Task<long>>>(digitsInstruction);
 

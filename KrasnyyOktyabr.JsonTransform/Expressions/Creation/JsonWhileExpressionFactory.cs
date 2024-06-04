@@ -36,7 +36,7 @@ public sealed class JsonWhileExpressionFactory(IJsonAbstractExpressionFactory fa
     /// <exception cref="ArgumentNullException"></exception>
     public override WhileExpression Create(JToken input)
     {
-        if (input == null)
+        if (input is null)
         {
             throw new ArgumentNullException(nameof(input));
         }

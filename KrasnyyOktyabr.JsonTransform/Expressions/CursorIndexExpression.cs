@@ -6,7 +6,7 @@ public sealed class CursorIndexExpression : AbstractExpression<Task<long>>
 
     public CursorIndexExpression(IExpression<Task<string>>? cursorNameExpression = null)
     {
-        if (cursorNameExpression != null)
+        if (cursorNameExpression is not null)
         {
             _cursorNameExpression = cursorNameExpression;
         }
@@ -20,7 +20,7 @@ public sealed class CursorIndexExpression : AbstractExpression<Task<long>>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (_cursorNameExpression != null)
+            if (_cursorNameExpression is not null)
             {
                 string name = await _cursorNameExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 

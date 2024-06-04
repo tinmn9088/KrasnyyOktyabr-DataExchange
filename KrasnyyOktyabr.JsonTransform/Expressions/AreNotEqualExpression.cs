@@ -30,7 +30,7 @@ public class AreNotEqualExpression(IExpression<Task<object?>> leftExpression, IE
 
     private static JToken FromObject(object? value)
     {
-        return value == null
+        return value is null
             ? JValue.CreateNull()
             : JToken.FromObject(value, s_jsonSerializer);
     }

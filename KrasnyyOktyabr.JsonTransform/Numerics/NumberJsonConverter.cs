@@ -11,12 +11,12 @@ public sealed class NumberJsonConverter : JsonConverter<Number>
 
     public override void WriteJson(JsonWriter writer, Number value, JsonSerializer serializer)
     {
-        if (value.Long != null)
+        if (value.Long is not null)
         {
             JToken.FromObject(value.Long).WriteTo(writer);
         }
 
-        if (value.Decimal != null)
+        if (value.Decimal is not null)
         {
             JToken.FromObject(value.Decimal).WriteTo(writer);
         }
