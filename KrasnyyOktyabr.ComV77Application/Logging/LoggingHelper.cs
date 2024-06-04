@@ -9,7 +9,7 @@ public static partial class LoggingHelper
 
     public static string BuildArgsString(object?[]? args)
     {
-        if (args == null)
+        if (args is null)
         {
             return NullString;
         }

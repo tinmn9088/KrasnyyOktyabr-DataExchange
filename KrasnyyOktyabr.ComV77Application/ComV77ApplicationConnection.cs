@@ -169,7 +169,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 
         if (!isInitializing)
         {
-            if (_comObject == null)
+            if (_comObject is null)
             {
                 throw new InvalidOperationException("COM object is not created");
             }
@@ -286,7 +286,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
                 target: _comObject,
                 args: ["ValueList"])!;
 
-            if (ertContext != null)
+            if (ertContext is not null)
             {
                 foreach (KeyValuePair<string, string> nameValue in ertContext)
                 {
@@ -425,7 +425,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     {
         _logger.ReleasingComObject(_properties.InfobasePath);
 
-        if (_comObject != null) Marshal.FinalReleaseComObject(_comObject);
+        if (_comObject is not null) Marshal.FinalReleaseComObject(_comObject);
         _isInitialized = false;
         _comObject = null;
         _comObjectType = null;
