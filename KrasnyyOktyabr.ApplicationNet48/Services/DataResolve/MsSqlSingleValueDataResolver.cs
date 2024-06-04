@@ -19,7 +19,7 @@ public class MsSqlSingleValueDataResolver(IMsSqlService service, string connecti
 
     public async ValueTask<object?> ResolveAsync(CancellationToken cancellationToken)
     {
-        return connectionType != null
+        return connectionType is not null
             ? await _service.SelectSingleValueAsync(_connectionString, _query, connectionType.Value)
             : await _service.SelectSingleValueAsync(_connectionString, _query);
     }

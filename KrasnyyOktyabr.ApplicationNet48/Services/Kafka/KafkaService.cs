@@ -43,7 +43,7 @@ public sealed partial class KafkaService : IKafkaService
     /// <exception cref="NoKafkaSettingsException"></exception>
     public IProducer<TKey, TValue> GetProducer<TKey, TValue>()
     {
-        if (_settings == null)
+        if (_settings is null)
         {
             throw new NoKafkaSettingsException();
         }
@@ -61,7 +61,7 @@ public sealed partial class KafkaService : IKafkaService
     /// <exception cref="NoKafkaSettingsException"></exception>
     public IConsumer<TKey, TValue> GetConsumer<TKey, TValue>(IEnumerable<string> topics, string consumerGroup)
     {
-        if (_settings == null)
+        if (_settings is null)
         {
             throw new NoKafkaSettingsException();
         }
@@ -93,7 +93,7 @@ public sealed partial class KafkaService : IKafkaService
                 .GetSection(KafkaSettings.Position)
                 .Get<KafkaSettings>();
 
-        if (_settings == null)
+        if (_settings is null)
         {
             _logger.LogConfigurationNotFound();
 

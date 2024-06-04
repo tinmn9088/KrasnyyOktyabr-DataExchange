@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +17,8 @@ public static class V77ApplicationHelper
 
     public static string ObjectDatePropertyName => "ДатаДокИзЛогов";
 
-    public static async ValueTask WaitRdSessionsAllowed(IWmiService wmiService, ILogger logger)
+    /// <exception cref="OperationCanceledException"></exception>
+    public static async ValueTask WaitRdSessionsAllowed(IWmiService wmiService, CancellationToken cancellationToken = default, ILogger logger = null)
     {
         try
         {
@@ -24,9 +26,11 @@ public static class V77ApplicationHelper
 
             while (areRdSessionsAllowed == false)
             {
-                logger.LogTrace("Wait until RDP is allowed");
+                cancellationToken.ThrowIfCancellationRequested();
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                logger?.LogTrace("Wait until RDP is allowed");
+
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
 
                 areRdSessionsAllowed = wmiService.AreRdSessionsAllowed();
             }

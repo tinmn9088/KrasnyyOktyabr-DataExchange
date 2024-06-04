@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using KrasnyyOktyabr.ApplicationNet48.Models.Configuration;
 using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Health;
@@ -36,4 +37,7 @@ public class LegacyConsumerHealthStatus
 
     [JsonProperty("tableJsonProperty")]
     public string? TableJsonProperty { get; set; }
+
+    [JsonProperty("suspendAt")]
+    public TimePeriod[]? SuspendSchedule { get; set; }
 }

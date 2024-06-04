@@ -27,7 +27,7 @@ public static class ValidationHelper
             .GetSection(section)
             .Get<TSettings[]>();
 
-        if (settings == null)
+        if (settings is null)
         {
             return null;
         }
@@ -36,7 +36,7 @@ public static class ValidationHelper
         {
             foreach (TSettings setting in settings)
             {
-                if (setting == null)
+                if (setting is null)
                 {
                     continue;
                 }

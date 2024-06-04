@@ -163,6 +163,7 @@
     <Compile Include="Services\Kafka\KafkaServiceTests.cs" />
     <Compile Include="Services\Kafka\V77ApplicationProducerServiceTests.cs" />
     <Compile Include="Services\MsSqlServiceTests.cs" />
+    <Compile Include="Services\TimeHelperTests.cs" />
     <Compile Include="Services\TransliterationServiceTests.cs" />
     <Compile Include="Services\V77ApplicationLogServiceTests.cs" />
   </ItemGroup>

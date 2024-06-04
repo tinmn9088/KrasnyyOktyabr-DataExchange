@@ -65,7 +65,13 @@ Example:
   "TransactionTypeFilters": [
     "RefNew"
   ],
-  "DocumentGuidsDatabaseConnectionString": ""
+  "DocumentGuidsDatabaseConnectionString": "",
+  "SuspendSchedule": [
+    {
+      "Start": "23:00",
+      "Duration": "6:00"
+    }
+  ]
 }
 ```
 
@@ -78,6 +84,7 @@ Properties:
 1. `ObjectFilters` - each entry is `<idPrefix>:<jsonMaxDepth>`.
 1. `TransactionTypeFilters` - transaction types filters.
 1. (_optional_) `DocumentGuidsDatabaseConnectionString` - connection string to the database where global document IDs are stored.
+1. (_optional_) `SuspendSchedule` - periods when producer have to suspend.
 
 
 #### 1C8
@@ -103,7 +110,13 @@ Example:
   "TransactionTypeFilters": [
     "RefNew"
   ],
-  "DocumentGuidsDatabaseConnectionString": ""
+  "DocumentGuidsDatabaseConnectionString": "",
+  "SuspendSchedule": [
+    {
+      "Start": "23:00",
+      "Duration": "6:00"
+    }
+  ]
 }
 ```
 
@@ -115,7 +128,7 @@ Properties:
 1. `ObjectFilters` - each entry is `<idPrefix>:<jsonMaxDepth>`.
 1. `TransactionTypeFilters` - transaction types filters.
 1. (_optional_) `DocumentGuidsDatabaseConnectionString` - connection string to the database where global document IDs are stored.
-
+1. (_optional_) `SuspendSchedule` - periods when producer have to suspend. 
 
 
 ### Kafka Consumers
@@ -142,7 +155,13 @@ Example:
   ],
   "Instructions": {
     "Topic1": "Instruction1.json"
-  }
+  },
+  "SuspendSchedule": [
+    {
+      "Start": "23:00",
+      "Duration": "6:00"
+    }
+  ]
 }
 ```
 
@@ -155,6 +174,7 @@ Properties:
 1. `Topics` - topic names.
 1. `Instructions` - _topic names_ -> names of _instructions_ stored in `Properties/ConsumerInstructions` directory.
 1. (_optional_) `ConsumerGroup` - consumer group (__infobase directory name__ by default).
+1. (_optional_) `SuspendSchedule` - periods when consumer have to suspend. 
 
 
 #### 1C8
@@ -178,7 +198,13 @@ Example:
   ],
   "Instructions": {
     "Topic1": "Instruction1.json"
-  }
+  },
+  "SuspendSchedule": [
+    {
+      "Start": "23:00",
+      "Duration": "6:00"
+    }
+  ]
 }
 ```
 
@@ -190,6 +216,7 @@ Properties:
 1. `Topics` - topic names.
 1. `Instructions` - _topic names_ -> names of _instructions_ stored in `Properties/ConsumerInstructions` directory.
 1. (_optional_) `ConsumerGroup` - consumer group (__infobase publication name__ by default).
+1. (_optional_) `SuspendSchedule` - periods when consumer have to suspend. 
 
 
 #### MS SQL
@@ -213,7 +240,13 @@ Example:
   "ConsumerGroup": "<consumerGroup>",
   "Instructions": {
     "Topic1": "Instruction1.json"
-  }
+  },
+  "SuspendSchedule": [
+    {
+      "Start": "23:00",
+      "Duration": "6:00"
+    }
+  ]
 }
 ```
 
@@ -225,3 +258,4 @@ Properties:
 1. `Instructions` - _topic names_ -> names of _instructions_ stored in `Properties/ConsumerInstructions` directory.
 1. (_optional_) `ConnectionType` - _"OleDbConnection"_ or _"SqlConnection"_.
 1. (_optional_) `ConsumerGroup` - consumer group (__database name__ by default).
+1. (_optional_) `SuspendSchedule` - periods when consumer have to suspend. 

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿#nullable enable
+
+using Newtonsoft.Json.Linq;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
@@ -10,7 +12,7 @@ public static class JsonHelper
 
         T? convertedValue = JToken.FromObject(value).ToObject<T>();
 
-        if (convertedValue != null)
+        if (convertedValue is not null)
         {
             converted = convertedValue;
 

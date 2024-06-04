@@ -41,17 +41,17 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
         Dictionary<string, object?> propertiesToAdd,
         string dataTypePropertyName)
     {
-        if (objectJson == null)
+        if (objectJson is null)
         {
             throw new ArgumentNullException(nameof(objectJson));
         }
 
-        if (propertiesToAdd == null)
+        if (propertiesToAdd is null)
         {
             throw new ArgumentNullException(nameof(propertiesToAdd));
         }
 
-        if (dataTypePropertyName == null)
+        if (dataTypePropertyName is null)
         {
             throw new ArgumentNullException(nameof(dataTypePropertyName));
         }
@@ -173,12 +173,12 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
         string objectJson,
         CancellationToken cancellationToken)
     {
-        if (instructionName == null)
+        if (instructionName is null)
         {
             throw new ArgumentNullException(nameof(instructionName));
         }
 
-        if (objectJson == null)
+        if (objectJson is null)
         {
             throw new ArgumentNullException(nameof(objectJson));
         }
@@ -204,7 +204,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
     /// <exception cref="ArgumentException"></exception>
     private static JObject ParseObjectJson(string objectJson)
     {
-        if (objectJson == null)
+        if (objectJson is null)
         {
             throw new ArgumentNullException(nameof(objectJson));
         }

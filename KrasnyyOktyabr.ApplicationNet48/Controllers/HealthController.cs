@@ -12,6 +12,7 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
+using static Confluent.Kafka.ConfigPropertyNames;
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
 public class HealthController(HealthCheckService healthCheckService) : ApiController
@@ -52,7 +53,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
     {
         List<LegacyProducerHealthStatus>? gatheredStatuses = gatherer(healthReport);
 
-        if (gatheredStatuses != null)
+        if (gatheredStatuses is not null)
         {
             statuses.AddRange(gatheredStatuses);
         }
@@ -62,7 +63,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
     {
         List<LegacyConsumerHealthStatus>? gatheredStatuses = gatherer(healthReport);
 
-        if (gatheredStatuses != null)
+        if (gatheredStatuses is not null)
         {
             statuses.AddRange(gatheredStatuses);
         }
@@ -74,7 +75,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
             healthReport,
             dataKey: MsSqlConsumerServiceHealthChecker.DataKey);
 
-        if (statuses == null)
+        if (statuses is null)
         {
             return null;
         }
@@ -94,6 +95,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
                 TableJsonProperty = status.TablePropertyName,
                 Topics = [.. status.Topics],
                 ConsumerGroup = status.ConsumerGroup,
+                SuspendSchedule = status.SuspendSchedule,
             });
         }
 
@@ -106,7 +108,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
             healthReport,
             dataKey: V77ApplicationProducerServiceHealthChecker.DataKey);
 
-        if (statuses == null)
+        if (statuses is null)
         {
             return null;
         }
@@ -129,6 +131,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
                 InfobasePath = status.InfobasePath,
                 Username = status.Username,
                 DataTypeJsonProperty = status.DataTypePropertyName,
+                SuspendSchedule = status.SuspendSchedule,
             });
         }
 
@@ -141,7 +144,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
             healthReport,
             dataKey: V77ApplicationConsumerServiceHealthChecker.DataKey);
 
-        if (statuses == null)
+        if (statuses is null)
         {
             return null;
         }
@@ -161,6 +164,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
                 InfobaseName = status.InfobaseName,
                 Topics = [.. status.Topics],
                 ConsumerGroup = status.ConsumerGroup,
+                SuspendSchedule = status.SuspendSchedule,
             });
         }
 
@@ -173,7 +177,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
             healthReport,
             dataKey: V83ApplicationProducerServiceHealthChecker.DataKey);
 
-        if (statuses == null)
+        if (statuses is null)
         {
             return null;
         }
@@ -195,6 +199,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
                 InfobasePath = status.InfobaseUrl,
                 Username = status.Username,
                 DataTypeJsonProperty = status.DataTypePropertyName,
+                SuspendSchedule = status.SuspendSchedule,
 
                 // Unused
                 ReadFromLogFile = null,
@@ -210,7 +215,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
             healthReport,
             dataKey: V83ApplicationConsumerServiceHealthChecker.DataKey);
 
-        if (statuses == null)
+        if (statuses is null)
         {
             return null;
         }
@@ -230,6 +235,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
                 InfobaseName = status.InfobaseName,
                 Topics = [.. status.Topics],
                 ConsumerGroup = status.ConsumerGroup,
+                SuspendSchedule = status.SuspendSchedule,
             });
         }
 
@@ -259,7 +265,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
             return null;
         }
 
-        if (serviceStatus.Statuses == null || serviceStatus.Statuses.Count == 0)
+        if (serviceStatus.Statuses is null || serviceStatus.Statuses.Count == 0)
         {
             return null;
         }

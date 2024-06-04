@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.HttpClientHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
@@ -64,7 +65,7 @@ public sealed partial class V83ApplicationConsumerService(
     {
         get
         {
-            if (_consumers == null || _consumers.Count == 0)
+            if (_consumers is null || _consumers.Count == 0)
             {
                 return StatusContainer<V83ApplicationConsumerStatus>.Empty;
             }
@@ -84,6 +85,7 @@ public sealed partial class V83ApplicationConsumerService(
                     Saved = consumer.Saved,
                     Topics = consumer.Topics,
                     ConsumerGroup = consumer.ConsumerGroup,
+                    SuspendSchedule = consumer.Settings.SuspendSchedule,
                 });
             }
 
@@ -140,7 +142,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         try
         {
-            if (_consumers != null && _consumers.TryGetValue(key, out V83ApplicationConsumer? consumer))
+            if (_consumers is not null && _consumers.TryGetValue(key, out V83ApplicationConsumer? consumer))
             {
                 _consumers.Remove(key);
 
@@ -222,7 +224,7 @@ public sealed partial class V83ApplicationConsumerService(
                 Content = new StringContent(result, Encoding.UTF8, "application/json"),
             };
 
-            if (settings.Username != null)
+            if (settings.Username is not null)
             {
                 request.Headers.Authorization = GetAuthenticationHeaderValue(settings.Username, settings.Password);
             }
@@ -237,7 +239,7 @@ public sealed partial class V83ApplicationConsumerService(
     {
         V83ApplicationConsumerSettings[]? producersSettings = GetConsumersSettings();
 
-        if (producersSettings == null)
+        if (producersSettings is null)
         {
             logger.LogConfigurationNotFound();
 
@@ -278,7 +280,7 @@ public sealed partial class V83ApplicationConsumerService(
 
     private async Task StopConsumersAsync()
     {
-        if (_consumers != null)
+        if (_consumers is not null)
         {
             if (_consumers.Count > 0)
             {
@@ -333,7 +335,7 @@ public sealed partial class V83ApplicationConsumerService(
 
             InfobaseName = ExtractInfobaseName(settings.InfobaseUrl);
 
-            if (settings.ConsumerGroup != null)
+            if (settings.ConsumerGroup is not null)
             {
                 ConsumerGroup = settings.ConsumerGroup;
             }
@@ -358,7 +360,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         public string Key => Settings.InfobaseUrl;
 
-        public bool Active => Error == null;
+        public bool Active => Error is null;
 
         public DateTimeOffset LastActivity { get; private set; }
 
@@ -386,6 +388,11 @@ public sealed partial class V83ApplicationConsumerService(
                 {
                     LastActivity = DateTimeOffset.Now;
 
+                    if (Settings.SuspendSchedule is not null)
+                    {
+                        await WaitPeriodsEnd(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
+                    }
+
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);
 
                     Consumed++;
@@ -407,7 +414,7 @@ public sealed partial class V83ApplicationConsumerService(
                         _logger,
                         cancellationToken);
 
-                    if (jsonTransformResults == null || jsonTransformResults.Count == 0)
+                    if (jsonTransformResults is null || jsonTransformResults.Count == 0)
                     {
                         consumer.Commit();
 

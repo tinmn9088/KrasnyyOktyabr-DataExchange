@@ -84,7 +84,7 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
     /// <returns>The most recent position in file not exceeding <see cref="SeekBackBytesLimit"/>.</returns>
     public long CalculateStartPosition(long fileStreamLength, long? filterStartPosition)
     {
-        if (filterStartPosition == null)
+        if (filterStartPosition is null)
         {
             logger.LogWarning("No filter start position");
 

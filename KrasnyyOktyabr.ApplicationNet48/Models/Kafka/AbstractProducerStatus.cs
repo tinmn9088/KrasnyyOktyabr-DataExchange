@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KrasnyyOktyabr.ApplicationNet48.Models.Configuration;
 using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
@@ -13,4 +14,8 @@ public abstract class AbstractProducerStatus : AbstractStatus
 
     [JsonProperty("dataTypePropertyName")]
     public string DataTypePropertyName { get; set; }
+
+#nullable enable
+    [JsonProperty("suspendAt")]
+    public TimePeriod[]? SuspendSchedule { get; set; }
 }

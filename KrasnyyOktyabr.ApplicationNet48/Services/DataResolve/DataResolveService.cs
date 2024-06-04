@@ -59,7 +59,7 @@ public class DataResolveService : IDataResolveService
             Content = GetHttpContent(contentType, body),
         };
 
-        if (credentialsUsername != null)
+        if (credentialsUsername is not null)
         {
             request.Headers.Authorization = GetAuthenticationHeaderValue(credentialsUsername, credentialsPassword);
         }
@@ -102,7 +102,7 @@ public class DataResolveService : IDataResolveService
 
         Dictionary<string, string>? convertedContext = null;
 
-        if (context != null)
+        if (context is not null)
         {
             convertedContext = [];
 
@@ -134,7 +134,7 @@ public class DataResolveService : IDataResolveService
             return checkedValue;
         }
 
-        if (value != null)
+        if (value is not null)
         {
             if (TryConvertThroughJToken(value, out T? converted))
             {
@@ -159,7 +159,7 @@ public class DataResolveService : IDataResolveService
             return checkedValue;
         }
 
-        if (value != null)
+        if (value is not null)
         {
             if (TryConvertThroughJToken(value, out T? converted))
             {
@@ -172,12 +172,12 @@ public class DataResolveService : IDataResolveService
 
     private static StringContent? GetHttpContent(string? contentType, string? body)
     {
-        if (body == null)
+        if (body is null)
         {
             return null;
         }
 
-        return contentType == null
+        return contentType is null
             ? new StringContent(body)
             : new StringContent(body, Encoding.UTF8, contentType);
     }

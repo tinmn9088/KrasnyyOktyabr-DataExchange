@@ -289,6 +289,7 @@
     <Compile Include="Logging\KafkaLoggingHelper.cs" />
     <Compile Include="Logging\MsSqlLoggingHelper.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractConsumerSettings.cs" />
+    <Compile Include="Models\Configuration\Kafka\AbstractSuspendableSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationProducerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\KafkaSettings.cs" />
@@ -297,6 +298,7 @@
     <Compile Include="Models\Configuration\Kafka\V77ApplicationProducerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationProducerSettings.cs" />
+    <Compile Include="Models\Configuration\TimePeriod.cs" />
     <Compile Include="Models\Health\ComV77ApplicationConnectionHealthStatus.cs" />
     <Compile Include="Models\Health\LegacyConsumerHealthStatus.cs" />
     <Compile Include="Models\Health\LegacyHealthStatus.cs" />
@@ -350,6 +352,7 @@
     <Compile Include="Services\MsSqlService.cs" />
     <Compile Include="Services\OffsetService.cs" />
     <Compile Include="Services\RestartService.cs" />
+    <Compile Include="Services\TimeHelper.cs" />
     <Compile Include="Services\TransliterationService.cs" />
     <Compile Include="Services\V77ApplicationLogService.cs" />
     <Compile Include="Services\ValidationHelper.cs" />

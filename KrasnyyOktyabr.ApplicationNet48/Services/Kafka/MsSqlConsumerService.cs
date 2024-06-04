@@ -11,6 +11,7 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
@@ -58,7 +59,7 @@ public sealed class MsSqlConsumerService(
     {
         get
         {
-            if (_consumers == null || _consumers.Count == 0)
+            if (_consumers is null || _consumers.Count == 0)
             {
                 return StatusContainer<MsSqlConsumerStatus>.Empty;
             }
@@ -78,6 +79,7 @@ public sealed class MsSqlConsumerService(
                     TablePropertyName = consumer.TablePropertyName,
                     Topics = consumer.Topics,
                     ConsumerGroup = consumer.ConsumerGroup,
+                    SuspendSchedule = consumer.Settings.SuspendSchedule,
                 });
             }
 
@@ -134,7 +136,7 @@ public sealed class MsSqlConsumerService(
 
         try
         {
-            if (_consumers != null && _consumers.TryGetValue(key, out MsSqlConsumer? consumer))
+            if (_consumers is not null && _consumers.TryGetValue(key, out MsSqlConsumer? consumer))
             {
                 _consumers.Remove(key);
 
@@ -210,7 +212,7 @@ public sealed class MsSqlConsumerService(
     {
         foreach (JsonTransformMsSqlResult result in jsonTransformResults)
         {
-            if (settings.ConnectionType != null)
+            if (settings.ConnectionType is not null)
             {
                 await msSqlService.InsertAsync(settings.ConnectionString, result.Table, result.ColumnValues, settings.ConnectionType.Value);
             }
@@ -225,7 +227,7 @@ public sealed class MsSqlConsumerService(
     {
         MsSqlConsumerSettings[]? producersSettings = GetConsumersSettings();
 
-        if (producersSettings == null)
+        if (producersSettings is null)
         {
             logger.LogConfigurationNotFound();
 
@@ -265,7 +267,7 @@ public sealed class MsSqlConsumerService(
 
     private async Task StopConsumersAsync()
     {
-        if (_consumers != null)
+        if (_consumers is not null)
         {
             if (_consumers.Count > 0)
             {
@@ -319,7 +321,7 @@ public sealed class MsSqlConsumerService(
 
             DatabaseName = _kafkaService.ExtractConsumerGroupNameFromConnectionString(settings.ConnectionString);
 
-            if (settings.ConsumerGroup != null)
+            if (settings.ConsumerGroup is not null)
             {
                 ConsumerGroup = settings.ConsumerGroup;
             }
@@ -344,7 +346,7 @@ public sealed class MsSqlConsumerService(
 
         public string Key => Settings.ConnectionString;
 
-        public bool Active => Error == null;
+        public bool Active => Error is null;
 
         public DateTimeOffset LastActivity { get; private set; }
 
@@ -374,6 +376,11 @@ public sealed class MsSqlConsumerService(
                 {
                     LastActivity = DateTimeOffset.Now;
 
+                    if (Settings.SuspendSchedule is not null)
+                    {
+                        await WaitPeriodsEnd(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
+                    }
+
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);
 
                     Consumed++;
@@ -395,7 +402,7 @@ public sealed class MsSqlConsumerService(
                         _logger,
                         cancellationToken);
 
-                    if (jsonTransformResults == null || jsonTransformResults.Count == 0)
+                    if (jsonTransformResults is null || jsonTransformResults.Count == 0)
                     {
                         consumer.Commit();
 

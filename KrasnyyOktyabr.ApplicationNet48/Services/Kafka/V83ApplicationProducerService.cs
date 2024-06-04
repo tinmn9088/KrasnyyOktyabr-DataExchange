@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationProducerService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
@@ -50,7 +51,7 @@ public sealed class V83ApplicationProducerService(
     {
         get
         {
-            if (_producers == null || _producers.Count == 0)
+            if (_producers is null || _producers.Count == 0)
             {
                 return StatusContainer<V83ApplicationProducerStatus>.Empty;
             }
@@ -72,6 +73,7 @@ public sealed class V83ApplicationProducerService(
                     InfobaseUrl = producer.InfobaseUrl,
                     Username = producer.Username,
                     DataTypePropertyName = producer.DataTypeJsonPropertyName,
+                    SuspendSchedule = producer.Settings.SuspendSchedule,
                 });
             }
 
@@ -128,7 +130,7 @@ public sealed class V83ApplicationProducerService(
 
         try
         {
-            if (_producers != null && _producers.TryGetValue(key, out V83ApplicationProducer? producer))
+            if (_producers is not null && _producers.TryGetValue(key, out V83ApplicationProducer? producer))
             {
                 _producers.Remove(key);
 
@@ -173,7 +175,7 @@ public sealed class V83ApplicationProducerService(
     {
         V83ApplicationProducerSettings[]? producersSettings = GetProducersSettings();
 
-        if (producersSettings == null)
+        if (producersSettings is null)
         {
             logger.LogConfigurationNotFound();
 
@@ -212,7 +214,7 @@ public sealed class V83ApplicationProducerService(
 
     private async Task StopProducersAsync()
     {
-        if (_producers != null)
+        if (_producers is not null)
         {
             if (_producers.Count > 0)
             {
@@ -272,7 +274,7 @@ public sealed class V83ApplicationProducerService(
 
         public string Key => Settings.InfobaseUrl;
 
-        public bool Active => Error == null;
+        public bool Active => Error is null;
 
         public DateTimeOffset LastActivity { get; private set; }
 
@@ -301,6 +303,11 @@ public sealed class V83ApplicationProducerService(
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     LastActivity = DateTimeOffset.Now;
+
+                    if (Settings.SuspendSchedule is not null)
+                    {
+                        await WaitPeriodsEnd(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
+                    }
 
                     _logger.LogRequestInfobaseChanges(Key);
 

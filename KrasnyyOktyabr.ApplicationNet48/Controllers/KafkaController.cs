@@ -28,7 +28,7 @@ public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController
 
             using Stream bodyStream = await request.Content.ReadAsStreamAsync();
 
-            if (bodyStream == null || bodyStream.Length == 0)
+            if (bodyStream is null || bodyStream.Length == 0)
             {
                 throw new ArgumentException("Missing body");
             }

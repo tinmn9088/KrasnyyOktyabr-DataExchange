@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
@@ -65,7 +66,7 @@ public sealed class V77ApplicationConsumerService(
     {
         get
         {
-            if (_consumers == null || _consumers.Count == 0)
+            if (_consumers is null || _consumers.Count == 0)
             {
                 return StatusContainer<V77ApplicationConsumerStatus>.Empty;
             }
@@ -85,6 +86,7 @@ public sealed class V77ApplicationConsumerService(
                     Saved = consumer.Saved,
                     Topics = consumer.Topics,
                     ConsumerGroup = consumer.ConsumerGroup,
+                    SuspendSchedule = consumer.Settings.SuspendSchedule,
                 });
             }
 
@@ -141,7 +143,7 @@ public sealed class V77ApplicationConsumerService(
 
         try
         {
-            if (_consumers != null && _consumers.TryGetValue(key, out V77ApplicationConsumer? consumer))
+            if (_consumers is not null && _consumers.TryGetValue(key, out V77ApplicationConsumer? consumer))
             {
                 _consumers.Remove(key);
 
@@ -248,7 +250,7 @@ public sealed class V77ApplicationConsumerService(
     {
         V77ApplicationConsumerSettings[]? producersSettings = GetConsumersSettings();
 
-        if (producersSettings == null)
+        if (producersSettings is null)
         {
             logger.LogConfigurationNotFound();
 
@@ -290,7 +292,7 @@ public sealed class V77ApplicationConsumerService(
 
     private async Task StopConsumersAsync()
     {
-        if (_consumers != null)
+        if (_consumers is not null)
         {
             if (_consumers.Count > 0)
             {
@@ -349,7 +351,7 @@ public sealed class V77ApplicationConsumerService(
 
             InfobaseName = ExtractInfobaseName(settings.InfobasePath);
 
-            if (settings.ConsumerGroup != null)
+            if (settings.ConsumerGroup is not null)
             {
                 ConsumerGroup = settings.ConsumerGroup;
             }
@@ -374,7 +376,7 @@ public sealed class V77ApplicationConsumerService(
 
         public string Key => Settings.InfobasePath;
 
-        public bool Active => Error == null;
+        public bool Active => Error is null;
 
         public DateTimeOffset LastActivity { get; private set; }
 
@@ -402,7 +404,12 @@ public sealed class V77ApplicationConsumerService(
                 {
                     LastActivity = DateTimeOffset.Now;
 
-                    await WaitRdSessionsAllowed(_wmiService, _logger);
+                    if (Settings.SuspendSchedule is not null)
+                    {
+                        await WaitPeriodsEnd(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
+                    }
+
+                    await WaitRdSessionsAllowed(_wmiService, cancellationToken, _logger);
 
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);
 
@@ -425,7 +432,7 @@ public sealed class V77ApplicationConsumerService(
                         _logger,
                         cancellationToken);
 
-                    if (jsonTransformResults == null || jsonTransformResults.Count == 0)
+                    if (jsonTransformResults is null || jsonTransformResults.Count == 0)
                     {
                         consumer.Commit();
 

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 
-public class AbstractConsumerSettings
+public class AbstractConsumerSettings : AbstractSuspendableSettings
 {
     [Required]
     public string[] Topics { get; set; }

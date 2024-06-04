@@ -14,7 +14,7 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
     private static TimeSpan CheckInterval => TimeSpan.FromMinutes(3);
 
     /// <summary>
-    /// Minimout timeout before inactive service has to be restarted.
+    /// Minimal timeout before inactive service has to be restarted.
     /// </summary>
     public static TimeSpan MinRestartTimeout => TimeSpan.FromHours(1);
 
@@ -97,12 +97,14 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
 
     private static async ValueTask<(int, int)> Restart<T>(IServiceProvider provider, CancellationToken cancellationToken) where T : IRestartableHostedService
     {
+#nullable enable
         T? service = provider.GetService<T>();
+#nullable disable
 
         int stopped = 0;
         int started = 0;
 
-        if (service != null)
+        if (service is not null)
         {
             stopped = service.ManagedInstancesCount;
 
@@ -121,14 +123,14 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
         T? service = provider.GetService<T>();
 #nullable disable
 
-        if (service == null)
+        if (service is null)
         {
             return;
         }
 
         IStatusContainer<AbstractStatus> serviceStatus = service.Status;
 
-        if (serviceStatus.Statuses != null)
+        if (serviceStatus.Statuses is not null)
         {
             foreach (AbstractStatus status in serviceStatus.Statuses)
             {

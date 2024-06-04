@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using KrasnyyOktyabr.ApplicationNet48.Models.Configuration;
 using Newtonsoft.Json;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 

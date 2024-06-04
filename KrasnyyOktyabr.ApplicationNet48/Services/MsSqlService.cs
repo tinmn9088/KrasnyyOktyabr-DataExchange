@@ -176,7 +176,7 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
             .FirstOrDefault();
 #nullable disable
 
-        return applyMapping != null
+        return applyMapping is not null
             ? (string)applyMapping.Invoke(value)
             : throw new ValueMappingForSqlCommandNotFoundException(value.GetType().ToString());
     }

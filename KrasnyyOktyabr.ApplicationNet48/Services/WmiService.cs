@@ -39,7 +39,7 @@ public class WmiService(IMemoryCache cache, ILogger<WmiService> logger) : IWmiSe
             return logons;
         }
 
-        if (logons != null)
+        if (logons is not null)
         {
             return logons;
         }

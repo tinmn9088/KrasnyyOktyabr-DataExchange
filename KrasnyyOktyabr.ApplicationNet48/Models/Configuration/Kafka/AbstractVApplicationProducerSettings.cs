@@ -2,7 +2,7 @@
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 
-public class AbstractVApplicationProducerSettings
+public class AbstractVApplicationProducerSettings : AbstractSuspendableSettings
 {
     [Required]
     public string Username { get; set; }

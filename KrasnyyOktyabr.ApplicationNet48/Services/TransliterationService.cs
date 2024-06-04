@@ -83,7 +83,7 @@ public sealed class TransliterationService : ITransliterationService
 
     private static string TransliterateCyrillicToLatin(string source)
     {
-        if (source == null)
+        if (source is null)
         {
             throw new ArgumentNullException(nameof(source));
         }

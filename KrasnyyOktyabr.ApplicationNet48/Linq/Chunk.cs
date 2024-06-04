@@ -12,7 +12,7 @@ public static partial class Enumerable
     /// <exception cref="ArgumentOutOfRangeException"/>
     public static IEnumerable<TSource[]> Chunk<TSource>(this IEnumerable<TSource> source, int size)
     {
-        if (source == null)
+        if (source is null)
         {
             throw new ArgumentNullException(nameof(source));
         }

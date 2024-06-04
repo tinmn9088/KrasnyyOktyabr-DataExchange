@@ -25,7 +25,7 @@ public class JsonTransformController(IJsonService jsonService, ILogger<JsonTrans
 
         Stream bodyStream = await request.Content.ReadAsStreamAsync();
 
-        if (bodyStream == null)
+        if (bodyStream is null)
         {
             return BadRequest();
         }

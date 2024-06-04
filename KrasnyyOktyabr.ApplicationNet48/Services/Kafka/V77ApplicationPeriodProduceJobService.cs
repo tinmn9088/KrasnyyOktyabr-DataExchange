@@ -168,7 +168,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
                     resultName: "ObjectJSON",
                     cancellationToken).ConfigureAwait(false);
 
-                if (result == null || result.ToString() == "null")
+                if (result is null || result.ToString() == "null")
                 {
                     throw new FailedToGetObjectException(objectId);
                 }

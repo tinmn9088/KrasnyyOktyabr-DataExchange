@@ -18,6 +18,7 @@ using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
@@ -81,7 +82,7 @@ public sealed partial class V77ApplicationProducerService(
     {
         get
         {
-            if (_producers == null || _producers.Count == 0)
+            if (_producers is null || _producers.Count == 0)
             {
                 return StatusContainer<V77ApplicationProducerStatus>.Empty;
             }
@@ -104,6 +105,7 @@ public sealed partial class V77ApplicationProducerService(
                     InfobasePath = producer.InfobaseFullPath,
                     Username = producer.Username,
                     DataTypePropertyName = producer.DataTypeJsonPropertyName,
+                    SuspendSchedule = producer.Settings.SuspendSchedule,
                 });
             }
 
@@ -160,7 +162,7 @@ public sealed partial class V77ApplicationProducerService(
 
         try
         {
-            if (_producers != null && _producers.TryGetValue(key, out V77ApplicationProducer? producer))
+            if (_producers is not null && _producers.TryGetValue(key, out V77ApplicationProducer? producer))
             {
                 _producers.Remove(key);
 
@@ -276,7 +278,7 @@ public sealed partial class V77ApplicationProducerService(
                     resultName: "ObjectJSON",
                     cancellationToken).ConfigureAwait(false);
 
-                if (result == null || result.ToString() == "null")
+                if (result is null || result.ToString() == "null")
                 {
                     throw new FailedToGetObjectException(objectId);
                 }
@@ -355,7 +357,7 @@ public sealed partial class V77ApplicationProducerService(
     {
         V77ApplicationProducerSettings[]? producersSettings = GetProducersSettings();
 
-        if (producersSettings == null)
+        if (producersSettings is null)
         {
             logger.LogConfigurationNotFound();
 
@@ -400,7 +402,7 @@ public sealed partial class V77ApplicationProducerService(
 
     private async Task StopProducersAsync()
     {
-        if (_producers != null)
+        if (_producers is not null)
         {
             if (_producers.Count > 0)
             {
@@ -579,7 +581,7 @@ public sealed partial class V77ApplicationProducerService(
         {
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
-            if (Error != null)
+            if (Error is not null)
             {
                 _logger.LogErrorsExceeded(Key);
 
@@ -600,7 +602,12 @@ public sealed partial class V77ApplicationProducerService(
 
                             await Task.Delay(MinChangesInterval, cancellationToken).ConfigureAwait(false);
 
-                            await WaitRdSessionsAllowed(_wmiService, _logger);
+                            if (Settings.SuspendSchedule is not null)
+                            {
+                                await WaitPeriodsEnd(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
+                            }
+
+                            await WaitRdSessionsAllowed(_wmiService, cancellationToken, _logger);
 
                             _currentProcessingTask = ProcessChanges(cancellationToken);
 
@@ -707,7 +714,7 @@ public sealed partial class V77ApplicationProducerService(
     {
         string? commitedOffsetString = await offsetService.GetOffset(infobaseFullPath, cancellationToken).ConfigureAwait(false);
 
-        if (commitedOffsetString == null)
+        if (commitedOffsetString is null)
         {
             return new(
                 position: null,
@@ -742,7 +749,7 @@ public sealed partial class V77ApplicationProducerService(
     {
         await offsetService.CommitOffset(
             key: infobaseFullPath,
-            offset: position != null ? $"{position}{s_offsetValuesSeparator}{lastReadLine}" : lastReadLine,
+            offset: position is not null ? $"{position}{s_offsetValuesSeparator}{lastReadLine}" : lastReadLine,
             cancellationToken);
     }
 
