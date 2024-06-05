@@ -414,9 +414,13 @@ public sealed partial class V83ApplicationConsumerService(
                         _logger,
                         cancellationToken);
 
+                    LastActivity = DateTimeOffset.Now;
+
                     if (jsonTransformResults is null || jsonTransformResults.Count == 0)
                     {
                         consumer.Commit();
+
+                        LastActivity = DateTimeOffset.Now;
 
                         continue;
                     }
@@ -429,7 +433,11 @@ public sealed partial class V83ApplicationConsumerService(
 
                     Saved += jsonTransformResults.Count;
 
+                    LastActivity = DateTimeOffset.Now;
+
                     consumer.Commit();
+
+                    LastActivity = DateTimeOffset.Now;
                 }
             }
             catch (OperationCanceledException)
