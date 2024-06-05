@@ -390,7 +390,7 @@ public sealed partial class V83ApplicationConsumerService(
 
                     if (Settings.SuspendSchedule is not null)
                     {
-                        await WaitPeriodsEnd(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
+                        await WaitPeriodsEndAsync(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
                     }
 
                     ConsumeResult<string, string> consumeResult = consumer.Consume(cancellationToken);

@@ -32,7 +32,7 @@ public static class TimeHelper
     /// Uses <see cref="IsInPeriod(DateTimeOffset, TimePeriod)"/>.
     /// </summary>
     /// <exception cref="OperationCanceledException"></exception>
-    public static async ValueTask WaitPeriodsEnd(Func<DateTimeOffset> dateTimeProvider, IEnumerable<TimePeriod> periods, CancellationToken cancellationToken = default, ILogger logger = null)
+    public static async ValueTask WaitPeriodsEndAsync(Func<DateTimeOffset> dateTimeProvider, IEnumerable<TimePeriod> periods, CancellationToken cancellationToken = default, ILogger logger = null)
     {
         int periodNumber = 1;
 
