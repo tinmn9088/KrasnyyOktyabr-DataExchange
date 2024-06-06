@@ -177,29 +177,18 @@ public sealed class MsSqlConsumerService(
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        List<JsonTransformMsSqlResult> jsonTransformResults;
-
-        try
+        if (!settings.TopicsInstructionNames.TryGetValue(topic, out string? instructionName))
         {
-            if (!settings.TopicsInstructionNames.TryGetValue(topic, out string? instructionName))
-            {
-                throw new InstructionNotSpecifiedException(topic);
-            }
-
-            jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageMsSqlAsync(
-                instructionName,
-                message,
-                settings.TablePropertyName,
-                cancellationToken);
-
-            logger.LogJsonTransformResult(jsonTransformResults.Count);
+            throw new InstructionNotSpecifiedException(topic);
         }
-        catch (Exception ex)
-        {
-            logger.LogJsonTransformError(ex);
 
-            throw;
-        }
+        List<JsonTransformMsSqlResult> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageMsSqlAsync(
+            instructionName,
+            message,
+            settings.TablePropertyName,
+            cancellationToken);
+
+        logger.LogJsonTransformResult(jsonTransformResults.Count);
 
         return jsonTransformResults;
     };

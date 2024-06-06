@@ -183,28 +183,17 @@ public sealed partial class V83ApplicationConsumerService(
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        List<string> jsonTransformResults;
-
-        try
+        if (!settings.TopicsInstructionNames.TryGetValue(topic, out string? instructionName))
         {
-            if (!settings.TopicsInstructionNames.TryGetValue(topic, out string? instructionName))
-            {
-                throw new InstructionNotSpecifiedException(topic);
-            }
-
-            jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageVApplicationAsync(
-                instructionName,
-                message,
-                cancellationToken);
-
-            logger.LogJsonTransformResult(jsonTransformResults.Count);
+            throw new InstructionNotSpecifiedException(topic);
         }
-        catch (Exception ex)
-        {
-            logger.LogJsonTransformError(ex);
 
-            throw;
-        }
+        List<string> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageVApplicationAsync(
+            instructionName,
+            message,
+            cancellationToken);
+
+        logger.LogJsonTransformResult(jsonTransformResults.Count);
 
         return jsonTransformResults;
     };
