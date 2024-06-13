@@ -211,7 +211,7 @@ public sealed class V77ApplicationConsumerService(
 
         ConnectionProperties connectionProperties = new(
             infobasePath: infobaseFullPath,
-            username: settings.Username,
+            username: settings.Username ?? string.Empty,
             password: settings.Password
         );
 
@@ -226,11 +226,16 @@ public sealed class V77ApplicationConsumerService(
                     { "ObjectJson", result },
                 };
 
-                await connection.RunErtAsync(
+                object? error = await connection.RunErtAsync(
                     ertRelativePath: GetErtRelativePath(settings),
                     ertContext,
-                    resultName: null,
+                    resultName: "Error",
                     cancellationToken).ConfigureAwait(false);
+
+                if (error is not null)
+                {
+                    throw new FailedToSaveObjectException(error.ToString());
+                }
             }
         }
     };
@@ -491,6 +496,13 @@ public sealed class V77ApplicationConsumerService(
     public class InstructionNotSpecifiedException : Exception
     {
         internal InstructionNotSpecifiedException(string topic) : base($"Instruction not specified for '{topic}'")
+        {
+        }
+    }
+
+    public class FailedToSaveObjectException : Exception
+    {
+        internal FailedToSaveObjectException(string message) : base(message)
         {
         }
     }
