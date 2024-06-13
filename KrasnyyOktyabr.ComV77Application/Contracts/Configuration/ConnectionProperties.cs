@@ -2,7 +2,7 @@
 
 public record ConnectionProperties
 {
-    public ConnectionProperties(string infobasePath, string username, string password)
+    public ConnectionProperties(string infobasePath, string username, string? password)
     {
         InfobasePath = infobasePath;
         Username = username;
@@ -13,5 +13,5 @@ public record ConnectionProperties
 
     public string Username { get; }
 
-    public string Password { get; }
+    public string? Password { get; }
 }
