@@ -19,8 +19,24 @@ public class HttpDataResolver(HttpClient httpClient, HttpRequestMessage request)
     {
         HttpResponseMessage response = await _httpClient.SendAsync(_request, cancellationToken).ConfigureAwait(false);
 
-        response.EnsureSuccessStatusCode();
+        string responseContent = await response.Content.ReadAsStringAsync();
 
-        return await response.Content.ReadAsStringAsync();
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new HttpDataResolverException($"{ex.Message} {responseContent}");
+        }
+
+        return responseContent;
+    }
+
+    public class HttpDataResolverException : Exception
+    {
+        internal HttpDataResolverException(string message) : base(message)
+        {
+        }
     }
 }
