@@ -1,4 +1,6 @@
-﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
+﻿using Newtonsoft.Json.Linq;
+
+namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 /// <summary>
 /// Translates inner expression result to <see cref="string"/> or throws <see cref="NullReferenceException"/>.
@@ -19,6 +21,6 @@ public sealed class StringCastExpression(IExpression<Task> innerExpression) : Ab
             return stringResult;
         }
 
-        return innerExpressionTaskResult.ToString() ?? throw new NullReferenceException();
+        return JToken.FromObject(innerExpressionTaskResult).ToString();
     }
 }
