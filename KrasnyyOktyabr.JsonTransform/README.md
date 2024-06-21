@@ -508,7 +508,7 @@ Returns _false_.
 
 ```json
 {
-  "$and": {
+  "$or": {
     "left": true,
     "right": false
   }
