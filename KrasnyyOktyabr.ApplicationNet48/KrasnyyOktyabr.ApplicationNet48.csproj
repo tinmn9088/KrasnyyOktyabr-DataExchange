@@ -265,6 +265,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\V77ApplicationResolverController.cs" />
     <Compile Include="Controllers\ControllersHelper.cs" />
     <Compile Include="Controllers\HealthController.cs" />
     <Compile Include="Controllers\JsonTransformController.cs" />
@@ -317,6 +318,7 @@
     <Compile Include="Models\Kafka\V83ApplicationConsumerStatus.cs" />
     <Compile Include="Models\Kafka\V83ApplicationProducerStatus.cs" />
     <Compile Include="Models\RestartResult.cs" />
+    <Compile Include="Models\V77ApplicationResolverRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DataResolve\ComV77ApplicationResolver.cs" />
     <Compile Include="Services\DataResolve\DataResolveService.cs" />

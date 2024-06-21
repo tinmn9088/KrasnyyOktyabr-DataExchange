@@ -12,7 +12,7 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
-using static Confluent.Kafka.ConfigPropertyNames;
+
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
 public class HealthController(HealthCheckService healthCheckService) : ApiController
