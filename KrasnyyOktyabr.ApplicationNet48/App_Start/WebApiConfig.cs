@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
+using KrasnyyOktyabr.ApplicationNet48.Filters;
 
 namespace KrasnyyOktyabr.ApplicationNet48;
 
@@ -32,5 +33,8 @@ public static class WebApiConfig
             name: "JsonTransformApi",
             routeTemplate: "api/{controller}/{action}" // JsonTransformController
         );
+
+        // Enable models validation
+        config.Filters.Add(new ValidateModelAttribute());
     };
 }

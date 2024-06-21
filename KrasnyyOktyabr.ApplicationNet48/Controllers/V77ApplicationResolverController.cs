@@ -34,14 +34,23 @@ public class V77ApplicationResolverController(IComV77ApplicationConnectionFactor
 
             object? result = await resolver.ResolveAsync(cancellationToken);
 
-            return base.ResponseMessage(new HttpResponseMessage()
+            if (request.ResultName is not null && result is null)
             {
-                Content = new StringContent(result?.ToString()),
-            });
+                throw new ErtReturnedNothing(request.ResultName);
+            }
+
+            return result is not null
+                ? base.ResponseMessage(new HttpResponseMessage() { Content = new StringContent(result.ToString()) })
+                : Ok();
         }
         catch (Exception ex)
         {
             return BadRequest($"{ex.GetType().Name}: {ex.Message}");
         }
+    }
+
+    private class ErtReturnedNothing(string resultName)
+    : Exception($"Context value '{resultName}' is empty after ERT execution")
+    {
     }
 }

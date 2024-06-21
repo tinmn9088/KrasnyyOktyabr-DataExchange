@@ -276,6 +276,7 @@
     <Compile Include="DependencyInjection\JsonTransformDependencyInjectionHelper.cs" />
     <Compile Include="DependencyInjection\KafkaDependencyInjectionHelper.cs" />
     <Compile Include="DependencyInjection\ServiceProviderExtensions.cs" />
+    <Compile Include="Filters\ValidateModelAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
