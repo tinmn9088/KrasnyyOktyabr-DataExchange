@@ -9,19 +9,24 @@
     "$add": {
       "key": "answer",
       "value": {
-        "comment": "3 + 39",
-        "$sum": {
-          "left": {
-            "$cast": {
-              "type": "int",
-              "value": {
-                "$mget": {
-                  "name": "three"
+        "$cast": {
+          "value": {
+            "comment": "3 + 39",
+            "$sum": {
+              "left": {
+                "$cast": {
+                  "type": "int",
+                  "value": {
+                    "$mget": {
+                      "name": "three"
+                    }
+                  }
                 }
-              }
+              },
+              "right": 39
             }
           },
-          "right": 39
+          "type": "string"
         }
       }
     }
