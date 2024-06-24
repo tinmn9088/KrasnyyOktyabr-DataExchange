@@ -334,7 +334,7 @@ public class JsonAbstractFactoryTests
 
         Assert.AreEqual(1, output.Count);
         Assert.IsTrue(output[0].ContainsKey("answer"));
-        Assert.AreEqual(42, output[0]["answer"]);
+        Assert.AreEqual("42", output[0]["answer"]);
     }
 
     [TestMethod]
