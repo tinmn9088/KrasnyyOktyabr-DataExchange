@@ -22,6 +22,8 @@ public interface IValueTable : IEnumerable<List<object?>>
     /// <exception cref="CoulmnNotFoundException"></exception>
     object? GetValue(string name);
 
+    void Collapse(string[] columnsToGroup, string[] columnsToSum);
+
     public class LineNotSelectedException : Exception
     {
     }

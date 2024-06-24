@@ -25,7 +25,7 @@ public class ValueTableTests
     {
         // Arrange
         string column1 = "StringColumn";
-        string column2 = "StringColumn";
+        string column2 = "NumberColumn";
 
         // Act
         ValueTable table = new([column1, column2]);
@@ -42,5 +42,51 @@ public class ValueTableTests
 
         table.SelectLine(0);
         Assert.AreEqual(666, table.GetValue(column2));
+    }
+
+    [TestMethod]
+    public void Collapse_ShouldGroupByColumnsProvided()
+    {
+        // Arrange
+        string column1 = "String1Column";
+        string column2 = "String2Column";
+        string column3 = "Number1Column";
+        string column4 = "Number2Column";
+
+        // Act
+        ValueTable table = new([column1, column2]);
+
+        table.AddLine();
+        table.SetValue(column1, "Group1");
+        table.SetValue(column2, "Group1");
+        table.SetValue(column3, 1);
+        table.SetValue(column4, 2);
+
+        table.AddLine();
+        table.SetValue(column1, "Group1");
+        table.SetValue(column2, "Group1");
+        table.SetValue(column3, 3);
+        table.SetValue(column4, 4);
+
+        table.AddLine();
+        table.SetValue(column1, "Group2");
+        table.SetValue(column2, "Group2");
+        table.SetValue(column3, 5);
+        table.SetValue(column4, 5);
+
+        table.AddLine();
+        table.SetValue(column1, "Group3");
+        table.SetValue(column2, "Group3");
+        table.SetValue(column3, 6);
+        table.SetValue(column4, 7);
+
+        table.AddLine();
+        table.SetValue(column1, "Group3");
+        table.SetValue(column2, "Group3");
+        table.SetValue(column3, 8);
+        table.SetValue(column4, 9);
+
+        // TODO: Assert
+        throw new NotImplementedException();
     }
 }

@@ -7,9 +7,9 @@ public sealed class ValueTable : IValueTable
 {
     private const int NOT_SELECTED_LINE_INDEX = -1;
 
-    private readonly List<List<object?>> _values;
+    private List<List<object?>> _values;
 
-    private readonly List<string> _columns;
+    private List<string> _columns;
 
     private int _currentLineIndex;
 
@@ -63,6 +63,22 @@ public sealed class ValueTable : IValueTable
         int columnIndex = GetColumnIndexByName(name);
 
         return _values[_currentLineIndex][columnIndex];
+    }
+
+    public void Collapse(string[] columnsToGroup, string[] columnsToSum)
+    {
+        List<string> newColumns = [.. columnsToGroup, .. columnsToSum];
+
+        List<List<object?>> collapsedValues = [];
+
+        foreach (List<object?> line in _values)
+        {
+            // TODO: implement
+            throw new NotImplementedException();
+        }
+
+        _columns = newColumns;
+        _values = collapsedValues;
     }
 
     /// <exception cref="LineNotSelectedException"></exception>
