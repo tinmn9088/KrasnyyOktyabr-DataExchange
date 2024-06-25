@@ -87,6 +87,8 @@ public sealed class ValueTable : IValueTable
                 : valuesToSum;
         }
 
+        _currentLineIndex = NOT_SELECTED_LINE_INDEX;
+
         _columns = [.. columnsToGroup, .. columnsToSum];
 
         static List<object?> JoinKeyAndCollapsedValues(CollapseKey key, List<Number> sum) => [.. key.Value, .. sum];
