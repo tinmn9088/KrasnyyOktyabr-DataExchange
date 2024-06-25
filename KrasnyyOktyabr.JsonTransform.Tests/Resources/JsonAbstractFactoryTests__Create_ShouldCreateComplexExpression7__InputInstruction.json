@@ -1,0 +1,197 @@
+﻿[
+  {
+    "comment": "Create table with columns 'group' and 'sum'",
+    "$mset": {
+      "name": "table",
+      "value": {
+        "$createtable": {
+          "columns": "group, sum"
+        }
+      }
+    }
+  },
+  {
+    "comment": "Add first line",
+    "$addline": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      }
+    }
+  },
+  {
+    "comment": "Set value for column 'group' at first line",
+    "$setvalue": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "column": "group",
+      "value": "gr1"
+    }
+  },
+  {
+    "comment": "Set value for column 'sum' at first line",
+    "$setvalue": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "column": "sum",
+      "value": 1
+    }
+  },
+  {
+    "comment": "Add second line",
+    "$addline": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      }
+    }
+  },
+  {
+    "comment": "Set value for column 'group' at second line",
+    "$setvalue": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "column": "group",
+      "value": "gr1"
+    }
+  },
+  {
+    "comment": "Set value for column 'sum' at second line",
+    "$setvalue": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "column": "sum",
+      "value": 5
+    }
+  },
+  {
+    "comment": "Select first line again (index 0)",
+    "$selectline": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "index": 0
+    }
+  },
+  {
+    "comment": "Update value for column 'sum' at first line",
+    "$setvalue": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "column": "sum",
+      "value": 37
+    }
+  },
+  {
+    "comment": "Group table by 'group' column and calculate sum for 'sum'",
+    "$collapse": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "group": "group",
+      "sum": "sum"
+    }
+  },
+  {
+    "comment": "Select first line after collapsing",
+    "$selectline": {
+      "table": {
+        "$cast": {
+          "value": {
+            "$mget": {
+              "name": "table"
+            }
+          },
+          "type": "valuetable"
+        }
+      },
+      "index": 0
+    }
+  },
+  {
+    "$add": {
+      "key": "answer",
+      "value": {
+        "$getvalue": {
+          "table": {
+            "$cast": {
+              "value": {
+                "$mget": {
+                  "name": "table"
+                }
+              },
+              "type": "valuetable"
+            }
+          },
+          "column": "sum"
+        }
+      }
+    }
+  }
+]

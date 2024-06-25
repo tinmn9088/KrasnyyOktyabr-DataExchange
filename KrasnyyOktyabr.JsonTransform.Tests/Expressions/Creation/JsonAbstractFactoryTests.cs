@@ -382,6 +382,56 @@ public class JsonAbstractFactoryTests
         Assert.AreEqual(42, output[0]["answer"]);
     }
 
+    [TestMethod]
+    public async Task Create_ShouldCreateComplexExpression7()
+    {
+        JsonConstLongExpressionFactory constIntExpressionFactory = new();
+        JsonConstStringExpressionFactory constStringExpressionFactory = new();
+        JsonMemorySetExpressionFactory memorySetExpressionFactory = new(_abstractFactory!);
+        JsonMemoryGetExpressionFactory memoryGetExpressionFactory = new(_abstractFactory!);
+        JsonExpressionsBlockFactory expressionsBlockFactory = new(_abstractFactory!);
+        JsonCastExpressionsFactory castExpressionsFactory = new(_abstractFactory!);
+        JsonAddExpressionFactory addExpressionFactory = new(_abstractFactory!);
+        JsonValueTableCreateExpressionFactory valueTableCreateExpressionFactory = new(_abstractFactory!);
+        JsonValueTableAddLineExpressionFactory valueTableAddLineExpressionFactory = new(_abstractFactory!);
+        JsonValueTableSelectLineExpressionFactory valueTableSelectLineExpressionFactory = new(_abstractFactory!);
+        JsonValueTableSetValueExpressionFactory valueTableSetValueExpressionFactory = new(_abstractFactory!);
+        JsonValueTableGetValueExpressionFactory valueTableGetValueExpressionFactory = new(_abstractFactory!);
+        JsonValueTableCollapseExpressionFactory valueTableCollapseExpressionFactory = new(_abstractFactory!);
+        JsonValueTableCountExpressionFactory valueTableCountExpressionFactory = new(_abstractFactory!);
+
+        _abstractFactory!.ExpressionFactories =
+        [
+            constIntExpressionFactory,
+            constStringExpressionFactory,
+            memorySetExpressionFactory,
+            memoryGetExpressionFactory,
+            expressionsBlockFactory,
+            castExpressionsFactory,
+            addExpressionFactory,
+            valueTableCreateExpressionFactory,
+            valueTableAddLineExpressionFactory,
+            valueTableSelectLineExpressionFactory,
+            valueTableSetValueExpressionFactory,
+            valueTableGetValueExpressionFactory,
+            valueTableCollapseExpressionFactory,
+            valueTableCountExpressionFactory,
+        ];
+
+        JToken input = await GetCurrentTestInputInstructionAsync();
+
+        ExpressionsBlock expression = _abstractFactory.Create<ExpressionsBlock>(input);
+
+        Context context = CreateEmptyExpressionContext();
+
+        await expression.InterpretAsync(context);
+
+        List<JObject> output = context.OutputGet();
+
+        Assert.AreEqual(1, output.Count);
+        Assert.AreEqual(42, output[0]["answer"]);
+    }
+
     /// <exception cref="NullReferenceException"></exception>
     private async Task<JToken> GetCurrentTestInputInstructionAsync()
     {
