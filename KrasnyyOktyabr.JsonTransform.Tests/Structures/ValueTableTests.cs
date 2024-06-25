@@ -1,6 +1,4 @@
-﻿using KrasnyyOktyabr.JsonTransform.Structures;
-
-namespace KrasnyyOktyabr.JsonTransform.Tests.Structures;
+﻿namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
 
 [TestClass]
 public class ValueTableTests
