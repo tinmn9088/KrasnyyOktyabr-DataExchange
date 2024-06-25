@@ -16,7 +16,7 @@ public class ValueTableSelectLineTests
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((IValueTable)null!);
 
-        Mock<IExpression<Task<int>>> indexExpressionMock = new();
+        Mock<IExpression<Task<long>>> indexExpressionMock = new();
         indexExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(0);
@@ -48,7 +48,7 @@ public class ValueTableSelectLineTests
             .ReturnsAsync(valueTable);
 
         // Setting up index expression mock
-        Mock<IExpression<Task<int>>> indexExpressionMock = new();
+        Mock<IExpression<Task<long>>> indexExpressionMock = new();
         indexExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);

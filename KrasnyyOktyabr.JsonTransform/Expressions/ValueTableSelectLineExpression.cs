@@ -4,12 +4,12 @@ namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 public sealed class ValueTableSelectLineExpression(
     IExpression<Task<IValueTable>> valueTableExpression,
-    IExpression<Task<int>> indexExpression)
+    IExpression<Task<long>> indexExpression)
     : AbstractExpression<Task>
 {
     private readonly IExpression<Task<IValueTable>> _valueTableExpression = valueTableExpression ?? throw new ArgumentNullException(nameof(valueTableExpression));
 
-    private readonly IExpression<Task<int>> _indexExpression = indexExpression ?? throw new ArgumentNullException(nameof(indexExpression));
+    private readonly IExpression<Task<long>> _indexExpression = indexExpression ?? throw new ArgumentNullException(nameof(indexExpression));
 
     public override async Task InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
@@ -17,9 +17,9 @@ public sealed class ValueTableSelectLineExpression(
         {
             IValueTable valueTable = await _valueTableExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-            int index = await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
+            long index = await _indexExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
-            valueTable.SelectLine(index);
+            valueTable.SelectLine(Convert.ToInt32(index));
         }
         catch (InterpretException)
         {

@@ -106,9 +106,9 @@ public class JsonValueTableSelectLineExpressionFactoryTests
             .Returns(addLineToValueTableExpressionMock.Object);
 
         // Setting up index instruction mock
-        Mock<IExpression<Task<int>>> selectLineInValueTableExpressionMock = new();
+        Mock<IExpression<Task<long>>> selectLineInValueTableExpressionMock = new();
         _abstractFactoryMock!
-            .Setup(f => f.Create<IExpression<Task<int>>>(It.IsAny<JToken>()))
+            .Setup(f => f.Create<IExpression<Task<long>>>(It.IsAny<JToken>()))
             .Returns(selectLineInValueTableExpressionMock.Object);
 
         JObject input = new()

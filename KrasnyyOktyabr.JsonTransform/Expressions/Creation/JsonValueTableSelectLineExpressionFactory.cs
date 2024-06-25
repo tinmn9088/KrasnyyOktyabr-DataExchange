@@ -48,7 +48,7 @@ public sealed class JsonValueTableSelectLineExpressionFactory(IJsonAbstractExpre
         JToken indexInstruction = instruction[JsonSchemaPropertyIndex]!;
 
         IExpression<Task<IValueTable>> valueTableExpression = factory.Create<IExpression<Task<IValueTable>>>(valueTableInstruction);
-        IExpression<Task<int>> indexExpression = factory.Create<IExpression<Task<int>>>(indexInstruction);
+        IExpression<Task<long>> indexExpression = factory.Create<IExpression<Task<long>>>(indexInstruction);
 
         return new(valueTableExpression, indexExpression);
     }
