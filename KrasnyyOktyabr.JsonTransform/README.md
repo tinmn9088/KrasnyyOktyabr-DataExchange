@@ -4,15 +4,16 @@
 
 ### Table of contents 
 
-| Group                       | Instructions                                                                                     |
-| :---                        | :---                                                                                             |
-| [Context](#context)         | [$add](#add), [$mget](#mget), [$mset](#mset), [$select](#select)                                 |
-| [Arithmetic](#arithmetic)   | [$sum](#sum), [$substract](#substract), [$mul](#mul), [$div](#div), [$round](#round)             |
-| [Logical](#logical)         | [$and](#and), [$eq](#eq), [$neq](#neq), [$gt](#gt), [$gte](#gte), [$not](#not), [$or](#or)       |
-| [Containers](#containers)   | [Array](#array), [ExpressionsBlock](#expressionsblock), [$map](#map)                             |
-| [Conditional](#conditional) | [$if](#if)                                                                                       |
-| [Loops](#loops)             | [$cur](#cur), [$curindex](#curindex), [$foreach](#foreach), [$while](#while)                     |
-| [Other](#other)             | [$cast](#cast), [$resolve](#resolve), [$regexgetgroup](#regexgetgroup), [$strformat](#strformat) |
+| Group                       | Instructions                                                                                                                                       |
+| :---                        | :---                                                                                                                                               |
+| [Context](#context)         | [$add](#add), [$mget](#mget), [$mset](#mset), [$select](#select)                                                                                   |
+| [Arithmetic](#arithmetic)   | [$sum](#sum), [$substract](#substract), [$mul](#mul), [$div](#div), [$round](#round)                                                               |
+| [Logical](#logical)         | [$and](#and), [$eq](#eq), [$neq](#neq), [$gt](#gt), [$gte](#gte), [$not](#not), [$or](#or)                                                         |
+| [Containers](#containers)   | [Array](#array), [ExpressionsBlock](#expressionsblock), [$map](#map)                                                                               |
+| [Conditional](#conditional) | [$if](#if)                                                                                                                                         |
+| [Loops](#loops)             | [$cur](#cur), [$curindex](#curindex), [$foreach](#foreach), [$while](#while)                                                                       |
+| [ValueTable](#valuetable)   | [$createtable](#createtable), [$addline](#addline), [$setvalue](#setvalue), [$getvalue](#getvalue), [$selectline](#selectline), [$collapse](#collapse), [$tablesize](#tablesize) |
+| [Other](#other)             | [$cast](#cast), [$resolve](#resolve), [$regexgetgroup](#regexgetgroup), [$strformat](#strformat)                                                   |
 
 
 
@@ -764,6 +765,244 @@ or
 
 
 
+### ValueTable
+
+#### $createtable
+
+##### Description
+
+Create empty `valuetable` with provided column names.
+
+##### Returns
+
+`valuetable`.
+
+##### Example
+
+```json
+{
+  "$createtable": {
+    "columns": "column1,column2"
+  }
+}
+```
+
+Creates a table with columns _"column1"_ and _"column2"_.
+
+
+#### $addline
+
+##### Description
+
+Appends an empty line to the table and selects it.
+
+##### Parameters
+
+| Name    | Type              | 
+|:---     |:---               |
+| `table` | `valuetable` exp. |
+
+##### Example
+
+```json
+{
+  "$addline": {
+    "table": {
+      "$cast": {
+        "value": {
+          "$mget": {
+            "name": "myTable"
+          }
+        },
+        "type": "valuetable"
+      }
+    }
+  }
+}
+```
+
+
+#### $setvalue
+
+##### Description
+
+Update value at the selected line for the provided column.
+
+##### Parameters
+
+| Name     | Type              | 
+|:---      |:---               |
+| `table`  | `valuetable` exp. |
+| `column` | `string` exp.     |
+| `value`  | `any` exp.        |
+
+##### Example
+
+```json
+{
+  "$setvalue": {
+    "table": {
+      "$cast": {
+        "value": {
+          "$mget": {
+            "name": "myTable"
+          }
+        },
+        "type": "valuetable"
+      }
+    },
+    "column": "myColumn",
+    "value": 666
+  }
+}
+```
+
+
+#### $getvalue
+
+##### Description
+
+Get value from the selected line and provided column.
+
+##### Parameters
+
+| Name     | Type              | 
+|:---      |:---               |
+| `table`  | `valuetable` exp. |
+| `column` | `string` exp.     |
+
+##### Returns
+
+`any`.
+
+##### Example
+
+```json
+{
+  "$getvalue": {
+    "table": {
+      "$cast": {
+        "value": {
+          "$mget": {
+            "name": "myTable"
+          }
+        },
+        "type": "valuetable"
+      }
+    },
+    "column": "myColumn"
+  }
+}
+```
+
+
+#### $selectline
+
+##### Description
+
+Select line in the table.
+
+##### Parameters
+
+| Name    | Type              | 
+|:---     |:---               |
+| `table` | `valuetable` exp. |
+| `index` | `int` exp.        |
+
+##### Example
+
+```json
+{
+  "$selectline": {
+    "table": {
+      "$cast": {
+        "value": {
+          "$mget": {
+            "name": "myTable"
+          }
+        },
+        "type": "valuetable"
+      }
+    },
+    "index": 2
+  }
+}
+```
+
+
+#### $collapse
+
+##### Description
+
+Collapse the table by the corresponding columns, i.e. replaces all duplicate rows (by grouping) with one row, summing values from columns to sum.
+
+##### Parameters
+
+| Name    | Type              | 
+|:---     |:---               |
+| `table` | `valuetable` exp. |
+| `group` | `string` exp.     |
+| `sum`   | `string` exp.     |
+
+##### Example
+
+```json
+{
+  "$collapse": {
+    "table": {
+      "$cast": {
+        "value": {
+          "$mget": {
+            "name": "myTable"
+          }
+        },
+        "type": "valuetable"
+      }
+    },
+    "group": "group1,group2",
+    "sum": "sum1,sum2"
+  }
+}
+```
+
+
+#### $tablesize
+
+##### Description
+
+Get number of lines in the table.
+
+##### Parameters
+
+| Name     | Type              | 
+|:---      |:---               |
+| `table`  | `valuetable` exp. |
+
+##### Returns
+
+`int`.
+
+##### Example
+
+```json
+{
+  "$tablesize": {
+    "table": {
+      "$cast": {
+        "value": {
+          "$mget": {
+            "name": "myTable"
+          }
+        },
+        "type": "valuetable"
+      }
+    }
+  }
+}
+```
+
+
+
 ### Other
 
 #### $cast
@@ -788,6 +1027,7 @@ When `type` is:
 * _"string"_ -> `string`
 * _"bool"_ -> `bool`
 * _"array"_ -> `array`
+* _"valuetable"_ -> `valuetable`
 
 ##### Example
 
