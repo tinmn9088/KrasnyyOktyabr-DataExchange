@@ -48,20 +48,20 @@ public sealed class ValueTable : IValueTable
         _currentLineIndex = index;
     }
 
-    public void SetValue(string name, object? value)
+    public void SetValue(string column, object? value)
     {
         CheckLineIsSelected();
 
-        int columnIndex = GetColumnIndexByName(name);
+        int columnIndex = GetColumnIndexByName(column);
 
         _values[_currentLineIndex][columnIndex] = value;
     }
 
-    public object? GetValue(string name)
+    public object? GetValue(string column)
     {
         CheckLineIsSelected();
 
-        int columnIndex = GetColumnIndexByName(name);
+        int columnIndex = GetColumnIndexByName(column);
 
         return _values[_currentLineIndex][columnIndex];
     }

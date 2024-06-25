@@ -16,11 +16,11 @@ public interface IValueTable : IEnumerable<List<object?>>
 
     /// <exception cref="LineNotSelectedException"></exception>
     /// <exception cref="CoulmnNotFoundException"></exception>
-    void SetValue(string name, object? value);
+    void SetValue(string column, object? value);
 
     /// <exception cref="LineNotSelectedException"></exception>
     /// <exception cref="CoulmnNotFoundException"></exception>
-    object? GetValue(string name);
+    object? GetValue(string column);
 
     /// <summary>
     /// Collapse the table by the corresponding <paramref name="columnsToGroup"/>,

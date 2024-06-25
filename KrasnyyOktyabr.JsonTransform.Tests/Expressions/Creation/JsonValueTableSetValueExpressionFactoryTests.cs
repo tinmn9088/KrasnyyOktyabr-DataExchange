@@ -2,22 +2,21 @@
 using Moq;
 using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
-using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonValueTableSelectLineExpressionFactory;
+using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonValueTableSetValueExpressionFactory;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation.Tests;
-
 [TestClass]
-public class JsonValueTableSelectLineExpressionFactoryTests
+public class JsonValueTableSetValueExpressionFactoryTests
 {
     private Mock<IJsonAbstractExpressionFactory>? _abstractFactoryMock;
 
-    private JsonValueTableSelectLineExpressionFactory? _valueTableSelectLineExpressionFactory;
+    private JsonValueTableSetValueExpressionFactory? _valueTableSetValueExpressionFactory;
 
     [TestInitialize]
     public void Initialize()
     {
         _abstractFactoryMock = new();
-        _valueTableSelectLineExpressionFactory = new(_abstractFactoryMock.Object);
+        _valueTableSetValueExpressionFactory = new(_abstractFactoryMock.Object);
     }
 
     [TestMethod]
@@ -26,16 +25,17 @@ public class JsonValueTableSelectLineExpressionFactoryTests
         JObject input = new()
         {
             {
-                JsonSchemaPropertySelectLine,
+                JsonSchemaPropertySetValue,
                 new JObject()
                 {
                     { JsonSchemaPropertyTable, null },
-                    { JsonSchemaPropertyIndex, null },
+                    { JsonSchemaPropertyColumn, null },
+                    { JsonSchemaPropertyValue, null },
                 }
             },
         };
 
-        bool isMatch = _valueTableSelectLineExpressionFactory!.Match(input);
+        bool isMatch = _valueTableSetValueExpressionFactory!.Match(input);
 
         Assert.IsTrue(isMatch);
     }
@@ -49,16 +49,17 @@ public class JsonValueTableSelectLineExpressionFactoryTests
                 JsonSchemaPropertyComment, "TestComment"
             },
             {
-                JsonSchemaPropertySelectLine,
+                JsonSchemaPropertySetValue,
                 new JObject()
                 {
                     { JsonSchemaPropertyTable, null },
-                    { JsonSchemaPropertyIndex, null },
+                    { JsonSchemaPropertyColumn, null },
+                    { JsonSchemaPropertyValue, null },
                 }
             },
         };
 
-        bool isMatch = _valueTableSelectLineExpressionFactory!.Match(input);
+        bool isMatch = _valueTableSetValueExpressionFactory!.Match(input);
 
         Assert.IsTrue(isMatch);
     }
@@ -75,16 +76,17 @@ public class JsonValueTableSelectLineExpressionFactoryTests
                 JsonSchemaPropertyComment, "TestComment"
             },
             {
-                JsonSchemaPropertySelectLine,
+                JsonSchemaPropertySetValue,
                 new JObject()
                 {
                     { JsonSchemaPropertyTable, null },
-                    { JsonSchemaPropertyIndex, null },
+                    { JsonSchemaPropertyColumn, null },
+                    { JsonSchemaPropertyValue, null },
                 }
             },
         };
 
-        bool isMatch = _valueTableSelectLineExpressionFactory!.Match(input);
+        bool isMatch = _valueTableSetValueExpressionFactory!.Match(input);
 
         Assert.IsFalse(isMatch);
     }
@@ -93,7 +95,7 @@ public class JsonValueTableSelectLineExpressionFactoryTests
     [ExpectedException(typeof(ArgumentNullException))]
     public void Create_WhenInputNull_ShouldThrowArgumentNullException()
     {
-        _valueTableSelectLineExpressionFactory!.Create(null!);
+        _valueTableSetValueExpressionFactory!.Create(null!);
     }
 
     [TestMethod]
@@ -105,29 +107,36 @@ public class JsonValueTableSelectLineExpressionFactoryTests
             .Setup(f => f.Create<IExpression<Task<IValueTable>>>(It.IsAny<JToken>()))
             .Returns(addLineToValueTableExpressionMock.Object);
 
-        // Setting up index instruction mock
-        Mock<IExpression<Task<int>>> selectLineInValueTableExpressionMock = new();
+        // Setting up column instruction mock
+        Mock<IExpression<Task<string>>> columnExpressionMock = new();
         _abstractFactoryMock!
-            .Setup(f => f.Create<IExpression<Task<int>>>(It.IsAny<JToken>()))
-            .Returns(selectLineInValueTableExpressionMock.Object);
+            .Setup(f => f.Create<IExpression<Task<string>>>(It.IsAny<JToken>()))
+            .Returns(columnExpressionMock.Object);
+
+        // Setting up value instruction mock
+        Mock<IExpression<Task<object?>>> valueExpressionMock = new();
+        _abstractFactoryMock!
+            .Setup(f => f.Create<IExpression<Task<object?>>>(It.IsAny<JToken>()))
+            .Returns(valueExpressionMock.Object);
 
         JObject input = new()
         {
             { JsonSchemaPropertyComment, "TestComment" },
             {
-                JsonSchemaPropertySelectLine,
+                JsonSchemaPropertySetValue,
                 new JObject()
                 {
                     { JsonSchemaPropertyTable, new JObject() },
-                    { JsonSchemaPropertyIndex, new JObject() },
+                    { JsonSchemaPropertyColumn, new JObject() },
+                    { JsonSchemaPropertyValue, new JObject() },
                 }
             },
         };
 
-        ValueTableSelectLineExpression expression = _valueTableSelectLineExpressionFactory!.Create(input);
+        ValueTableSetValueExpression expression = _valueTableSetValueExpressionFactory!.Create(input);
 
         Assert.IsNotNull(expression);
-        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task>>(It.IsAny<JToken>()), Times.Exactly(2));
+        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task>>(It.IsAny<JToken>()), Times.Exactly(3));
         _abstractFactoryMock.VerifyNoOtherCalls();
     }
 }

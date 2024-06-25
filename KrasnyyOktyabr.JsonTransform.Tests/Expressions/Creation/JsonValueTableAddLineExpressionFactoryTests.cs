@@ -1,8 +1,8 @@
 ﻿using KrasnyyOktyabr.JsonTransform.Structures;
 using Moq;
 using Newtonsoft.Json.Linq;
-using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonValueTableAddLineExpressionFactory;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
+using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonValueTableAddLineExpressionFactory;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation.Tests;
 
