@@ -5,7 +5,6 @@
 /// </summary>
 public sealed class ArrayCastExpression(IExpression<Task> innerExpression) : AbstractCastExpression<object?[]>(innerExpression)
 {
-    /// <exception cref="ArrayCastExpressionException"></exception>
     public override object?[] Cast(object? innerExpressionTaskResult)
     {
         if (innerExpressionTaskResult is object?[] arrayResult)

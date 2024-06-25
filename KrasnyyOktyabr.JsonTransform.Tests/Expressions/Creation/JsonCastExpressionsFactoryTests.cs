@@ -177,4 +177,31 @@ public class JsonCastExpressionsFactoryTests
         _abstractFactoryMock.Verify(f => f.Create<IExpression<Task>>(valueInstruction), Times.Once());
         _abstractFactoryMock.VerifyNoOtherCalls();
     }
+
+    [TestMethod]
+    public void Create_ShouldCreateValueTableCastExpression()
+    {
+        Mock<IExpression<Task>> expressionMock = new();
+        _abstractFactoryMock!.Setup(f => f.Create<IExpression<Task>>(It.IsAny<JToken>())).Returns(expressionMock.Object);
+        JObject valueInstruction = new();
+        string type = ReturnType.ValueTable.ToString().ToLower();
+        JObject input = new()
+        {
+            {
+                JsonSchemaPropertyCast,
+                new JObject()
+                {
+                    { JsonSchemaPropertyValue, valueInstruction },
+                    { JsonSchemaPropertyType, type },
+                }
+            }
+        };
+
+        IExpression<Task> expression = _castExpressionsFactory!.Create(input);
+
+        Assert.IsNotNull(expression);
+        Assert.IsInstanceOfType<ValueTableCastExpression>(expression);
+        _abstractFactoryMock.Verify(f => f.Create<IExpression<Task>>(valueInstruction), Times.Once());
+        _abstractFactoryMock.VerifyNoOtherCalls();
+    }
 }

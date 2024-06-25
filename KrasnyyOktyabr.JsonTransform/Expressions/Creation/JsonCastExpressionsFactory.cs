@@ -39,6 +39,7 @@ public sealed class JsonCastExpressionsFactory(IJsonAbstractExpressionFactory fa
         Bool,
         String,
         Array,
+        ValueTable,
     }
 
     public static string JsonSchemaPropertyCast => "$cast";
@@ -73,6 +74,7 @@ public sealed class JsonCastExpressionsFactory(IJsonAbstractExpressionFactory fa
             ReturnType.Bool => new BoolCastExpression(innerExpression),
             ReturnType.String => new StringCastExpression(innerExpression),
             ReturnType.Array => new ArrayCastExpression(innerExpression),
+            ReturnType.ValueTable => new ValueTableCastExpression(innerExpression),
             _ => throw new ArgumentException($"Unexpected '{JsonSchemaPropertyType}' value: '{returnTypeString}'"),
         };
     }
