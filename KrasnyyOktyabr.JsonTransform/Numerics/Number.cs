@@ -35,6 +35,33 @@ public readonly struct Number : IEquatable<Number>, IComparable<Number>
         Long = value;
     }
 
+    public static bool TryParse(string? value, out Number number)
+    {
+        // Long
+        if (long.TryParse(value, out long parseLongResult))
+        {
+            number = new Number(parseLongResult);
+
+            return true;
+        }
+
+        // Decimal
+        if (decimal.TryParse(value,
+            style: NumberStyles.Any,
+            provider: CultureInfo.InvariantCulture,
+            out decimal parseDoubleResult))
+        {
+            number = new Number(parseDoubleResult);
+
+            return true;
+        }
+
+        // Failed to parse
+        number = new Number(0);
+
+        return false;
+    }
+
     public static Number operator +(Number a, Number b)
     {
         if (a.Long is not null && b.Long is not null)
