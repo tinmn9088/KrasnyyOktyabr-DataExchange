@@ -22,7 +22,7 @@ public sealed class ValueTableSetValueExpression(
 
             string column = await _columnExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
 
-            object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false) ?? throw new NullReferenceException();
+            object? value = await _valueExpression.InterpretAsync(context, cancellationToken).ConfigureAwait(false);
 
             valueTable.SetValue(column, value);
         }
