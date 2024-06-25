@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using KrasnyyOktyabr.JsonTransform.Numerics;
 using static KrasnyyOktyabr.JsonTransform.Structures.IValueTable;
 
 namespace KrasnyyOktyabr.JsonTransform.Structures;
@@ -65,21 +66,39 @@ public sealed class ValueTable : IValueTable
         return _values[_currentLineIndex][columnIndex];
     }
 
-    public void Collapse(string[] columnsToGroup, string[] columnsToSum)
+    public void Collapse(IEnumerable<string> columnsToGroup, IEnumerable<string> columnsToSum)
     {
-        List<string> newColumns = [.. columnsToGroup, .. columnsToSum];
+        Dictionary<CollapseKey, List<Number>> valuesToGroupToSum = [];
 
-        List<List<object?>> collapsedValues = [];
-
-        foreach (List<object?> line in _values)
+        for (int i = 0; i < Count; i++)
         {
-            // TODO: implement
-            throw new NotImplementedException();
+            CollapseKey key = CollapseKey.ExtractFromValueTable(this, columnsToGroup, i);
+
+            List<Number> valuesToSum = columnsToSum
+                .Select(GetValue)
+                .Select(value => Number.TryParse(value?.ToString(), out Number number)
+                    ? number
+                    : throw new InvalidCastException($"Cannot cast to number: {value}"))
+                .ToList();
+
+            valuesToGroupToSum[key] = valuesToGroupToSum.TryGetValue(key, out List<Number> sum)
+                ? sum.Zip(valuesToSum, (left, right) => left + right)
+                    .ToList()
+                : valuesToSum;
         }
 
-        _columns = newColumns;
-        _values = collapsedValues;
+        _columns = [.. columnsToGroup, .. columnsToSum];
+
+        static List<object?> JoinKeyAndCollapsedValues(CollapseKey key, List<Number> sum) => [.. key.Value, .. sum];
+
+        _values = valuesToGroupToSum
+            .Select(keySum => JoinKeyAndCollapsedValues(keySum.Key, keySum.Value))
+            .ToList();
     }
+
+    public IEnumerator<List<object?>> GetEnumerator() => _values.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <exception cref="LineNotSelectedException"></exception>
     private void CheckLineIsSelected()
@@ -104,7 +123,31 @@ public sealed class ValueTable : IValueTable
         return columnIndex;
     }
 
-    public IEnumerator<List<object?>> GetEnumerator() => _values.GetEnumerator();
+    private class CollapseKey : IEquatable<CollapseKey>
+    {
+        private readonly IReadOnlyList<object?> _value;
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        private CollapseKey(IReadOnlyList<object?> value)
+        {
+            _value = value;
+        }
+
+        public IReadOnlyList<object?> Value => _value;
+
+        public static CollapseKey ExtractFromValueTable(ValueTable valueTable, IEnumerable<string> columnsToGroup, int lineNumber)
+        {
+            valueTable.SelectLine(lineNumber);
+
+            return new CollapseKey(columnsToGroup
+                .Select(valueTable.GetValue)
+                .ToList()
+                .AsReadOnly());
+        }
+
+        public bool Equals(CollapseKey other) => _value.SequenceEqual(other._value);
+
+        public override bool Equals(object obj) => obj is CollapseKey other && Equals(other);
+
+        public override int GetHashCode() => _value.Sum(v => v?.GetHashCode() ?? 0);
+    }
 }

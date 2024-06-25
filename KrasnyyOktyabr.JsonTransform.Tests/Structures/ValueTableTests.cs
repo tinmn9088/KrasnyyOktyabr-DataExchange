@@ -53,8 +53,7 @@ public class ValueTableTests
         string column3 = "Number1Column";
         string column4 = "Number2Column";
 
-        // Act
-        ValueTable table = new([column1, column2]);
+        ValueTable table = new([column1, column2, column3, column4]);
 
         table.AddLine();
         table.SetValue(column1, "Group1");
@@ -86,7 +85,10 @@ public class ValueTableTests
         table.SetValue(column3, 8);
         table.SetValue(column4, 9);
 
-        // TODO: Assert
-        throw new NotImplementedException();
+        // Act
+        table.Collapse([column1, column2], [column3, column4]);
+
+        // Assert
+        Assert.AreEqual(3, table.Count);
     }
 }

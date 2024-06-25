@@ -22,7 +22,12 @@ public interface IValueTable : IEnumerable<List<object?>>
     /// <exception cref="CoulmnNotFoundException"></exception>
     object? GetValue(string name);
 
-    void Collapse(string[] columnsToGroup, string[] columnsToSum);
+    /// <summary>
+    /// Collapse the table by the corresponding <paramref name="columnsToGroup"/>,
+    /// i.e. replaces all duplicate rows (by grouping <paramref name="columnsToGroup"/>) with one row,
+    /// summing <paramref name="columnsToSum"/> values.
+    /// </summary>
+    void Collapse(IEnumerable<string> columnsToGroup, IEnumerable<string> columnsToSum);
 
     public class LineNotSelectedException : Exception
     {
