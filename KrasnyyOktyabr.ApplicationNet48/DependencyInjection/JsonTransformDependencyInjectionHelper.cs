@@ -73,6 +73,15 @@ public static class JsonTransformDependencyInjectionHelper
                 new JsonWhileExpressionFactory(factory),
                 new JsonCursorExpressionFactory(factory),
                 new JsonCursorIndexExpressionFactory(factory),
+
+                // ValueTable
+                new JsonValueTableCreateExpressionFactory(factory),
+                new JsonValueTableSelectLineExpressionFactory(factory),
+                new JsonValueTableAddLineExpressionFactory(factory),
+                new JsonValueTableSetValueExpressionFactory(factory),
+                new JsonValueTableGetValueExpressionFactory(factory),
+                new JsonValueTableCollapseExpressionFactory(factory),
+                new JsonValueTableCountExpressionFactory(factory),
             ];
 
             return factory;
