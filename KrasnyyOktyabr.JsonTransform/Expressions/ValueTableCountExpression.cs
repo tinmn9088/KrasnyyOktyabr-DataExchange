@@ -2,11 +2,11 @@
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
-public sealed class ValueTableCountExpression(IExpression<Task<IValueTable>> valueTableExpression) : AbstractExpression<Task<int>>
+public sealed class ValueTableCountExpression(IExpression<Task<IValueTable>> valueTableExpression) : AbstractExpression<Task<long>>
 {
     private readonly IExpression<Task<IValueTable>> _valueTableExpression = valueTableExpression ?? throw new ArgumentNullException(nameof(valueTableExpression));
 
-    public override async Task<int> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
+    public override async Task<long> InterpretAsync(IContext context, CancellationToken cancellationToken = default)
     {
         try
         {
