@@ -35,6 +35,12 @@ public interface IValueTable : IEnumerable<List<object?>>
     /// </summary>
     void Collapse(IEnumerable<string> columnsToGroup, IEnumerable<string> columnsToSum);
 
+    /// <summary>
+    /// Collapse the table by the corresponding <paramref name="columnsToGroup"/>,
+    /// i.e. replaces all duplicate rows (by grouping <paramref name="columnsToGroup"/>) with one row.
+    /// </summary>
+    void Collapse(IEnumerable<string> columnsToGroup);
+
     public class LineNotSelectedException : Exception
     {
     }

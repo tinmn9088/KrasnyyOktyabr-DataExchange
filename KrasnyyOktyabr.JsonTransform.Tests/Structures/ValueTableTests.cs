@@ -49,6 +49,42 @@ public class ValueTableTests
     public void Collapse_ShouldGroupByColumnsProvided()
     {
         // Arrange
+        string column1 = "Column1";
+        string column2 = "Column2";
+
+        ValueTable table = new([column1, column2]);
+
+        table.AddLine();
+        table.SetValue(column1, "Group1");
+        table.SetValue(column2, "Group1");
+
+        table.AddLine();
+        table.SetValue(column1, "Group1");
+        table.SetValue(column2, "Group1");
+
+        table.AddLine();
+        table.SetValue(column1, "Group2");
+        table.SetValue(column2, "Group2");
+
+        table.AddLine();
+        table.SetValue(column1, "Group3");
+        table.SetValue(column2, "Group3");
+
+        table.AddLine();
+        table.SetValue(column1, "Group3");
+        table.SetValue(column2, "Group3");
+
+        // Act
+        table.Collapse([column1, column2]);
+
+        // Assert
+        Assert.AreEqual(3, table.Count);
+    }
+
+    [TestMethod()]
+    public void Collapse_WhenColumnsToSumProvided_ShouldGroupAndSum()
+    {
+        // Arrange
         string column1 = "String1Column";
         string column2 = "String2Column";
         string column3 = "Number1Column";

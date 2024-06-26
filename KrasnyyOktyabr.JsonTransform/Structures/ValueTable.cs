@@ -83,7 +83,7 @@ public sealed class ValueTable : IValueTable
         return _values[_currentLineIndex][columnIndex];
     }
 
-    public void Collapse(IEnumerable<string> columnsToGroup, IEnumerable<string> columnsToSum)
+    public void Collapse(IEnumerable<string> columnsToGroup, IEnumerable<string>? columnsToSum)
     {
         Dictionary<CollapseKey, List<Number>> valuesToGroupToSum = [];
 
@@ -112,6 +112,26 @@ public sealed class ValueTable : IValueTable
 
         _values = valuesToGroupToSum
             .Select(keySum => JoinKeyAndCollapsedValues(keySum.Key, keySum.Value))
+            .ToList();
+    }
+
+    public void Collapse(IEnumerable<string> columnsToGroup)
+    {
+        HashSet<CollapseKey> valuesToGroup = [];
+
+        for (int i = 0; i < Count; i++)
+        {
+            CollapseKey key = CollapseKey.ExtractFromValueTable(this, columnsToGroup, i);
+
+            valuesToGroup.Add(key);
+        }
+
+        _columns = [.. columnsToGroup];
+
+        static List<object?> ExtractKeyValues(CollapseKey key) => [.. key.Value];
+
+        _values = valuesToGroup
+            .Select(ExtractKeyValues)
             .ToList();
     }
 
