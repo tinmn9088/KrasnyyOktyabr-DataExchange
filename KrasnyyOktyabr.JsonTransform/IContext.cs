@@ -46,7 +46,7 @@ public interface IContext
     /// <exception cref="ArgumentNullException"></exception>
     void RemoveCursor(string name);
 
-    public class MemoryValueNotFoundException(string name) : Exception(name)
+    public class MemoryValueNotFoundException(string name) : Exception($"Value with name '{name}' not found")
     {
     }
 
@@ -56,7 +56,7 @@ public interface IContext
         {
         }
 
-        internal CursorNotFoundException(string name) : base(name)
+        internal CursorNotFoundException(string name) : base($"Cursor not found for loop '{name}'")
         {
         }
     }
@@ -67,7 +67,7 @@ public interface IContext
         {
         }
 
-        internal CursorIndexNotFoundException(string name) : base(name)
+        internal CursorIndexNotFoundException(string name) : base($"Cursor index not found for loop '{name}'")
         {
         }
     }
