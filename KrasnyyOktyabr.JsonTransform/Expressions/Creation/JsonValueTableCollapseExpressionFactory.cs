@@ -22,8 +22,7 @@ public sealed class JsonValueTableCollapseExpressionFactory(IJsonAbstractExpress
                   },
                   'required': [
                     '" + JsonSchemaPropertyTable + @"',
-                    '" + JsonSchemaPropertyColumnsToGroup + @"',
-                    '" + JsonSchemaPropertyColumnsToSum + @"'
+                    '" + JsonSchemaPropertyColumnsToGroup + @"'
                   ]
                 }
               },
@@ -50,12 +49,20 @@ public sealed class JsonValueTableCollapseExpressionFactory(IJsonAbstractExpress
         JObject instruction = (JObject)input[JsonSchemaPropertyCollapse]!;
         JToken valueTableInstruction = instruction[JsonSchemaPropertyTable]!;
         JToken columnsToGroupStringInstruction = instruction[JsonSchemaPropertyColumnsToGroup]!;
-        JToken columnsToSumStringInstruction = instruction[JsonSchemaPropertyColumnsToSum]!;
+        JToken? columnsToSumStringInstruction = instruction[JsonSchemaPropertyColumnsToSum];
 
         IExpression<Task<IValueTable>> valueTableExpression = factory.Create<IExpression<Task<IValueTable>>>(valueTableInstruction);
         IExpression<Task<string>> columnsToGroupStringExpression = factory.Create<IExpression<Task<string>>>(columnsToGroupStringInstruction);
-        IExpression<Task<string>> columnsToSumStringExpression = factory.Create<IExpression<Task<string>>>(columnsToSumStringInstruction);
 
-        return new(valueTableExpression, columnsToGroupStringExpression, columnsToSumStringExpression);
+        if (columnsToSumStringInstruction is not null)
+        {
+            IExpression<Task<string>> columnsToSumStringExpression = factory.Create<IExpression<Task<string>>>(columnsToSumStringInstruction);
+
+            return new(valueTableExpression, columnsToGroupStringExpression, columnsToSumStringExpression);
+        }
+        else
+        {
+            return new(valueTableExpression, columnsToGroupStringExpression);
+        }
     }
 }

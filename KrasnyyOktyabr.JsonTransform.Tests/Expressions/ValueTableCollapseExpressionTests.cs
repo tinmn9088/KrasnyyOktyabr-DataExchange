@@ -33,7 +33,56 @@ public class ValueTableCollapseExpressionTests
     }
 
     [TestMethod]
-    public async Task InterpretAsync_ShouldSelectLine()
+    public async Task InterpretAsync_WhenColumnsToSumNull_ShouldCollapse()
+    {
+        // Setting up value table
+        string columnToGroup = "ColumnToGroup";
+        string columnToRemove = "ColumnToRemove";
+        ValueTable valueTable = new([columnToGroup, columnToRemove]);
+
+        valueTable.AddLine();
+        valueTable.SetValue(columnToGroup, "Group1");
+        valueTable.SetValue(columnToRemove, "IgnoreValue");
+
+        valueTable.AddLine();
+        valueTable.SetValue(columnToGroup, "Group1");
+        valueTable.SetValue(columnToRemove, "IgnoreValue");
+
+        valueTable.AddLine();
+        valueTable.SetValue(columnToGroup, "Group2");
+        valueTable.SetValue(columnToRemove, "IgnoreValue");
+
+        valueTable.AddLine();
+        valueTable.SetValue(columnToGroup, "Group3");
+        valueTable.SetValue(columnToRemove, "IgnoreValue");
+
+        valueTable.AddLine();
+        valueTable.SetValue(columnToGroup, "Group3");
+        valueTable.SetValue(columnToRemove, "IgnoreValue");
+
+        Assert.AreEqual(5, valueTable.Count);
+
+        // Setting up value table expression mock
+        Mock<IExpression<Task<IValueTable>>> valueTableExpressionMock = new();
+        valueTableExpressionMock
+            .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(valueTable);
+
+        // Setting up columns to group string expression mock
+        Mock<IExpression<Task<string>>> columnsToGroupStringExpressionMock = new();
+        columnsToGroupStringExpressionMock
+            .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(columnToGroup);
+
+        ValueTableCollapseExpression valueTableCollapseExpression = new(valueTableExpressionMock.Object, columnsToGroupStringExpressionMock.Object);
+
+        await valueTableCollapseExpression.InterpretAsync(CreateEmptyExpressionContext());
+
+        Assert.AreEqual(3, valueTable.Count);
+    }
+
+    [TestMethod]
+    public async Task InterpretAsync_ShouldCollapse()
     {
         // Setting up value table
         string columnToGroup1 = "ColumnToGroup1";
@@ -71,7 +120,7 @@ public class ValueTableCollapseExpressionTests
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync($"{columnToGroup1}, {columnToGroup2}");
 
-        // Setting up columns to group string expression mock
+        // Setting up columns to sum string expression mock
         Mock<IExpression<Task<string>>> columnsToSumStringExpressionMock = new();
         columnsToSumStringExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))

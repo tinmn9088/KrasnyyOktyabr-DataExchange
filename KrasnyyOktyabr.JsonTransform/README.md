@@ -938,11 +938,11 @@ Collapse the table by the corresponding columns, i.e. replaces all duplicate row
 
 ##### Parameters
 
-| Name    | Type              | 
-|:---     |:---               |
-| `table` | `valuetable` exp. |
-| `group` | `string` exp.     |
-| `sum`   | `string` exp.     |
+| Name               | Type              | 
+|:---                |:---               |
+| `table`            | `valuetable` exp. |
+| `group`            | `string` exp.     |
+| (_optional_) `sum` | `string` exp.     |
 
 ##### Example
 

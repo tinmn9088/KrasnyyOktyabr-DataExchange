@@ -66,6 +66,29 @@ public class JsonValueTableCollapseExpressionFactoryTests
     }
 
     [TestMethod]
+    public void Match_WhenInputWithoutColumnsToSum_ShouldReturnTrue()
+    {
+        JObject input = new()
+        {
+            {
+                JsonSchemaPropertyComment, "TestComment"
+            },
+            {
+                JsonSchemaPropertyCollapse,
+                new JObject()
+                {
+                    { JsonSchemaPropertyTable, null },
+                    { JsonSchemaPropertyColumnsToGroup, null },
+                }
+            },
+        };
+
+        bool isMatch = _valueTableCollapseExpressionFactory!.Match(input);
+
+        Assert.IsTrue(isMatch);
+    }
+
+    [TestMethod]
     public void Match_WhenInputWithAdditionalProperties_ShouldReturnFalse()
     {
         JObject input = new()
