@@ -4,6 +4,8 @@ public interface IValueTable : IEnumerable<List<object?>>
 {
     int Count { get; }
 
+    IReadOnlyList<string> Columns { get; }
+
     /// <summary>
     /// Add and select new line.
     /// </summary>

@@ -16,6 +16,8 @@ public sealed class ValueTable : IValueTable
 
     public int Count => _values.Count;
 
+    public IReadOnlyList<string> Columns => _columns.AsReadOnly();
+
     public ValueTable(IEnumerable<string> columns)
     {
         _columns = columns.ToList();

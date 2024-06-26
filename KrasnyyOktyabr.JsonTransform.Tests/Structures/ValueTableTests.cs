@@ -148,6 +148,8 @@ public class ValueTableTests
         table.AddColumn(column2);
 
         // Assert
+        Assert.AreEqual(2, table.Columns.Count);
+
         table.SetValue(column2, "TestValue3");
     }
 }
