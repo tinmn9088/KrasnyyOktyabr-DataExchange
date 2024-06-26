@@ -78,6 +78,7 @@ public static class JsonTransformDependencyInjectionHelper
                 new JsonValueTableCreateExpressionFactory(factory),
                 new JsonValueTableSelectLineExpressionFactory(factory),
                 new JsonValueTableAddLineExpressionFactory(factory),
+                new JsonValueTableAddColumnExpressionFactory(factory),
                 new JsonValueTableSetValueExpressionFactory(factory),
                 new JsonValueTableGetValueExpressionFactory(factory),
                 new JsonValueTableCollapseExpressionFactory(factory),

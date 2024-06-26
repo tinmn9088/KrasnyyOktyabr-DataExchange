@@ -93,7 +93,7 @@ public class JsonValueTableCreateExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateCreateValueTableExpression()
+    public void Create_ShouldCreateValueTableCreateExpression()
     {
         // Setting up columns instruction mock
         JObject fakeColumnsStringInstruction = new();

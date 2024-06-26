@@ -22,7 +22,7 @@ public class ValueTableCountExpressionTests
     }
 
     [TestMethod]
-    public async Task InterpretAsync_ShouldSelectLine()
+    public async Task InterpretAsync_ShouldReturnLinesCount()
     {
         // Setting up value table
         string columnName = "TestColumn";

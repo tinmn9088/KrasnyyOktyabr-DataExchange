@@ -97,7 +97,7 @@ public class JsonValueTableSelectLineExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateSelectLineInValueTableExpression()
+    public void Create_ShouldCreateValueTableSelectLineExpression()
     {
         // Setting up value table instruction mock
         Mock<IExpression<Task<IValueTable>>> addLineToValueTableExpressionMock = new();

@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using KrasnyyOktyabr.JsonTransform.Structures;
-
-namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
+﻿namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
 
 [TestClass]
 public class ValueTableTests

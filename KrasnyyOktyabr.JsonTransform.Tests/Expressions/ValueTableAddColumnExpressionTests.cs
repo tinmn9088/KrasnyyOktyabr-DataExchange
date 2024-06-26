@@ -5,7 +5,7 @@ using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Tests;
 
 [TestClass]
-public class ValueTableGetValueExpressionTests
+public class ValueTableAddColumnExpressionTests
 {
     [TestMethod]
     [ExpectedException(typeof(InterpretException))]
@@ -21,23 +21,18 @@ public class ValueTableGetValueExpressionTests
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(string.Empty);
 
-        ValueTableGetValueExpression valueTableGetValueExpression = new(valueTableExpressionMock.Object, columnExpressionMock.Object);
+        ValueTableAddColumnExpression valueTableAddColumnExpression = new(valueTableExpressionMock.Object, columnExpressionMock.Object);
 
-        await valueTableGetValueExpression.InterpretAsync(CreateEmptyExpressionContext());
+        await valueTableAddColumnExpression.InterpretAsync(CreateEmptyExpressionContext());
     }
 
     [TestMethod]
-    public async Task InterpretAsync_ShouldReturnValue()
+    public async Task InterpretAsync_ShouldAddColumn()
     {
         // Setting up value table
-        string columnName = "TestColumn";
-        string expected = "TestValue";
-        ValueTable valueTable = new([columnName]);
-
-        valueTable.AddLine();
-        valueTable.SetValue(columnName, expected);
-
-        Assert.AreEqual(1, valueTable.Count);
+        string column = "TestColumn";
+        string columnToAdd = "NewColumn";
+        ValueTable valueTable = new([column]);
 
         // Setting up value table expression mock
         Mock<IExpression<Task<IValueTable>>> valueTableExpressionMock = new();
@@ -49,12 +44,15 @@ public class ValueTableGetValueExpressionTests
         Mock<IExpression<Task<string>>> columnExpressionMock = new();
         columnExpressionMock
             .Setup(e => e.InterpretAsync(It.IsAny<IContext>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(columnName);
+            .ReturnsAsync(columnToAdd);
 
-        ValueTableGetValueExpression valueTableGetValueExpression = new(valueTableExpressionMock.Object, columnExpressionMock.Object);
+        ValueTableAddColumnExpression valueTableAddColumnExpression = new(valueTableExpressionMock.Object, columnExpressionMock.Object);
 
-        object? actual = await valueTableGetValueExpression.InterpretAsync(CreateEmptyExpressionContext());
+        await valueTableAddColumnExpression.InterpretAsync(CreateEmptyExpressionContext());
 
-        Assert.AreEqual(expected, actual);
+        IReadOnlyList<string> columns = valueTable.Columns;
+
+        Assert.AreEqual(2, columns.Count);
+        Assert.AreEqual(columnToAdd, columns[1]);
     }
 }

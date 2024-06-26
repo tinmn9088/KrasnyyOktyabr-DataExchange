@@ -4,16 +4,16 @@
 
 ### Table of contents 
 
-| Group                       | Instructions                                                                                                                                       |
-| :---                        | :---                                                                                                                                               |
-| [Context](#context)         | [$add](#add), [$mget](#mget), [$mset](#mset), [$select](#select)                                                                                   |
-| [Arithmetic](#arithmetic)   | [$sum](#sum), [$substract](#substract), [$mul](#mul), [$div](#div), [$round](#round)                                                               |
-| [Logical](#logical)         | [$and](#and), [$eq](#eq), [$neq](#neq), [$gt](#gt), [$gte](#gte), [$not](#not), [$or](#or)                                                         |
-| [Containers](#containers)   | [Array](#array), [ExpressionsBlock](#expressionsblock), [$map](#map)                                                                               |
-| [Conditional](#conditional) | [$if](#if)                                                                                                                                         |
-| [Loops](#loops)             | [$cur](#cur), [$curindex](#curindex), [$foreach](#foreach), [$while](#while)                                                                       |
-| [ValueTable](#valuetable)   | [$createtable](#createtable), [$addline](#addline), [$setvalue](#setvalue), [$getvalue](#getvalue), [$selectline](#selectline), [$collapse](#collapse), [$tablesize](#tablesize) |
-| [Other](#other)             | [$cast](#cast), [$resolve](#resolve), [$regexgetgroup](#regexgetgroup), [$strformat](#strformat)                                                   |
+| Group                       | Instructions                                                                                                                                                                                               |
+| :---                        | :---                                                                                                                                                                                                       |
+| [Context](#context)         | [$add](#add), [$mget](#mget), [$mset](#mset), [$select](#select)                                                                                                                                           |
+| [Arithmetic](#arithmetic)   | [$sum](#sum), [$substract](#substract), [$mul](#mul), [$div](#div), [$round](#round)                                                                                                                       |
+| [Logical](#logical)         | [$and](#and), [$eq](#eq), [$neq](#neq), [$gt](#gt), [$gte](#gte), [$not](#not), [$or](#or)                                                                                                                 |
+| [Containers](#containers)   | [Array](#array), [ExpressionsBlock](#expressionsblock), [$map](#map)                                                                                                                                       |
+| [Conditional](#conditional) | [$if](#if)                                                                                                                                                                                                 |
+| [Loops](#loops)             | [$cur](#cur), [$curindex](#curindex), [$foreach](#foreach), [$while](#while)                                                                                                                               |
+| [ValueTable](#valuetable)   | [$createtable](#createtable), [$addline](#addline), [$addcolumn](#addcolumn), [$setvalue](#setvalue), [$getvalue](#getvalue), [$selectline](#selectline), [$collapse](#collapse), [$tablesize](#tablesize) |
+| [Other](#other)             | [$cast](#cast), [$resolve](#resolve), [$regexgetgroup](#regexgetgroup), [$strformat](#strformat)                                                                                                           |
 
 
 
@@ -817,6 +817,39 @@ Appends an empty line to the table and selects it.
         "type": "valuetable"
       }
     }
+  }
+}
+```
+
+
+#### $addcolumn
+
+##### Description
+
+Adds a column to the table.
+
+##### Parameters
+
+| Name    | Type              | 
+|:---     |:---               |
+| `table` | `valuetable` exp. |
+
+##### Example
+
+```json
+{
+  "$addcolumn": {
+    "table": {
+      "$cast": {
+        "value": {
+          "$mget": {
+            "name": "myTable"
+          }
+        },
+        "type": "valuetable"
+      }
+    },
+    "column": "newColumn"
   }
 }
 ```

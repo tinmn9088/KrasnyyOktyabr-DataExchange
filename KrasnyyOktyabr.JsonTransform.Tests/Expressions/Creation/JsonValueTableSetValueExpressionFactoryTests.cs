@@ -99,7 +99,7 @@ public class JsonValueTableSetValueExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateSelectLineInValueTableExpression()
+    public void Create_ShouldCreateValueTableSetValueExpression()
     {
         // Setting up value table instruction mock
         Mock<IExpression<Task<IValueTable>>> addLineToValueTableExpressionMock = new();

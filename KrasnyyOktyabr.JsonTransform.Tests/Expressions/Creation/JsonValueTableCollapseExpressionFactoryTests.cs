@@ -123,7 +123,7 @@ public class JsonValueTableCollapseExpressionFactoryTests
     }
 
     [TestMethod]
-    public void Create_ShouldCreateSelectLineInValueTableExpression()
+    public void Create_ShouldCreateValueTableCollapseExpression()
     {
         // Setting up value table instruction mock
         Mock<IExpression<Task<IValueTable>>> addLineToValueTableExpressionMock = new();

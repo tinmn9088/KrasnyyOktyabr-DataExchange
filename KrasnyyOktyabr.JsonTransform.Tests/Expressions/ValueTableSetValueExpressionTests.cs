@@ -32,7 +32,7 @@ public class ValueTableSetValueExpressionTests
     }
 
     [TestMethod]
-    public async Task InterpretAsync_ShouldSelectLine()
+    public async Task InterpretAsync_ShouldSetValue()
     {
         // Setting up value table
         string columnName = "TestColumn";
