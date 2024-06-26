@@ -33,9 +33,26 @@ public sealed class ValueTable : IValueTable
     {
         List<object?> emptyLine = Enumerable.Repeat<object?>(null, _columns.Count).ToList();
 
+        emptyLine.TrimExcess();
+
         _values.Add(emptyLine);
 
         _currentLineIndex = _values.Count - 1;
+    }
+
+    public void AddColumn(string column)
+    {
+        if (column is null)
+        {
+            throw new ArgumentNullException(nameof(column));
+        }
+
+        _columns.Add(column);
+
+        foreach (List<object?> line in _values)
+        {
+            line.Add(null);
+        }
     }
 
     public void SelectLine(int index)

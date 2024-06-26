@@ -43,6 +43,6 @@ public class ValueTableCountExpressionTests
 
         object? count = await valueTableGetValueExpression.InterpretAsync(CreateEmptyExpressionContext());
 
-        Assert.AreEqual(2, count);
+        Assert.AreEqual(2L, count);
     }
 }

@@ -10,6 +10,12 @@ public interface IValueTable : IEnumerable<List<object?>>
     void AddLine();
 
     /// <summary>
+    /// Add column and fill it with empty values.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"></exception>
+    void AddColumn(string column);
+
+    /// <summary>
     /// Set pointer to the line with <paramref name="index"/> (starts with <c>0</c>).
     /// </summary>
     void SelectLine(int index);

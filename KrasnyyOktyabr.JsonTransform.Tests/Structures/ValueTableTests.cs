@@ -1,4 +1,7 @@
-﻿namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using KrasnyyOktyabr.JsonTransform.Structures;
+
+namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
 
 [TestClass]
 public class ValueTableTests
@@ -88,5 +91,27 @@ public class ValueTableTests
 
         // Assert
         Assert.AreEqual(3, table.Count);
+    }
+
+    [TestMethod]
+    public void AddColumn_ShouldAddColumn()
+    {
+        // Arrange
+        string column1 = "Column1";
+        string column2 = "Column2";
+
+        ValueTable table = new([column1]);
+
+        table.AddLine();
+        table.SetValue(column1, "TestValue1");
+
+        table.AddLine();
+        table.SetValue(column1, "TestValue2");
+
+        // Act
+        table.AddColumn(column2);
+
+        // Assert
+        table.SetValue(column2, "TestValue3");
     }
 }
