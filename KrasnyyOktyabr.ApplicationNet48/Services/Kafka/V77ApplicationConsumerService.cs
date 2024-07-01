@@ -43,8 +43,6 @@ public sealed class V77ApplicationConsumerService(
         IComV77ApplicationConnectionFactory connectionFactory,
         CancellationToken cancellationToken);
 
-    public static string DefaultErtRelativePath => @"ExtForms\EDO\Test\SaveObject.ert";
-
     /// <summary>
     /// <para>
     /// Is <c>null</c> when no configuration found.
@@ -491,7 +489,7 @@ public sealed class V77ApplicationConsumerService(
 
     private static string GetInfobaseFullPath(string infobasePath) => Path.GetFullPath(infobasePath);
 
-    private static string GetErtRelativePath(V77ApplicationConsumerSettings settings) => settings.ErtRelativePath ?? DefaultErtRelativePath;
+    private static string GetErtRelativePath(V77ApplicationConsumerSettings settings) => settings.ErtRelativePath ?? DefaultConsumerErtRelativePath;
 
     public class InstructionNotSpecifiedException : Exception
     {

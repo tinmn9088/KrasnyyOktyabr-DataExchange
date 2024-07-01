@@ -708,7 +708,7 @@ public sealed partial class V77ApplicationProducerService(
 
     private static string GetInfobasePubName(string infobasePath) => Path.GetFileName(infobasePath);
 
-    private static string GetErtRelativePath(V77ApplicationProducerSettings settings) => settings.ErtRelativePath ?? DefaultErtRelativePath;
+    private static string GetErtRelativePath(V77ApplicationProducerSettings settings) => settings.ErtRelativePath ?? DefaultProducerErtRelativePath;
 
     private static async Task<LogOffset> GetCommitedOffset(IOffsetService offsetService, string infobaseFullPath, ILogger logger, CancellationToken cancellationToken)
     {

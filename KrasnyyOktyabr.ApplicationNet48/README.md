@@ -80,9 +80,9 @@ Properties:
 1. `InfobasePath` - absolute path to 1C7 infobase.
 1. `Username` - infobase user name.
 1. `Password` - infobase user password.
-1. `ErtRelativePath` - path of the ERT to be called to retrieve __object JSONs__ relative to `InfobasePath`.
 1. `ObjectFilters` - each entry is `<idPrefix>:<jsonMaxDepth>`.
 1. `TransactionTypeFilters` - transaction types filters.
+1. (_optional_) `ErtRelativePath` - path of the ERT to be called to retrieve __object JSONs__ relative to `InfobasePath` (be default _"ExtForms\EDO\Test\UN_JSON_Synch.ert"_).
 1. (_optional_) `DocumentGuidsDatabaseConnectionString` - connection string to the database where global document IDs are stored.
 1. (_optional_) `SuspendSchedule` - periods when producer have to suspend.
 
@@ -170,9 +170,9 @@ Properties:
 1. `InfobasePath` - absolute path to 1C7 infobase.
 1. `Username` - infobase user name.
 1. `Password` - infobase user password.
-1. `ErtRelativePath` - path of the ERT to be called to save `JsonTransform` results to infobase relative to `InfobasePath`.
 1. `Topics` - topic names.
 1. `Instructions` - _topic names_ -> names of _instructions_ stored in `Properties/ConsumerInstructions` directory.
+1. (_optional_) `ErtRelativePath` - path of the ERT to be called to save `JsonTransform` results to infobase relative to `InfobasePath`  (be default _"ExtForms\EDO\Test\SaveObject.ert"_).
 1. (_optional_) `ConsumerGroup` - consumer group (__infobase directory name__ by default).
 1. (_optional_) `SuspendSchedule` - periods when consumer have to suspend. 
 

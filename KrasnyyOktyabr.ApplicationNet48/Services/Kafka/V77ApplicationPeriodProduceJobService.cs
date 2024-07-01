@@ -466,7 +466,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
 
     private static string GetInfobasePubName(string infobasePath) => Path.GetFileName(infobasePath);
 
-    private static string GetErtRelativePath(V77ApplicationPeriodProduceJobRequest request) => request.ErtRelativePath ?? DefaultErtRelativePath;
+    private static string GetErtRelativePath(V77ApplicationPeriodProduceJobRequest request) => request.ErtRelativePath ?? DefaultProducerErtRelativePath;
 
     private static List<ObjectFilter> GetObjectFilters(V77ApplicationPeriodProduceJobRequest request)
     {
