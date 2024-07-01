@@ -189,6 +189,16 @@ public sealed class ValueTable : IValueTable
 
         public override bool Equals(object obj) => obj is CollapseKey other && Equals(other);
 
-        public override int GetHashCode() => _value.Sum(v => v?.GetHashCode() ?? 0);
+        public override int GetHashCode()
+        {
+            int hash = 0;
+
+            foreach (object? item in _value)
+            {
+                hash ^= item?.GetHashCode() ?? 0;
+            }
+
+            return hash;
+        }
     }
 }

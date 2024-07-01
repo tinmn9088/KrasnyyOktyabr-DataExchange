@@ -1,8 +1,16 @@
-﻿namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
+﻿using Newtonsoft.Json.Linq;
+using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
+
+namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
 
 [TestClass]
 public class ValueTableTests
 {
+    public required TestContext TestContext
+    {
+        get; set;
+    }
+
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void ValueTable_WhenNoColumnProvided_ShouldThrowArgumentException()
@@ -127,6 +135,41 @@ public class ValueTableTests
     }
 
     [TestMethod]
+    public async Task Collapse_ShouldNotThrowOverflowException()
+    {
+        // Arrange
+        string[] valueTableColumnToGroup = ["GroupColumn1", "GroupColumn2", "GroupColumn3"];
+        string valueTableColumnToCollapse = "SumColumn";
+        string[] valueTableColumns = [.. valueTableColumnToGroup, valueTableColumnToCollapse];
+        ValueTable valueTable = new(valueTableColumns);
+
+        JArray valueTableData = await GetCurrentTestDataAsync<JArray>();
+
+        foreach (JToken valueTableDataItem in valueTableData)
+        {
+            JArray? valueTableRow = valueTableDataItem as JArray;
+
+            if (valueTableRow is null)
+            {
+                throw new ArgumentException($"Must to be array: {valueTableRow}");
+            }
+
+            valueTable.AddLine();
+
+            for (int i = 0; i < valueTableColumns.Length; i++)
+            {
+                valueTable.SetValue(valueTableColumns[i], valueTableRow[i]);
+            }
+        }
+
+        // Act
+        valueTable.Collapse(valueTableColumnToGroup, [valueTableColumnToCollapse]);
+
+        // Assert
+        Assert.AreEqual(262, valueTable.Count);
+    }
+
+    [TestMethod]
     public void AddColumn_ShouldAddColumn()
     {
         // Arrange
@@ -148,5 +191,11 @@ public class ValueTableTests
         Assert.AreEqual(2, table.Columns.Count);
 
         table.SetValue(column2, "TestValue3");
+    }
+
+    /// <exception cref="NullReferenceException"></exception>
+    private async Task<T> GetCurrentTestDataAsync<T>() where T : JToken
+    {
+        return await LoadJsonAsync<T>(GetType(), TestContext.TestName ?? throw new NullReferenceException());
     }
 }

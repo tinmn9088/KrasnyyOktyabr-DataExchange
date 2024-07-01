@@ -36,4 +36,20 @@ internal static class TestsHelper
             return await JToken.LoadAsync(new JsonTextReader(reader));
         }
     }
+
+    /// <returns>
+    /// Content of file with name <c>$"{testClass.Name}__{testName}.json"</c>.
+    /// </returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    public static async Task<T> LoadJsonAsync<T>(Type testClass, string testName) where T : JToken
+    {
+        string fileName = $"{testClass.Name}__{testName}.json";
+        string absolutePath = Path.Combine(ResourcesDirectoryPath, fileName);
+
+        using (StreamReader reader = File.OpenText(absolutePath))
+        {
+            return await JToken.LoadAsync(new JsonTextReader(reader)) as T
+                ?? throw new ArgumentException($"Failed to read '{typeof(T).Name}' from '{fileName}'");
+        }
+    }
 }

@@ -8,7 +8,7 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <Version>0.2.3</Version>
+    <Version>0.2.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -51,6 +51,9 @@
     </None>
     <None Update="Resources\JsonAbstractFactoryTests__Create_ShouldCreateComplexExpression1__InputInstruction.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\ValueTableTests__Collapse_ShouldNotThrowOverflowException.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
