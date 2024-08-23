@@ -1,4 +1,6 @@
-﻿namespace KrasnyyOktyabr.JsonTransform.Expressions.Tests;
+﻿using KrasnyyOktyabr.JsonTransform.Expressions;
+
+namespace KrasnyyOktyabr.JsonTransform.Tests.Expressions;
 
 [TestClass]
 public class ObjectCastExpressionTests

@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using KrasnyyOktyabr.JsonTransform.Structures;
+using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 
-namespace KrasnyyOktyabr.JsonTransform.Structures.Tests;
+namespace KrasnyyOktyabr.JsonTransform.Tests.Structures;
 
 [TestClass]
 public class ValueTableTests

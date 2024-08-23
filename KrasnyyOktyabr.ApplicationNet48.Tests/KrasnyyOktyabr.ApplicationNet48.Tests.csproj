@@ -159,12 +159,12 @@
   <ItemGroup>
     <Compile Include="Logging\MessageHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\JsonServiceTests.cs" />
+    <Compile Include="Services\ScriptingJsonLegacyServiceTests.cs" />
     <Compile Include="Services\Kafka\KafkaServiceTests.cs" />
     <Compile Include="Services\Kafka\V77ApplicationProducerServiceTests.cs" />
     <Compile Include="Services\MsSqlServiceTests.cs" />
     <Compile Include="Services\TimeHelperTests.cs" />
-    <Compile Include="Services\TransliterationServiceTests.cs" />
+    <Compile Include="Services\TransliterationHelperTests.cs" />
     <Compile Include="Services\V77ApplicationLogServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -183,9 +183,13 @@
       <Project>{37E4CEDF-064E-448D-BF23-1C5B3B44EC8F}</Project>
       <Name>KrasnyyOktyabr.ComV77Application</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj">
-      <Project>{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}</Project>
-      <Name>KrasnyyOktyabr.JsonTransform</Name>
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.JsonTransform\KrasnyyOktyabr.Scripting.JsonTransform.csproj">
+      <Project>{324e7f72-9fea-4a40-bf1a-4c9558ba49ad}</Project>
+      <Name>KrasnyyOktyabr.Scripting.JsonTransform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.MsSql\KrasnyyOktyabr.MsSql.csproj">
+      <Project>{5d23e7ea-c9ec-422b-b08c-54a3b427cada}</Project>
+      <Name>KrasnyyOktyabr.MsSql</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

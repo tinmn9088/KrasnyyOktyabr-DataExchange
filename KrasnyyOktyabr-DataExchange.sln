@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrasnyyOktyabr.JsonTransform", "KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj", "{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrasnyyOktyabr.Scripting.JsonTransform", "KrasnyyOktyabr.Scripting.JsonTransform\KrasnyyOktyabr.Scripting.JsonTransform.csproj", "{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A6757DFB-77DB-49CF-9C79-0F5382669556} = {A6757DFB-77DB-49CF-9C79-0F5382669556}
+		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86} = {3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4BCA6D9F-CB84-4C06-B7E8-12ACDFB803F1}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,8 +23,33 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrasnyyOktyabr.ComV77Application.Tests", "KrasnyyOktyabr.ComV77Application.Tests\KrasnyyOktyabr.ComV77Application.Tests.csproj", "{5B89A672-4F7B-421E-8BB6-4F1BD65BCE8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.ApplicationNet48", "KrasnyyOktyabr.ApplicationNet48\KrasnyyOktyabr.ApplicationNet48.csproj", "{083AFF11-BE9D-4CF7-AC94-3938CBFE81D1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A6757DFB-77DB-49CF-9C79-0F5382669556} = {A6757DFB-77DB-49CF-9C79-0F5382669556}
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA} = {5D23E7EA-C9EC-422B-B08C-54A3B427CADA}
+		{83B4474D-BAA9-4588-BD4F-DB9E49F45932} = {83B4474D-BAA9-4588-BD4F-DB9E49F45932}
+		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86} = {3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.ApplicationNet48.Tests", "KrasnyyOktyabr.ApplicationNet48.Tests\KrasnyyOktyabr.ApplicationNet48.Tests.csproj", "{1564DEC5-8E9B-45D2-AE8D-F4EEFBF47A86}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA} = {5D23E7EA-C9EC-422B-B08C-54A3B427CADA}
+		{5B89A672-4F7B-421E-8BB6-4F1BD65BCE8B} = {5B89A672-4F7B-421E-8BB6-4F1BD65BCE8B}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.DataResolve", "KrasnyyOktyabr.DataResolve\KrasnyyOktyabr.DataResolve.csproj", "{A6757DFB-77DB-49CF-9C79-0F5382669556}"
+	ProjectSection(ProjectDependencies) = postProject
+		{37E4CEDF-064E-448D-BF23-1C5B3B44EC8F} = {37E4CEDF-064E-448D-BF23-1C5B3B44EC8F}
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA} = {5D23E7EA-C9EC-422B-B08C-54A3B427CADA}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.MsSql", "KrasnyyOktyabr.MsSql\KrasnyyOktyabr.MsSql.csproj", "{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.Scripting.OneScript", "KrasnyyOktyabr.Scripting.OneScript\KrasnyyOktyabr.Scripting.OneScript.csproj", "{83B4474D-BAA9-4588-BD4F-DB9E49F45932}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86} = {3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.Scripting.Core", "KrasnyyOktyabr.Scripting.Core\KrasnyyOktyabr.Scripting.Core.csproj", "{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +81,22 @@ Global
 		{1564DEC5-8E9B-45D2-AE8D-F4EEFBF47A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1564DEC5-8E9B-45D2-AE8D-F4EEFBF47A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1564DEC5-8E9B-45D2-AE8D-F4EEFBF47A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6757DFB-77DB-49CF-9C79-0F5382669556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6757DFB-77DB-49CF-9C79-0F5382669556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6757DFB-77DB-49CF-9C79-0F5382669556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6757DFB-77DB-49CF-9C79-0F5382669556}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83B4474D-BAA9-4588-BD4F-DB9E49F45932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83B4474D-BAA9-4588-BD4F-DB9E49F45932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83B4474D-BAA9-4588-BD4F-DB9E49F45932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83B4474D-BAA9-4588-BD4F-DB9E49F45932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

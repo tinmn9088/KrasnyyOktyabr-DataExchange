@@ -1,6 +1,7 @@
-﻿using Moq;
+﻿using KrasnyyOktyabr.JsonTransform.Expressions;
+using Moq;
 
-namespace KrasnyyOktyabr.JsonTransform.Expressions.Tests;
+namespace KrasnyyOktyabr.JsonTransform.Tests.Expressions;
 
 [TestClass]
 public class CursorIndexExpressionTests

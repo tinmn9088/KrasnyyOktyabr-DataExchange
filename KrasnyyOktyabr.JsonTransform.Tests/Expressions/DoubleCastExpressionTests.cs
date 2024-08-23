@@ -1,8 +1,9 @@
 ﻿using System.Globalization;
+using KrasnyyOktyabr.JsonTransform.Expressions;
 using Moq;
 using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 
-namespace KrasnyyOktyabr.JsonTransform.Expressions.Tests;
+namespace KrasnyyOktyabr.JsonTransform.Tests.Expressions;
 
 [TestClass]
 public class DoubleCastExpressionTests

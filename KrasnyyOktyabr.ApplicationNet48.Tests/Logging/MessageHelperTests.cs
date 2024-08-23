@@ -1,6 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using KrasnyyOktyabr.ApplicationNet48.Common.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Logging.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Logging;
 
 [TestClass]
 public class MessageHelperTests

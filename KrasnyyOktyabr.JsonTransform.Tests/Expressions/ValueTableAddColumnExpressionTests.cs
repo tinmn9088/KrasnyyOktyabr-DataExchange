@@ -1,8 +1,9 @@
-﻿using KrasnyyOktyabr.JsonTransform.Structures;
+﻿using KrasnyyOktyabr.JsonTransform.Expressions;
+using KrasnyyOktyabr.JsonTransform.Structures;
 using Moq;
 using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 
-namespace KrasnyyOktyabr.JsonTransform.Expressions.Tests;
+namespace KrasnyyOktyabr.JsonTransform.Tests.Expressions;
 
 [TestClass]
 public class ValueTableAddColumnExpressionTests

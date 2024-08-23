@@ -1,6 +1,5 @@
-﻿using KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
+﻿using KrasnyyOktyabr.DataResolve;
 using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
-using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KrasnyyOktyabr.ApplicationNet48.DependencyInjection;

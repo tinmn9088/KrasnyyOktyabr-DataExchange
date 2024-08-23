@@ -5,17 +5,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.ProducerServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.V77ApplicationLogService;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.V77ApplicationLogService.IV77ApplicationLogService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Helpers.V77ApplicationHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services.Kafka;
 
 [TestClass]
 public class V77ApplicationProducerServiceTests
@@ -34,7 +39,7 @@ public class V77ApplicationProducerServiceTests
 
     private static readonly Mock<IComV77ApplicationConnectionFactory> s_connectionFactoryMock = new();
 
-    private static readonly Mock<IJsonService> s_jsonServiceMock = new();
+    private static readonly Mock<IScriptingService> s_jsonServiceMock = new();
 
     private static readonly Mock<IKafkaService> s_kafkaServiceMock = new();
 
@@ -185,7 +190,7 @@ public class V77ApplicationProducerServiceTests
         List<string> objectJsons = [objectJson];
 
         // Setting up json service mock
-        Mock<IJsonService> jsonServiceMock = new();
+        Mock<IScriptingService> jsonServiceMock = new();
         jsonServiceMock
             .Setup(s => s.BuildKafkaProducerMessageData(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>(), It.IsAny<string>()))
             .Returns(new KafkaProducerMessageData(objectJson: "{\"TestObject\":\"TestValue\"}", dataType: null!));

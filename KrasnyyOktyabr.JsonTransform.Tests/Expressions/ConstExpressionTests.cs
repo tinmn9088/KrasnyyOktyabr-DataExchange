@@ -1,6 +1,7 @@
-﻿using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
+﻿using KrasnyyOktyabr.JsonTransform.Expressions;
+using static KrasnyyOktyabr.JsonTransform.Tests.TestsHelper;
 
-namespace KrasnyyOktyabr.JsonTransform.Expressions.Tests;
+namespace KrasnyyOktyabr.JsonTransform.Tests.Expressions;
 
 [TestClass]
 public class ConstExpressionTests

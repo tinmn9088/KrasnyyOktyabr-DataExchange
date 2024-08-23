@@ -1,4 +1,4 @@
-﻿using static KrasnyyOktyabr.ComV77Application.Logging.LoggingHelper;
+﻿using static KrasnyyOktyabr.ComV77Application.Helpers.LoggingHelper;
 
 namespace KrasnyyOktyabr.ComV77Application;
 

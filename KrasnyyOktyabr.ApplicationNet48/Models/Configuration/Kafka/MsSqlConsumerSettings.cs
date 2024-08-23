@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
+using MsSql;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 
 public class MsSqlConsumerSettings : AbstractConsumerSettings
 {
-    public static string Position => "Kafka:Clients:Consumers:MsSql";
+    public static string Position => "Kafka:Clients:Consumers:KrasnyyOktyabr.MsSql";
 
     [Required]
     public string ConnectionString { get; set; }
@@ -14,5 +14,5 @@ public class MsSqlConsumerSettings : AbstractConsumerSettings
     public string TablePropertyName { get; set; }
 
 #nullable enable
-    public ConnectionType? ConnectionType { get; set; }
+    public IMsSqlService.ConnectionType? ConnectionType { get; set; }
 }

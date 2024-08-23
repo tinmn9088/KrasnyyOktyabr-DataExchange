@@ -1,9 +1,11 @@
-﻿using Moq;
+﻿using KrasnyyOktyabr.JsonTransform.Expressions;
+using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+using Moq;
 using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonSelectExpressionFactory;
 
-namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation.Tests;
+namespace KrasnyyOktyabr.JsonTransform.Tests.Expressions.Creation;
 
 [TestClass]
 public class JsonSelectExpressionFactoryTests

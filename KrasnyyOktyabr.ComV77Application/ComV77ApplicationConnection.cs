@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
-using KrasnyyOktyabr.ComV77Application.Threading;
+using KrasnyyOktyabr.ComV77Application.Helpers;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnection;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
-using static KrasnyyOktyabr.ComV77Application.Logging.LoggingHelper;
+using static KrasnyyOktyabr.ComV77Application.Helpers.LoggingHelper;
 
 namespace KrasnyyOktyabr.ComV77Application;
 

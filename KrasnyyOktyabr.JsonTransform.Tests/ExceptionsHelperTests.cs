@@ -1,4 +1,6 @@
-﻿namespace KrasnyyOktyabr.JsonTransform.Tests;
+﻿using KrasnyyOktyabr.JsonTransform.Helpers;
+
+namespace KrasnyyOktyabr.JsonTransform.Tests;
 
 [TestClass]
 public class ExceptionsHelperTests

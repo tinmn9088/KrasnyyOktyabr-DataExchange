@@ -267,32 +267,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\V77ApplicationResolverController.cs" />
-    <Compile Include="Controllers\ControllersHelper.cs" />
-    <Compile Include="Controllers\HealthController.cs" />
-    <Compile Include="Controllers\JsonTransformController.cs" />
-    <Compile Include="Controllers\KafkaController.cs" />
-    <Compile Include="Controllers\RestartController.cs" />
-    <Compile Include="Controllers\V77ApplicationPeriodProduceJobController.cs" />
+    <Compile Include="Common\Extensions\LinqChunkExtension.cs" />
+    <Compile Include="Common\Helpers\HttpClientHelper.cs" />
+    <Compile Include="Common\Helpers\TimeHelper.cs" />
+    <Compile Include="Common\Helpers\TransliterationHelper.cs" />
+    <Compile Include="Common\Helpers\ValidationHelper.cs" />
+    <Compile Include="Common\Logging\KafkaLoggingHelper.cs" />
+    <Compile Include="Common\Logging\MessageHelper.cs" />
     <Compile Include="DependencyInjection\DependencyResolver.cs" />
     <Compile Include="DependencyInjection\JsonTransformDependencyInjectionHelper.cs" />
     <Compile Include="DependencyInjection\KafkaDependencyInjectionHelper.cs" />
     <Compile Include="DependencyInjection\ServiceProviderExtensions.cs" />
-    <Compile Include="Filters\ValidateModelAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Health\ComV77ApplicationConnectionFactoryHealthChecker.cs" />
-    <Compile Include="Health\MsSqlConsumerServiceHealthChecker.cs" />
-    <Compile Include="Health\V77ApplicationConsumerServiceHealthChecker.cs" />
-    <Compile Include="Health\V77ApplicationPeriodProduceJobServiceHealthChecker.cs" />
-    <Compile Include="Health\V77ApplicationProducerServiceHealthChecker.cs" />
-    <Compile Include="Health\V83ApplicationConsumerServiceHealthChecker.cs" />
-    <Compile Include="Health\V83ApplicationProducerServiceHealthChecker.cs" />
-    <Compile Include="Linq\Chunk.cs" />
-    <Compile Include="Logging\KafkaLoggingHelper.cs" />
-    <Compile Include="Logging\MessageHelper.cs" />
-    <Compile Include="Logging\MsSqlLoggingHelper.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractSuspendableSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationConsumerSettings.cs" />
@@ -328,46 +316,51 @@
     <Compile Include="Models\Kafka\V83ApplicationProducerStatus.cs" />
     <Compile Include="Models\RestartResult.cs" />
     <Compile Include="Models\V77ApplicationResolverRequest.cs" />
+    <Compile Include="Modules\API\Attributes\ApiRoutePrefixAttribute.cs" />
+    <Compile Include="Modules\API\Controllers\HealthController.cs" />
+    <Compile Include="Modules\API\Controllers\JsonTransformController.cs" />
+    <Compile Include="Modules\API\Controllers\KafkaController.cs" />
+    <Compile Include="Modules\API\Controllers\ProducersController.cs" />
+    <Compile Include="Modules\API\Controllers\ResolveController.cs" />
+    <Compile Include="Modules\API\Controllers\RestartController.cs" />
+    <Compile Include="Modules\API\Filters\ValidateModelAttribute.cs" />
+    <Compile Include="Modules\API\Helpers\ControllersHelper.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ConsumerServices\IMsSqlConsumerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ConsumerServices\IV77ApplicationConsumerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ConsumerServices\IV83ApplicationConsumerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ConsumerServices\MsSqlConsumerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ConsumerServices\V77ApplicationConsumerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ConsumerServices\V83ApplicationConsumerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\IKafkaService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\KafkaService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\PeriodServices\IV77ApplicationPeriodProduceJobService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\PeriodServices\V77ApplicationPeriodProduceJobService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ProducerServices\IV77ApplicationProducerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ProducerServices\IV83ApplicationProducerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ProducerServices\V77ApplicationProducerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\ProducerServices\V83ApplicationProducerService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\V77ApplicationLogService\IV77ApplicationLogService.cs" />
+    <Compile Include="Modules\Kafka\CoreServices\V77ApplicationLogService\V77ApplicationLogService.cs" />
+    <Compile Include="Modules\Kafka\HealthCheckers\ComV77ApplicationConnectionFactoryHealthChecker.cs" />
+    <Compile Include="Modules\Kafka\HealthCheckers\MsSqlConsumerServiceHealthChecker.cs" />
+    <Compile Include="Modules\Kafka\HealthCheckers\V77ApplicationConsumerServiceHealthChecker.cs" />
+    <Compile Include="Modules\Kafka\HealthCheckers\V77ApplicationPeriodProduceJobServiceHealthChecker.cs" />
+    <Compile Include="Modules\Kafka\HealthCheckers\V77ApplicationProducerServiceHealthChecker.cs" />
+    <Compile Include="Modules\Kafka\HealthCheckers\V83ApplicationConsumerServiceHealthChecker.cs" />
+    <Compile Include="Modules\Kafka\HealthCheckers\V83ApplicationProducerServiceHealthChecker.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\IJsonService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\IOffsetService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\IRestartable.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\IRestartableHostedService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\IRestartService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\IWmiService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\JsonService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\OffsetService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\RestartService.cs" />
+    <Compile Include="Modules\Kafka\HelperServices\WmiService.cs" />
+    <Compile Include="Modules\Kafka\Helpers\V77ApplicationHelper.cs" />
+    <Compile Include="Modules\Kafka\Models\KafkaProducerMessageData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\DataResolve\ComV77ApplicationResolver.cs" />
-    <Compile Include="Services\DataResolve\DataResolveService.cs" />
-    <Compile Include="Services\DataResolve\HttpDataResolver.cs" />
-    <Compile Include="Services\DataResolve\MsSqlSingleValueDataResolver.cs" />
-    <Compile Include="Services\HttpClientHelper.cs" />
-    <Compile Include="Services\IJsonService.cs" />
-    <Compile Include="Services\IMsSqlService.cs" />
-    <Compile Include="Services\IOffsetService.cs" />
-    <Compile Include="Services\IRestartable.cs" />
-    <Compile Include="Services\IRestartableHostedService.cs" />
-    <Compile Include="Services\IRestartService.cs" />
-    <Compile Include="Services\ITransliterationService.cs" />
-    <Compile Include="Services\IV77ApplicationLogService.cs" />
-    <Compile Include="Services\IWmiService.cs" />
-    <Compile Include="Services\JsonHelper.cs" />
-    <Compile Include="Services\JsonService.cs" />
-    <Compile Include="Services\Kafka\IKafkaService.cs" />
-    <Compile Include="Services\Kafka\IMsSqlConsumerService.cs" />
-    <Compile Include="Services\Kafka\IV77ApplicationConsumerService.cs" />
-    <Compile Include="Services\Kafka\IV77ApplicationPeriodProduceJobService.cs" />
-    <Compile Include="Services\Kafka\IV77ApplicationProducerService.cs" />
-    <Compile Include="Services\Kafka\IV83ApplicationConsumerService.cs" />
-    <Compile Include="Services\Kafka\IV83ApplicationProducerService.cs" />
-    <Compile Include="Services\Kafka\KafkaService.cs" />
-    <Compile Include="Services\Kafka\MsSqlConsumerService.cs" />
-    <Compile Include="Services\Kafka\V77ApplicationConsumerService.cs" />
-    <Compile Include="Services\Kafka\V77ApplicationPeriodProduceJobService.cs" />
-    <Compile Include="Services\Kafka\V77ApplicationProducerService.cs" />
-    <Compile Include="Services\Kafka\V77ApplicationHelper.cs" />
-    <Compile Include="Services\Kafka\V83ApplicationConsumerService.cs" />
-    <Compile Include="Services\Kafka\V83ApplicationProducerService.cs" />
-    <Compile Include="Services\MsSqlService.cs" />
-    <Compile Include="Services\OffsetService.cs" />
-    <Compile Include="Services\RestartService.cs" />
-    <Compile Include="Services\TimeHelper.cs" />
-    <Compile Include="Services\TransliterationService.cs" />
-    <Compile Include="Services\V77ApplicationLogService.cs" />
-    <Compile Include="Services\ValidationHelper.cs" />
-    <Compile Include="Services\WmiService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.json" />
@@ -383,17 +376,33 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\KrasnyyOktyabr.ComV77Application\KrasnyyOktyabr.ComV77Application.csproj">
       <Project>{37E4CEDF-064E-448D-BF23-1C5B3B44EC8F}</Project>
       <Name>KrasnyyOktyabr.ComV77Application</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj">
-      <Project>{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}</Project>
-      <Name>KrasnyyOktyabr.JsonTransform</Name>
+    <ProjectReference Include="..\KrasnyyOktyabr.DataResolve\KrasnyyOktyabr.DataResolve.csproj">
+      <Project>{a6757dfb-77db-49cf-9c79-0f5382669556}</Project>
+      <Name>KrasnyyOktyabr.DataResolve</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.Core\KrasnyyOktyabr.Scripting.Core.csproj">
+      <Project>{3f4ff9c8-c219-43fe-aec7-ac5b1d5a1d86}</Project>
+      <Name>KrasnyyOktyabr.Scripting.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.JsonTransform\KrasnyyOktyabr.Scripting.JsonTransform.csproj">
+      <Project>{324e7f72-9fea-4a40-bf1a-4c9558ba49ad}</Project>
+      <Name>KrasnyyOktyabr.Scripting.JsonTransform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.MsSql\KrasnyyOktyabr.MsSql.csproj">
+      <Project>{5d23e7ea-c9ec-422b-b08c-54a3b427cada}</Project>
+      <Name>KrasnyyOktyabr.MsSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.OneScript\KrasnyyOktyabr.Scripting.OneScript.csproj">
+      <Project>{83b4474d-baa9-4588-bd4f-db9e49f45932}</Project>
+      <Name>KrasnyyOktyabr.Scripting.OneScript</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\Formatters\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

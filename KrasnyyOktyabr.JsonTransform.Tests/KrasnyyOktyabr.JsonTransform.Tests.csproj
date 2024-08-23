@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj" />
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.JsonTransform\KrasnyyOktyabr.Scripting.JsonTransform.csproj" />
   </ItemGroup>
 
   <ItemGroup>

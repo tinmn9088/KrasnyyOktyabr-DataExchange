@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using KrasnyyOktyabr.JsonTransform.Numerics;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace KrasnyyOktyabr.JsonTransform.Numerics.Tests;
+namespace KrasnyyOktyabr.JsonTransform.Tests.Numerics;
 
 [TestClass]
 public class NumberJsonConverterTests

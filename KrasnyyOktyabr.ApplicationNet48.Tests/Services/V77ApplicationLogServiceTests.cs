@@ -2,13 +2,14 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.V77ApplicationLogService;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.V77ApplicationLogService.IV77ApplicationLogService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.V77ApplicationLogService.V77ApplicationLogService;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services;
 
 [TestClass]
 public class V77ApplicationLogServiceTests

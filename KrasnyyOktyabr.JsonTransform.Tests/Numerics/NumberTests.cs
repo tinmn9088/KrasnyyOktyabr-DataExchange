@@ -1,4 +1,6 @@
-﻿namespace KrasnyyOktyabr.JsonTransform.Numerics.Tests;
+﻿using KrasnyyOktyabr.JsonTransform.Numerics;
+
+namespace KrasnyyOktyabr.JsonTransform.Tests.Numerics;
 
 [TestClass]
 public class NumberTests

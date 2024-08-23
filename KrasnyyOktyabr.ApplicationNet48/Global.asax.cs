@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
-using KrasnyyOktyabr.ApplicationNet48.Services;
-using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
 using KrasnyyOktyabr.ComV77Application;
+using KrasnyyOktyabr.JsonTransform;
+using KrasnyyOktyabr.Scripting.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MsSql;
 using NLog;
 using NLog.Web;
 
@@ -38,24 +41,21 @@ public class WebApiApplication : HttpApplication
             IHost app = BuildHost();
 
             GlobalConfiguration.Configure(WebApiConfig.Register(provider: app.Services));
+            WebApiConfig.Register(provider: app.Services);
 
+            // Start application host
             _hostCancellation = new();
-            _hostTask = Task.Run(() =>
-            {
-                try
-                {
-                    app.RunAsync(_hostCancellation.Token);
-                }
-                catch (Exception ex)
-                {
-                    s_logger.Error(ex);
-                }
-            });
+            _hostTask = Task.Run(() => app.RunAsync(_hostCancellation.Token));
+            
+            // Log application host exceptions
+            _hostTask.ContinueWith(
+                failedHostTask => s_logger.Fatal(failedHostTask.Exception),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
         }
         catch (Exception ex)
         {
             s_logger.Error(ex);
-
             throw;
         }
     }
@@ -102,11 +102,11 @@ public class WebApiApplication : HttpApplication
         builder.Services.AddSingleton<IMsSqlService, MsSqlService>();
 
         builder.Services.AddSingleton<IWmiService, WmiService>();
-
+        
         builder.Services.AddSingleton<IJsonService, JsonService>();
 
-        builder.Services.AddSingleton<ITransliterationService, TransliterationService>();
-
+        builder.Services.AddSingleton<IScriptingService, ScriptingJsonTransformService>();
+        
         builder.Services.AddSingleton<IKafkaService, KafkaService>();
 
         builder.Services.AddControllers();
