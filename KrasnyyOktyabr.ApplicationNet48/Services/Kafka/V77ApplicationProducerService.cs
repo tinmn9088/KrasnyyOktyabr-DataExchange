@@ -219,7 +219,42 @@ public sealed partial class V77ApplicationProducerService(
 
         string logFilePath = Path.Combine(infobaseFullPath, LogFileRelativePath);
 
-        return await logService.GetLogTransactionsAsync(logFilePath, filter, cancellationToken).ConfigureAwait(false);
+        GetLogTransactionsResult getLogTransactionsResult = await logService.GetLogTransactionsAsync(logFilePath, filter, cancellationToken).ConfigureAwait(false);
+
+        // Clear redundant transactions when "ReadLastOnly" is true
+        List<LogTransaction> clearedLogTransactions = new(getLogTransactionsResult.Transactions.Count);
+
+        for (int currentIndex = 0; currentIndex < getLogTransactionsResult.Transactions.Count; currentIndex++)
+        {
+            LogTransaction logTransaction = getLogTransactionsResult.Transactions[currentIndex];
+
+            bool readLastOnly = settings.ObjectFilters
+                .Where(f => logTransaction.ObjectId.StartsWith(f.IdPrefix))
+                .Select(f => f.ReadLastOnly)
+                .First();
+
+            if (readLastOnly)
+            {
+                string objectIdToFind = logTransaction.ObjectId;
+
+                int lastIndex = getLogTransactionsResult.Transactions.FindLastIndex(t => t.ObjectId == objectIdToFind);
+
+                if (currentIndex == lastIndex)
+                {
+                    clearedLogTransactions.Add(logTransaction);
+                }
+            }
+            else
+            {
+                clearedLogTransactions.Add(logTransaction);
+            }
+        }
+
+        GetLogTransactionsResult clearedGetLogTransactionsResult = new(
+            lastReadOffset: getLogTransactionsResult.LastReadOffset,
+            transactions: clearedLogTransactions);
+
+        return clearedGetLogTransactionsResult;
     };
 
     public GetObjectJsonsAsync GetObjectJsonsTask => async (

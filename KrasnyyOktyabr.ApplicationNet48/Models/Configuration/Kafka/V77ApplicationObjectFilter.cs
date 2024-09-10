@@ -6,4 +6,6 @@ public class V77ApplicationObjectFilter : AbstractVApplicationObjectFilter
 {
     [Required]
     public string IdPrefix { get; set; }
+
+    public bool ReadLastOnly { get; set; }
 }

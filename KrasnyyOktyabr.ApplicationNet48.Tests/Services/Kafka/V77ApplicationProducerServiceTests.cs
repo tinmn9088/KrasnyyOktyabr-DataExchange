@@ -58,23 +58,19 @@ public class V77ApplicationProducerServiceTests
             new V77ApplicationObjectFilter()
             {
                 IdPrefix = "Id1",
-                JsonDepth = 3
+                JsonDepth = 3,
+                ReadLastOnly = true,
             },
             new V77ApplicationObjectFilter()
             {
                 IdPrefix = "Id2",
-                JsonDepth = 2
+                JsonDepth = 2,
+                ReadLastOnly = false,
             }],
         TransactionTypeFilters = ["Type1", "Type2"],
         DataTypePropertyName = "TestDatatype",
         ErtRelativePath = "Erts/test.ert",
     };
-
-    private static LogTransaction[] TestLogTransactions => [new LogTransaction(
-        objectId: "FakeObjectId",
-        objectName: "FakeObjectName",
-        type: "FakeTransactionType"
-    )];
 
     [TestMethod]
     public async Task GetLogTransactionsTask_ShouldGetLogTransactions()
@@ -91,12 +87,33 @@ public class V77ApplicationProducerServiceTests
         Mock<IV77ApplicationLogService> logServiceMock = new();
         long endPosition = 4321;
         string endLine = "NextFakeLastReadLine";
+        List<LogTransaction> logTransactions = [
+                new LogTransaction( // Must to be ignored
+                    objectId: "Id1Fake",
+                    objectName: "FakeObjectName1",
+                    type: "FakeTransactionType1"
+                ),
+            new LogTransaction( // Must not to be ignored
+                    objectId: "Id2Fake",
+                    objectName: "FakeObjectName2",
+                    type: "FakeTransactionType2"
+                ),
+            new LogTransaction(
+                    objectId: "Id2Fake",
+                    objectName: "FakeObjectName2",
+                    type: "FakeTransactionType2"
+                ),
+            new LogTransaction(
+                    objectId: "Id1Fake",
+                    objectName: "FakeObjectName1",
+                    type: "FakeTransactionType3"
+                )];
         GetLogTransactionsResult result = new(
             lastReadOffset: new(
                 position: endPosition,
                 lastReadLine: endLine
             ),
-            transactions: [.. TestLogTransactions]
+            transactions: logTransactions
         );
         logServiceMock
             .Setup(s => s.GetLogTransactionsAsync(It.IsAny<string>(), It.IsAny<TransactionFilterWithCommit>(), It.IsAny<CancellationToken>()))
@@ -105,7 +122,7 @@ public class V77ApplicationProducerServiceTests
         // Setting up logger mock
         Mock<ILogger> loggerMock = new();
 
-        GetLogTransactionsResult logTransactions = await s_service.GetLogTransactionsTask(
+        GetLogTransactionsResult logTransactionsResult = await s_service.GetLogTransactionsTask(
             settings,
             [],
             offsetServiceMock.Object,
@@ -113,14 +130,19 @@ public class V77ApplicationProducerServiceTests
             loggerMock.Object,
             cancellationToken: default);
 
-        Assert.AreEqual(1, logTransactions.Transactions.Count);
+        Assert.AreEqual(3, logTransactionsResult.Transactions.Count);
     }
 
     [TestMethod]
     public async Task GetObjectJsonsTask_ShouldGetObjectJsons()
     {
         V77ApplicationProducerSettings settings = TestSettings;
-        LogTransaction[] logTransactions = TestLogTransactions;
+        LogTransaction[] logTransactions = [
+            new LogTransaction(
+                objectId: "Id1Fake",
+                objectName: "FakeObjectName",
+                type: "FakeTransactionType"
+            )];
 
         V77ApplicationObjectFilter objectFilter = new()
         {
