@@ -570,7 +570,10 @@ public sealed partial class V77ApplicationProducerService(
             _isDisposed = false;
 
             // Prepare cached values
-            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth, f.Topic)).ToList().AsReadOnly();
+            CacheObjectFiltersList = Settings.ObjectFilters
+                .Select(f => new V77ApplicationObjectFilterStatus(f.IdPrefix, f.JsonDepth, f.Topic, f.ReadLastOnly))
+                .ToList()
+                .AsReadOnly();
 
             LastActivity = DateTimeOffset.Now;
         }
@@ -595,7 +598,7 @@ public sealed partial class V77ApplicationProducerService(
 
         public string DataTypeJsonPropertyName => Settings.DataTypePropertyName;
 
-        public IReadOnlyList<ObjectFilter> CacheObjectFiltersList { get; private set; }
+        public IReadOnlyList<V77ApplicationObjectFilterStatus> CacheObjectFiltersList { get; private set; }
 
         public Exception? Error { get; private set; }
 

@@ -33,7 +33,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
     public delegate ValueTask<GetLogTransactionsResult> ProduceFromPeriodAsync(
         ILogger logger,
         V77ApplicationPeriodProduceJobRequest request,
-        List<ObjectFilter> objectFilters,
+        List<ObjectFilterStatus> objectFilters,
         IV77ApplicationLogService logService,
         CancellationToken cancellationToken);
 
@@ -41,7 +41,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         ILogger logger,
         V77ApplicationPeriodProduceJobRequest request,
         LogTransaction[] logTransactions,
-        List<ObjectFilter> objectFilters,
+        List<ObjectFilterStatus> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         CancellationToken cancellationToken);
 
@@ -88,7 +88,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
     public ProduceFromPeriodAsync ProduceFromPeriodTask => async (
             ILogger logger,
             V77ApplicationPeriodProduceJobRequest request,
-            List<ObjectFilter> objectFilters,
+            List<ObjectFilterStatus> objectFilters,
             IV77ApplicationLogService logService,
             CancellationToken cancellationToken) =>
     {
@@ -115,7 +115,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         ILogger logger,
         V77ApplicationPeriodProduceJobRequest request,
         LogTransaction[] logTransactions,
-        List<ObjectFilter> objectFilters,
+        List<ObjectFilterStatus> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         CancellationToken cancellationToken) =>
     {
@@ -314,7 +314,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
 
         private readonly V77ApplicationPeriodProduceJobRequest _request;
 
-        private readonly List<ObjectFilter> _objectFilters;
+        private readonly List<ObjectFilterStatus> _objectFilters;
 
         private readonly IV77ApplicationLogService _logService;
 
@@ -394,7 +394,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
 
         public string[] TransactionTypeFilters => _request.TransactionTypeFilters;
 
-        public IReadOnlyList<ObjectFilter> ObjectFilters => _objectFilters.AsReadOnly();
+        public IReadOnlyList<ObjectFilterStatus> ObjectFilters => _objectFilters.AsReadOnly();
 
         public Exception? Error { get; private set; }
 

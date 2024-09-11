@@ -23,7 +23,7 @@ public class LegacyProducerHealthStatus
     public string? ErrorMessage { get; set; }
 
     [JsonProperty("objectFilters")]
-    public IEnumerable<ObjectFilter>? ObjectFilters { get; set; }
+    public IEnumerable<ObjectFilterStatus>? ObjectFilters { get; set; }
 
     [JsonProperty("transactionTypes")]
     public string[]? TransactionTypes { get; set; }

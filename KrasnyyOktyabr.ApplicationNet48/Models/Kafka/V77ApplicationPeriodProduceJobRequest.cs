@@ -16,7 +16,7 @@ public class V77ApplicationPeriodProduceJobRequest
 
     [Required]
     [JsonProperty("objectFilters")]
-    public ObjectFilter[] ObjectFilters { get; set; }
+    public ObjectFilterStatus[] ObjectFilters { get; set; }
 
     [Required]
     [JsonProperty("transactionTypeFilters")]

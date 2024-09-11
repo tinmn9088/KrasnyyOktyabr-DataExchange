@@ -417,7 +417,7 @@ public sealed class V83ApplicationProducerService(
             _producerTask = Task.Run(() => RunProducerAsync(cancellationToken), cancellationToken);
 
             // Prepare cached values
-            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.DataType, f.JsonDepth, f.Topic)).ToList().AsReadOnly();
+            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilterStatus(f.DataType, f.JsonDepth, f.Topic)).ToList().AsReadOnly();
 
             // Extract infobase publication name
             MatchCollection matches = InfobasePubNameRegex.Matches(settings.InfobaseUrl);
@@ -451,7 +451,7 @@ public sealed class V83ApplicationProducerService(
 
         public string DataTypeJsonPropertyName => Settings.DataTypePropertyName;
 
-        public IReadOnlyList<ObjectFilter> CacheObjectFiltersList { get; private set; }
+        public IReadOnlyList<ObjectFilterStatus> CacheObjectFiltersList { get; private set; }
 
         public Exception? Error { get; private set; }
 

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
-public readonly struct ObjectFilter(string name, int depth, string? topic)
+public class ObjectFilterStatus(string name, int depth, string? topic)
 {
     [JsonProperty("name")]
     public string Name { get; } = name;

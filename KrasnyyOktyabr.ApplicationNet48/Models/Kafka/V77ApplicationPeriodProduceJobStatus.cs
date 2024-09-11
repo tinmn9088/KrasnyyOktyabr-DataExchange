@@ -19,7 +19,7 @@ public class V77ApplicationPeriodProduceJobStatus
 #nullable disable
 
     [JsonProperty("objectFilters")]
-    public IReadOnlyList<ObjectFilter> ObjectFilters { get; set; }
+    public IReadOnlyList<ObjectFilterStatus> ObjectFilters { get; set; }
 
     [JsonProperty("transactionTypeFilters")]
     public IReadOnlyList<string> TransactionTypeFilters { get; set; }

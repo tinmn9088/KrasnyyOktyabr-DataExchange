@@ -6,7 +6,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 public class V77ApplicationProducerStatus : AbstractProducerStatus
 {
     [JsonProperty("objectFilters")]
-    public IReadOnlyList<ObjectFilter> ObjectFilters { get; set; }
+    public IReadOnlyList<V77ApplicationObjectFilterStatus> ObjectFilters { get; set; }
 
     [JsonProperty("gotLogTransactions")]
     public int GotLogTransactions { get; set; }
