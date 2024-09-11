@@ -243,6 +243,10 @@ public sealed partial class V77ApplicationProducerService(
                 {
                     clearedLogTransactions.Add(logTransaction);
                 }
+                else
+                {
+                    logger.LogTrace("Skipping transaction with object id '{ObjectId}' (there is a later transaction with index {LastIndex}, current index is {CurrentIndex})", logTransaction.ObjectId, lastIndex, currentIndex);
+                }
             }
             else
             {
