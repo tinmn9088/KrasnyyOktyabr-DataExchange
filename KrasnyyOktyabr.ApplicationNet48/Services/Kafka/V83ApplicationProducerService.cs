@@ -28,7 +28,7 @@ public sealed class V83ApplicationProducerService(
     ILoggerFactory loggerFactory)
     : IV83ApplicationProducerService
 {
-    public readonly struct NewLogTransactionResponse(string nextDate, string? transaction, string? previousTransaction, string data, string? dataType)
+    public readonly struct NewLogTransactionResponse(string nextDate, string? transaction, string? previousTransaction, string? data, string? dataType)
     {
         public string NextDate { get; } = nextDate;
 
@@ -36,7 +36,7 @@ public sealed class V83ApplicationProducerService(
 
         public string? PreviousTransaction { get; } = previousTransaction;
 
-        public string Data { get; } = data;
+        public string? Data { get; } = data;
 
         public string? DataType { get; } = dataType;
     }
@@ -266,7 +266,7 @@ public sealed class V83ApplicationProducerService(
         string? dataType = extractedValues[LogTransactionDataTypeJsonPropertyName];
         string? data = extractedValues[LogTransactionDataJsonPropertyName];
 
-        return new NewLogTransactionResponse(nextDate, transaction, offset.Transaction, newTransactionJson, dataType);
+        return new NewLogTransactionResponse(nextDate, transaction, offset.Transaction, data, dataType);
     };
 
     public SendObjectJsonAsync SendObjectJsonTask = async (
@@ -290,13 +290,13 @@ public sealed class V83ApplicationProducerService(
             : kafkaService.BuildTopicName(infobasePubName, logTransaction.DataType);
 
         // 2. Prepare Kafka message
-        Message<string, string> kafkaMessage = new()
+        Message<string, string?> kafkaMessage = new()
         {
             Key = infobasePubName,
-            Value = logTransaction.Data,
+            Value = logTransaction.Data!,
         };
 
-        using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
+        using IProducer<string, string?> producer = kafkaService.GetProducer<string, string?>();
 
         await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken).ConfigureAwait(false);
 
@@ -482,7 +482,6 @@ public sealed class V83ApplicationProducerService(
                     LastActivity = DateTimeOffset.Now;
 
                     bool isLogTransactionPresent = newLogTransaction.Transaction is not null
-                        && newLogTransaction.Transaction is not null
                         && newLogTransaction.DataType is not null;
 
                     if (isLogTransactionPresent)
