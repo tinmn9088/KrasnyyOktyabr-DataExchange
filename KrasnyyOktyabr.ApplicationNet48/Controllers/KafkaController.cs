@@ -11,6 +11,7 @@ using KrasnyyOktyabr.ApplicationNet48.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using static KrasnyyOktyabr.ApplicationNet48.Controllers.ControllersHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
@@ -22,6 +23,8 @@ public class KafkaController(IKafkaService kafkaService, IMemoryCache cache, ILo
     {
         public static string Producers => nameof(KafkaController) + "_" + nameof(Producers);
     }
+
+    private TimeSpan CacheTimeout => TimeSpan.FromSeconds(20);
 
     [Route("produce")]
     [HttpPost]
@@ -71,36 +74,40 @@ public class KafkaController(IKafkaService kafkaService, IMemoryCache cache, ILo
     /// <exception cref="InvalidCastException"></exception>
     private IProducer<string?, string> GetProducer()
     {
-        if (cache.TryGetValue(CacheKeys.Producers, out object? producer))
+        if (cache.TryGetValue(CacheKeys.Producers, out (IProducer<string?, string> producer, CancellationTokenSource expirationTokenSource)? cacheItem))
         {
-            return producer as IProducer<string?, string>
-                ?? throw new InvalidCastException($"Cached value was not of type '{typeof(IProducer<string?, string>)}'");
+            cacheItem!.Value.expirationTokenSource.CancelAfter(CacheTimeout);
+            return cacheItem!.Value.producer;
         }
 
         IProducer<string?, string> newInstance = kafkaService.GetProducer<string?, string>();
 
-        logger.LogDebug($"New instance of Kafka producer is created ({newInstance.GetHashCode()})");
+        logger.LogDebug("New instance of Kafka producer is created ({Hash})", newInstance.GetHashCode());
 
         MemoryCacheEntryOptions options = new()
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(3),
+            SlidingExpiration = CacheTimeout,
         };
 
         options.RegisterPostEvictionCallback(new PostEvictionDelegate((key, value, reason, state) =>
         {
-            logger.LogDebug($"'{typeof(PostEvictionDelegate).Name}' called for producer ({value?.GetHashCode()})");
+            logger.LogDebug("'{CallbackName}' called for on cache entry '{Key}'", typeof(PostEvictionDelegate).Name, key);
 
-            IProducer<string?, string>? producer = value as IProducer<string?, string>;
-
-            if (producer is not null)
+            if (value is (IProducer<string?, string>, CancellationTokenSource))
             {
-                producer.Dispose();
+                (IProducer<string?, string> producer, CancellationTokenSource expirationTokenSource) = ((IProducer<string?, string>, CancellationTokenSource))value;
 
-                logger.LogDebug($"Producer ({value?.GetHashCode()}) disposed");
+                producer.Dispose();
+                expirationTokenSource.Dispose();
+
+                logger.LogDebug("Producer ({Hash}) disposed", producer.GetHashCode());
             }
         }));
 
-        cache.Set(CacheKeys.Producers, newInstance, options);
+        CancellationTokenSource expirationTokenSource = new(CacheTimeout);
+        options.AddExpirationToken(new CancellationChangeToken(expirationTokenSource.Token));
+
+        cache.Set(CacheKeys.Producers, (newInstance, expirationTokenSource), options);
 
         return newInstance;
     }
