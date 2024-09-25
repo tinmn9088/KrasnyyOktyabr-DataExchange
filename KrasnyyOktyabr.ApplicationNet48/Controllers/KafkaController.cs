@@ -9,14 +9,20 @@ using System.Web.Http;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Controllers.ControllersHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
 [RoutePrefix("api/kafka")]
-public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController> logger) : ApiController
+public class KafkaController(IKafkaService kafkaService, IMemoryCache cache, ILogger<KafkaController> logger) : ApiController
 {
+    public class CacheKeys
+    {
+        public static string Producers => nameof(KafkaController) + "_" + nameof(Producers);
+    }
+
     [Route("produce")]
     [HttpPost]
     public async Task<IHttpActionResult> ProduceMessage(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -35,7 +41,7 @@ public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController
 
             using StreamReader reader = new(bodyStream);
 
-            using IProducer<string?, string> producer = kafkaService.GetProducer<string?, string>();
+            IProducer<string?, string> producer = GetProducer();
 
             Message<string?, string> message = new()
             {
@@ -59,5 +65,43 @@ public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    /// <returns>Kafka producer (do not dispose).</returns>
+    /// <exception cref="InvalidCastException"></exception>
+    private IProducer<string?, string> GetProducer()
+    {
+        if (cache.TryGetValue(CacheKeys.Producers, out object? producer))
+        {
+            return producer as IProducer<string?, string>
+                ?? throw new InvalidCastException($"Cached value was not of type '{typeof(IProducer<string?, string>)}'");
+        }
+
+        IProducer<string?, string> newInstance = kafkaService.GetProducer<string?, string>();
+
+        logger.LogDebug($"New instance of Kafka producer is created ({newInstance.GetHashCode()})");
+
+        MemoryCacheEntryOptions options = new()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
+        };
+
+        options.RegisterPostEvictionCallback(new PostEvictionDelegate((key, value, reason, state) =>
+        {
+            logger.LogDebug($"'{typeof(PostEvictionDelegate).Name}' called for producer ({value?.GetHashCode()})");
+
+            IProducer<string?, string>? producer = value as IProducer<string?, string>;
+
+            if (producer is not null)
+            {
+                producer.Dispose();
+
+                logger.LogDebug($"Producer ({value?.GetHashCode()}) disposed");
+            }
+        }));
+
+        cache.Set(CacheKeys.Producers, newInstance, options);
+
+        return newInstance;
     }
 }
