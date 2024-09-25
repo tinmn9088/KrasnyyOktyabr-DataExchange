@@ -83,7 +83,7 @@ public class KafkaController(IKafkaService kafkaService, IMemoryCache cache, ILo
 
         MemoryCacheEntryOptions options = new()
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1),
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(3),
         };
 
         options.RegisterPostEvictionCallback(new PostEvictionDelegate((key, value, reason, state) =>
