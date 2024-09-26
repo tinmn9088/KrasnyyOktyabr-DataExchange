@@ -24,7 +24,7 @@ public class KafkaController(IKafkaService kafkaService, IMemoryCache cache, ILo
         public static string Producers => nameof(KafkaController) + "_" + nameof(Producers);
     }
 
-    private TimeSpan CacheTimeout => TimeSpan.FromSeconds(20);
+    private TimeSpan CacheTimeout => TimeSpan.FromMinutes(5);
 
     [Route("produce")]
     [HttpPost]

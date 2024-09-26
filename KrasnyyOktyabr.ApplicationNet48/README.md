@@ -31,7 +31,7 @@ Properties:
 1. `Socket` - Kafka broker address.
 1. (_optional_) `MessageMaxBytes` - the largest record batch size allowed by Kafka.
 1. (_optional_) `MaxPollIntervalMs` - the maximum delay between poll requests.
-1. (_optional_) `MessageTimeoutMs` - limits the time a produced message waits for successful delivery.
+1. (_optional_) `MessageTimeoutMs` - limits the time a produced message waits for successful delivery (use values __<5000__ to guarantee correct work with cache at `api/kafka/produce` endpoint).
 
 
 
