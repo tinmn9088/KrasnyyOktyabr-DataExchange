@@ -213,7 +213,7 @@ public sealed partial class V77ApplicationProducerService(
         TransactionFilterWithCommit filter = new(
             startPosition: commitedOffset.Position,
             committedLine: commitedOffset.LastReadLine,
-            objectIds: [.. objectFilters.Select(f => f.IdPrefix)],
+            objectFilters: [.. objectFilters.Select(f => new TransactionObjectFilter(f.IdPrefix, f.TransactionTypeFilters))],
             transactionTypes: settings.TransactionTypeFilters
         );
 

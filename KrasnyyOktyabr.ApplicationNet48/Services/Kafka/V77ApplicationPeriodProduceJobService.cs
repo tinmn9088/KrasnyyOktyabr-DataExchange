@@ -97,7 +97,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         logger.LogGettingTransactionsForPeriod(infobaseFullPath, request.Start, request.Start + request.Duration);
 
         TransactionFilter filter = new(
-            objectIds: objectFilters.Select(f => f.Name).ToArray(),
+            objectFilters: objectFilters.Select(f => new TransactionObjectFilter(f.Name)).ToArray(),
             transactionTypes: request.TransactionTypeFilters
         );
 

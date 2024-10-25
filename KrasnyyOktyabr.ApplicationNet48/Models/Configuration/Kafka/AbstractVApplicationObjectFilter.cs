@@ -9,4 +9,6 @@ public abstract class AbstractVApplicationObjectFilter
 
 #nullable enable
     public string? Topic { get; set; }
+
+    public string[]? TransactionTypeFilters { get; set; }
 }

@@ -255,11 +255,11 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
         string objectId = subs[8];
         string objectName = subs[9];
 
-        foreach (string objectIdToFilter in filter.ObjectIds)
+        foreach (TransactionObjectFilter objectFilter in filter.ObjectFilters)
         {
-            foreach (string transactionTypeFilter in filter.TransactionTypes)
+            foreach (string transactionTypeFilter in objectFilter.TransactionTypes ?? filter.TransactionTypes)
             {
-                if (objectId.StartsWith(objectIdToFilter) && transactionType.StartsWith(transactionTypeFilter))
+                if (objectId.StartsWith(objectFilter.ObjectId) && transactionType.StartsWith(transactionTypeFilter))
                 {
                     logTransaction = new(
                         objectId: objectId,

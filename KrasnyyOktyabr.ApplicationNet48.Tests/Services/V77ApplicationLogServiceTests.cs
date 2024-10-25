@@ -31,7 +31,7 @@ public class V77ApplicationLogServiceTests
     public async Task GetLogTransactionsAsync_ShouldReadLogTransactions()
     {
         TransactionFilterWithCommit filter = new(
-            objectIds: ["O/666/", "O/999/"],
+            objectFilters: [new TransactionObjectFilter("O/666/"), new TransactionObjectFilter("O/999/")],
             transactionTypes: ["DocBackPassed"],
             committedLine: "20230301;09:49:24;Пользователь_6;E;Docs;DocWrite;2;;O/666/444007;Документ3 96569 01.03.2023 09:49:22",
             startPosition: 2271
@@ -88,7 +88,7 @@ public class V77ApplicationLogServiceTests
     public async Task GetLogTransactionsForPeriodAsync_ShouldFindTransaction()
     {
         TransactionFilter filter = new(
-            objectIds: ["B/10/"],
+            objectFilters: [new TransactionObjectFilter("B/10/")],
             transactionTypes: ["RefWrite"]
         );
 

@@ -18,23 +18,33 @@ public partial interface IV77ApplicationLogService
     }
 
     public class TransactionFilterWithCommit(
-        string[] objectIds,
+        TransactionObjectFilter[] objectFilters,
         string[] transactionTypes,
         long? startPosition,
         string committedLine)
-        : TransactionFilter(objectIds, transactionTypes)
+        : TransactionFilter(objectFilters, transactionTypes)
     {
         public long? StartPosition { get; } = startPosition;
 
         public string CommittedLine { get; } = committedLine;
     }
 
-    public class TransactionFilter(string[] objectIds, string[] transactionTypes)
+    public class TransactionFilter(TransactionObjectFilter[] objectFilters, string[] transactionTypes)
     {
-        public string[] ObjectIds { get; } = objectIds;
+        public TransactionObjectFilter[] ObjectFilters { get; } = objectFilters;
 
         public string[] TransactionTypes { get; } = transactionTypes;
     }
+#nullable enable
+
+    public class TransactionObjectFilter(string objectId, string[]? transactionTypes = null)
+    {
+        public string ObjectId { get; } = objectId;
+
+        public string[]? TransactionTypes { get; } = transactionTypes;
+    }
+
+#nullable disable
 
     public readonly struct LogOffset(long? position, string lastReadLine)
     {

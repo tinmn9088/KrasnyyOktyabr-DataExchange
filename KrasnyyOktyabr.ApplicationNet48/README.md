@@ -64,7 +64,10 @@ Example:
       "IdPrefix": "O/9999/",
       "JsonDepth": 3,
       "Topic": "Topic1",
-      "ReadLastOnly": false
+      "ReadLastOnly": false,
+      "TransactionTypeFilters": [
+        "RefNew"
+      ]
     }
   ],
   "TransactionTypeFilters": [
@@ -89,6 +92,7 @@ Properties:
 1. (_optional_) `Password` - infobase user password.
 1. (_optional_) `ObjectFilters.Topic` - topic name (by default is generated like `<infobaseName>_<dataType>`).
 1. (_optional_) `ObjectFilters.ReadLastOnly` - produce only the last read transaction when multiple with equal object ids are found (by default `false`).
+1. (_optional_) `ObjectFilters.TransactionTypeFilters` - transaction types filters (overwrites `TransactionTypeFilters` value).
 1. (_optional_) `ErtRelativePath` - path of the ERT to be called to retrieve __object JSONs__ relative to `InfobasePath` (be default _"ExtForms\EDO\Test\GetObjectJson.ert"_).
 1. (_optional_) `SuspendSchedule` - periods when producer have to suspend.
 
