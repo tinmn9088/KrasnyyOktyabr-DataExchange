@@ -220,7 +220,11 @@ public sealed partial class V83ApplicationConsumerService(
 
             HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                throw new FailedToSaveObjectException(content);
+            }
         }
     };
 
@@ -471,6 +475,13 @@ public sealed partial class V83ApplicationConsumerService(
     public class InstructionNotSpecifiedException : Exception
     {
         internal InstructionNotSpecifiedException(string topic) : base($"Instruction not specified for '{topic}'")
+        {
+        }
+    }
+
+    public class FailedToSaveObjectException : Exception
+    {
+        internal FailedToSaveObjectException(string message) : base(message)
         {
         }
     }
