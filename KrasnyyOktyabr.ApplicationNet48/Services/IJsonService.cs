@@ -36,7 +36,7 @@ public interface IJsonService
     /// <remarks>
     /// Uses <c>null</c> when property is not present.
     /// </remarks>
-    Dictionary<string, string?> ExtractProperties(string json, IEnumerable<string> propertyNames); 
+    Dictionary<string, string?> ExtractProperties(string json, IEnumerable<string> propertyNames);
 
     /// <summary>
     /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,
@@ -71,7 +71,7 @@ public interface IJsonService
         CancellationToken cancellationToken);
 
     /// <exception cref="Exception"></exception>
-    ValueTask<List<string>> RunJsonTransformOnConsumedMessageVApplicationAsync(
+    ValueTask<List<string>> RunJsonTransformOnConsumedMessageAsync(
         string instructionName,
         string message,
         CancellationToken cancellationToken);

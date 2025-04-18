@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Health;
 
-public class V83ApplicationConsumerServiceHealthChecker(IV83ApplicationConsumerService v83ApplicationConsumerService) : IHealthCheck
+public class HttpConsumerServiceHealthChecker(IHttpConsumerService httpConsumerService) : IHealthCheck
 {
     public static string DataKey => "status";
 
@@ -15,7 +15,7 @@ public class V83ApplicationConsumerServiceHealthChecker(IV83ApplicationConsumerS
         return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy,
             data: new Dictionary<string, object>()
             {
-                { DataKey, v83ApplicationConsumerService.Status }
+                { DataKey, httpConsumerService.Status }
             }));
     }
 }

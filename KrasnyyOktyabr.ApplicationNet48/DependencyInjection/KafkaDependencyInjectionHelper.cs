@@ -21,7 +21,7 @@ public static class KafkaDependencyInjectionHelper
     /// Called:
     /// <list type="bullet">
     ///   <item><see cref="AddV83ApplicationProducerService(IServiceCollection, IHealthChecksBuilder)"/></item>
-    ///   <item><see cref="AddV83ApplicationConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
+    ///   <item><see cref="AddHttpConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
     ///   <item><see cref="AddV77ApplicationProducerService(IServiceCollection, IHealthChecksBuilder)"/></item>
     ///   <item><see cref="AddV77ApplicationPeriodProduceJobService(IServiceCollection, IHealthChecksBuilder)"/></item>
     ///   <item><see cref="AddV77ApplicationConsumerService(IServiceCollection, IHealthChecksBuilder)"/></item>
@@ -52,7 +52,7 @@ public static class KafkaDependencyInjectionHelper
 
         services.AddV83ApplicationProducerService(healthChecksBuilder);
 
-        services.AddV83ApplicationConsumerService(healthChecksBuilder);
+        services.AddHttpConsumerService(healthChecksBuilder);
     }
 
     /// <summary>
@@ -115,14 +115,14 @@ public static class KafkaDependencyInjectionHelper
     }
 
     /// <summary>
-    /// Register singleton <see cref="IV83ApplicationConsumerService"/>, start <see cref="V83ApplicationConsumerService"/>
+    /// Register singleton <see cref="IHttpConsumerService"/>, start <see cref="HttpConsumerService"/>
     /// as hosted service and add health check for it.
     /// </summary>
-    public static void AddV83ApplicationConsumerService(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
+    public static void AddHttpConsumerService(this IServiceCollection services, IHealthChecksBuilder healthChecksBuilder)
     {
-        services.AddSingleton<IV83ApplicationConsumerService, V83ApplicationConsumerService>();
-        services.AddHostedService(p => p.GetRequiredService<IV83ApplicationConsumerService>());
+        services.AddSingleton<IHttpConsumerService, HttpConsumerService>();
+        services.AddHostedService(p => p.GetRequiredService<IHttpConsumerService>());
 
-        healthChecksBuilder.AddCheck<V83ApplicationConsumerServiceHealthChecker>(nameof(V83ApplicationConsumerStatus));
+        healthChecksBuilder.AddCheck<HttpConsumerServiceHealthChecker>(nameof(HttpConsumerStatus));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 
-public class AbstractVApplicationConsumerSettings : AbstractConsumerSettings
+public class AbstractCredentialsConsumerSettings : AbstractConsumerSettings
 {
     public string? Username { get; set; }
 

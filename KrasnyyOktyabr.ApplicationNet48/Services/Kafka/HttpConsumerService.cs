@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -18,41 +17,39 @@ using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
-public sealed partial class V83ApplicationConsumerService(
+public sealed partial class HttpConsumerService(
     IConfiguration configuration,
     IJsonService jsonService,
     IHttpClientFactory httpClientFactory,
     IKafkaService kafkaService,
     ITransliterationService transliterationService,
-    ILogger<V83ApplicationConsumerService> logger,
+    ILogger<HttpConsumerService> logger,
     ILoggerFactory loggerFactory)
-    : IV83ApplicationConsumerService
+    : IHttpConsumerService
 {
     public delegate ValueTask<List<string>?> TransformMessageAsync(
         string topic,
         string message,
-        V83ApplicationConsumerSettings settings,
+        HttpConsumerSettings settings,
         IJsonService jsonService,
         ILogger logger,
         CancellationToken cancellationToken);
 
-    public delegate ValueTask V83ApplicationSaveAsync(
+    public delegate ValueTask HttpSendAsync(
         List<string> jsonTransformResults,
-        V83ApplicationConsumerSettings settings,
+        HttpConsumerSettings settings,
         IHttpClientFactory httpClientFactory,
         CancellationToken cancellationToken);
-
-    public static string DefaultErtRelativePath => @"ExtForms\EDO\Test\SaveObject.ert";
 
     /// <summary>
     /// <para>
     /// Is <c>null</c> when no configuration found.
     /// </para>
     /// <para>
-    /// Keys are results of <see cref="V77ApplicationProducer.Key"/>.
+    /// Keys are results of <see cref="HttpConsumer.Key"/>.
     /// </para>
     /// </summary>
-    private Dictionary<string, V83ApplicationConsumer>? _consumers;
+    private Dictionary<string, HttpConsumer>? _consumers;
 
     /// <summary>
     /// Synchronizes restart methods.
@@ -61,18 +58,18 @@ public sealed partial class V83ApplicationConsumerService(
 
     public int ManagedInstancesCount => _consumers?.Count ?? 0;
 
-    public IStatusContainer<V83ApplicationConsumerStatus> Status
+    public IStatusContainer<HttpConsumerStatus> Status
     {
         get
         {
             if (_consumers is null || _consumers.Count == 0)
             {
-                return StatusContainer<V83ApplicationConsumerStatus>.Empty;
+                return StatusContainer<HttpConsumerStatus>.Empty;
             }
 
-            List<V83ApplicationConsumerStatus> statuses = new(_consumers.Count);
+            List<HttpConsumerStatus> statuses = new(_consumers.Count);
 
-            foreach (V83ApplicationConsumer consumer in _consumers.Values)
+            foreach (HttpConsumer consumer in _consumers.Values)
             {
                 statuses.Add(new()
                 {
@@ -80,16 +77,16 @@ public sealed partial class V83ApplicationConsumerService(
                     Active = consumer.Active,
                     LastActivity = consumer.LastActivity,
                     ErrorMessage = consumer.Error?.Message,
-                    InfobaseName = consumer.InfobaseName,
+                    Url = consumer.Url,
                     Consumed = consumer.Consumed,
-                    Saved = consumer.Saved,
+                    Sent = consumer.Saved,
                     Topics = consumer.Topics,
                     ConsumerGroup = consumer.ConsumerGroup,
                     SuspendSchedule = consumer.Settings.SuspendSchedule,
                 });
             }
 
-            return new StatusContainer<V83ApplicationConsumerStatus>()
+            return new StatusContainer<HttpConsumerStatus>()
             {
                 Statuses = statuses,
             };
@@ -142,7 +139,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         try
         {
-            if (_consumers is not null && _consumers.TryGetValue(key, out V83ApplicationConsumer? consumer))
+            if (_consumers is not null && _consumers.TryGetValue(key, out HttpConsumer? consumer))
             {
                 _consumers.Remove(key);
 
@@ -178,7 +175,7 @@ public sealed partial class V83ApplicationConsumerService(
     public TransformMessageAsync TransformMessageTask => async (
         string topic,
         string message,
-        V83ApplicationConsumerSettings settings,
+        HttpConsumerSettings settings,
         IJsonService jsonService,
         ILogger logger,
         CancellationToken cancellationToken) =>
@@ -188,7 +185,7 @@ public sealed partial class V83ApplicationConsumerService(
             throw new InstructionNotSpecifiedException(topic);
         }
 
-        List<string> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageVApplicationAsync(
+        List<string> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageAsync(
             instructionName,
             message,
             cancellationToken);
@@ -198,9 +195,9 @@ public sealed partial class V83ApplicationConsumerService(
         return jsonTransformResults;
     };
 
-    public V83ApplicationSaveAsync V83ApplicationSaveTask => async (
+    public HttpSendAsync HttpSendTask => async (
         List<string> jsonTransformResults,
-        V83ApplicationConsumerSettings settings,
+        HttpConsumerSettings settings,
         IHttpClientFactory httpClientFactory,
         CancellationToken cancellationToken) =>
     {
@@ -208,7 +205,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         foreach (string result in jsonTransformResults)
         {
-            HttpRequestMessage request = new(HttpMethod.Post, settings.InfobaseUrl)
+            HttpRequestMessage request = new(HttpMethod.Post, settings.Url)
             {
                 Content = new StringContent(result, Encoding.UTF8, "application/json"),
             };
@@ -223,14 +220,14 @@ public sealed partial class V83ApplicationConsumerService(
             if (!response.IsSuccessStatusCode)
             {
                 string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                throw new FailedToSaveObjectException(content);
+                throw new FailedToSendException(content);
             }
         }
     };
 
     private void StartConsumers()
     {
-        V83ApplicationConsumerSettings[]? producersSettings = GetConsumersSettings();
+        HttpConsumerSettings[]? producersSettings = GetConsumersSettings();
 
         if (producersSettings is null)
         {
@@ -243,30 +240,30 @@ public sealed partial class V83ApplicationConsumerService(
 
         logger.LogConfigurationFound(producersSettings.Length);
 
-        foreach (V83ApplicationConsumerSettings settings in producersSettings)
+        foreach (HttpConsumerSettings settings in producersSettings)
         {
             StartConsumer(settings);
         }
     }
 
-    private V83ApplicationConsumerSettings[]? GetConsumersSettings()
-        => ValidationHelper.GetAndValidateKafkaClientSettings<V83ApplicationConsumerSettings>(configuration, V83ApplicationConsumerSettings.Position, logger);
+    private HttpConsumerSettings[]? GetConsumersSettings()
+        => ValidationHelper.GetAndValidateKafkaClientSettings<HttpConsumerSettings>(configuration, HttpConsumerSettings.Position, logger);
 
     /// <summary>
-    /// Creates new <see cref="V83ApplicationConsumer"/> and saves it to <see cref="_consumers"/>.
+    /// Creates new <see cref="HttpConsumer"/> and saves it to <see cref="_consumers"/>.
     /// </summary>
-    private void StartConsumer(V83ApplicationConsumerSettings settings)
+    private void StartConsumer(HttpConsumerSettings settings)
     {
         _consumers ??= [];
-        V83ApplicationConsumer consumer = new(
-            loggerFactory.CreateLogger<V83ApplicationConsumer>(),
+        HttpConsumer consumer = new(
+            loggerFactory.CreateLogger<HttpConsumer>(),
             settings,
             kafkaService,
             jsonService,
             httpClientFactory,
             transliterationService,
             TransformMessageTask,
-            V83ApplicationSaveTask);
+            HttpSendTask);
 
         _consumers.Add(consumer.Key, consumer);
     }
@@ -280,7 +277,7 @@ public sealed partial class V83ApplicationConsumerService(
                 logger.LogStoppingConsumers(_consumers.Count);
             }
 
-            foreach (V83ApplicationConsumer consumer in _consumers.Values)
+            foreach (HttpConsumer consumer in _consumers.Values)
             {
                 await consumer.DisposeAsync();
             }
@@ -289,9 +286,9 @@ public sealed partial class V83ApplicationConsumerService(
         }
     }
 
-    private sealed partial class V83ApplicationConsumer : IAsyncDisposable
+    private sealed partial class HttpConsumer : IAsyncDisposable
     {
-        private readonly ILogger<V83ApplicationConsumer> _logger;
+        private readonly ILogger<HttpConsumer> _logger;
 
         private readonly IKafkaService _kafkaService;
 
@@ -301,7 +298,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         private readonly TransformMessageAsync _transformMessageTask;
 
-        private readonly V83ApplicationSaveAsync _v83ApplicationSaveTask;
+        private readonly HttpSendAsync _httpSendTask;
 
         private readonly Task _consumerTask;
 
@@ -310,15 +307,15 @@ public sealed partial class V83ApplicationConsumerService(
         /// </remarks>
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        internal V83ApplicationConsumer(
-            ILogger<V83ApplicationConsumer> logger,
-            V83ApplicationConsumerSettings settings,
+        internal HttpConsumer(
+            ILogger<HttpConsumer> logger,
+            HttpConsumerSettings settings,
             IKafkaService kafkaService,
             IJsonService jsonService,
             IHttpClientFactory httpClientFactory,
             ITransliterationService transliterationService,
             TransformMessageAsync transformMessageTask,
-            V83ApplicationSaveAsync v83ApplicationSaveTask)
+            HttpSendAsync httpSendTask)
         {
             _logger = logger;
             Settings = settings;
@@ -326,7 +323,7 @@ public sealed partial class V83ApplicationConsumerService(
             _jsonService = jsonService;
             _httpClientFactory = httpClientFactory;
 
-            InfobaseName = ExtractInfobaseName(settings.InfobaseUrl);
+            Url = settings.Url;
 
             if (settings.ConsumerGroup is not null)
             {
@@ -336,22 +333,22 @@ public sealed partial class V83ApplicationConsumerService(
             {
                 logger.LogConsumerGroupNotSpecified();
 
-                ConsumerGroup = transliterationService.TransliterateToLatin(InfobaseName);
+                ConsumerGroup = transliterationService.TransliterateToLatin(Url);
             }
 
             _cancellationTokenSource = new();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             _transformMessageTask = transformMessageTask;
-            _v83ApplicationSaveTask = v83ApplicationSaveTask;
+            _httpSendTask = httpSendTask;
             _consumerTask = Task.Run(() => RunConsumerAsync(cancellationToken), cancellationToken);
 
             LastActivity = DateTimeOffset.Now;
         }
 
-        public V83ApplicationConsumerSettings Settings { get; private set; }
+        public HttpConsumerSettings Settings { get; private set; }
 
-        public string Key => Settings.InfobaseUrl;
+        public string Key => Settings.Url;
 
         public bool Active => Error is null;
 
@@ -361,7 +358,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         public IReadOnlyList<string> Topics => [.. Settings.TopicsInstructionNames.Keys];
 
-        public string InfobaseName { get; private set; }
+        public string Url { get; private set; }
 
         public string ConsumerGroup { get; private set; }
 
@@ -418,7 +415,7 @@ public sealed partial class V83ApplicationConsumerService(
                         continue;
                     }
 
-                    await _v83ApplicationSaveTask(
+                    await _httpSendTask(
                         jsonTransformResults,
                         Settings,
                         _httpClientFactory,
@@ -466,10 +463,6 @@ public sealed partial class V83ApplicationConsumerService(
 
             _logger.LogDisposed(Key);
         }
-
-        private static readonly Regex s_infobaseNameRegex = new(@"/([^/]+)");
-
-        private static string ExtractInfobaseName(string infobaseUrl) => s_infobaseNameRegex.Match(infobaseUrl).Groups[1].Value;
     }
 
     public class InstructionNotSpecifiedException : Exception
@@ -479,9 +472,9 @@ public sealed partial class V83ApplicationConsumerService(
         }
     }
 
-    public class FailedToSaveObjectException : Exception
+    public class FailedToSendException : Exception
     {
-        internal FailedToSaveObjectException(string message) : base(message)
+        internal FailedToSendException(string message) : base(message)
         {
         }
     }

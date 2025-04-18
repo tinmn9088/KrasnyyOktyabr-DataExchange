@@ -181,7 +181,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
         string tablePropertyName,
         CancellationToken cancellationToken = default)
     {
-        List<JObject> jsonTransformResults = await RunJsonTransformOnConsumedMessageAsync(
+        List<JObject> jsonTransformResults = await RunJsonTransformOnConsumedMessageInternalAsync(
             instructionName,
             jsonObject,
             cancellationToken);
@@ -204,12 +204,12 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
     }
 
     /// <exception cref="ArgumentNullException"></exception>
-    public async ValueTask<List<string>> RunJsonTransformOnConsumedMessageVApplicationAsync(
+    public async ValueTask<List<string>> RunJsonTransformOnConsumedMessageAsync(
         string instructionName,
         string jsonObject,
         CancellationToken cancellationToken = default)
     {
-        List<JObject> jsonTransformResults = await RunJsonTransformOnConsumedMessageAsync(
+        List<JObject> jsonTransformResults = await RunJsonTransformOnConsumedMessageInternalAsync(
             instructionName,
             jsonObject,
             cancellationToken);
@@ -225,7 +225,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
     }
 
     /// <exception cref="ArgumentNullException"></exception>
-    private async ValueTask<List<JObject>> RunJsonTransformOnConsumedMessageAsync(
+    private async ValueTask<List<JObject>> RunJsonTransformOnConsumedMessageInternalAsync(
         string instructionName,
         string objectJson,
         CancellationToken cancellationToken)

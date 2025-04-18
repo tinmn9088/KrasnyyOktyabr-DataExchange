@@ -12,8 +12,8 @@ using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
@@ -187,7 +187,7 @@ public sealed class V77ApplicationConsumerService(
             throw new InstructionNotSpecifiedException(topic);
         }
 
-        List<string> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageVApplicationAsync(
+        List<string> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageAsync(
             instructionName,
             message,
             cancellationToken);

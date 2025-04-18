@@ -19,7 +19,7 @@ See [appsettings.json](appsettings.json).
       "Consumers": {
         "MsSql": [],
         "1C7": [],
-        "1C8": []
+        "Http": []
       }
     }
   }
@@ -187,20 +187,20 @@ Properties:
 1. (_optional_) `SuspendSchedule` - periods when consumer have to suspend. 
 
 
-#### 1C8
+#### Http
 
 __Consumer__ retrieves message with __object JSON__.
 
 Then it runs `JsonTransform` instruction corresponding to the topic.
 
-Then __consumer__ saves results to infobase by sending them to specified `InfobaseUrl`.
+Then __consumer__ sends results to the resource specified in `Url`.
 
 Example:
 
 ```json
 {
-  "InfobaseUrl": "http://example.net/publicationName",
-  "Username": "InfobaseUser",
+  "Url": "http://example.net/publicationName",
+  "Username": "User",
   "Password": "qwerty",
   "ConsumerGroup": "<consumerGroup>",
   "TopicsInstructions": {
@@ -217,7 +217,7 @@ Example:
 
 Properties:
 
-1. `InfobaseUrl` - 1C8 infobase HTTP-service endpoint for saving data.
+1. `Url` - Endpoint for saving data.
 1. `Username` - infobase user name.
 1. `Password` - infobase user password.
 1. `TopicsInstructions` - _topic names_ -> names of _instructions_ stored in `Properties/ConsumerInstructions` directory.

@@ -22,11 +22,11 @@ public class RestartResult
     [JsonProperty("consumers1C7Started")]
     public int Consumers1C7Started { get; set; }
 
-    [JsonProperty("consumers1C8Stopped")]
-    public int Consumers1C8Stopped { get; set; }
+    [JsonProperty("consumersHttpStopped")]
+    public int ConsumersHttpStopped { get; set; }
 
-    [JsonProperty("consumers1C8Started")]
-    public int Consumers1C8Started { get; set; }
+    [JsonProperty("consumersHttpStarted")]
+    public int ConsumersHttpStarted { get; set; }
 
     [JsonProperty("consumersMsSqlStopped")]
     public int ConsumersMsSqlStopped { get; set; }

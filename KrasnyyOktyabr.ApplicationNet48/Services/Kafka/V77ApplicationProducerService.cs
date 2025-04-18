@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Linq;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ComV77Application;
@@ -17,9 +18,8 @@ using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
-using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
-using KrasnyyOktyabr.ApplicationNet48.Linq;
+using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 

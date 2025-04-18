@@ -287,7 +287,7 @@
     <Compile Include="Health\V77ApplicationConsumerServiceHealthChecker.cs" />
     <Compile Include="Health\V77ApplicationPeriodProduceJobServiceHealthChecker.cs" />
     <Compile Include="Health\V77ApplicationProducerServiceHealthChecker.cs" />
-    <Compile Include="Health\V83ApplicationConsumerServiceHealthChecker.cs" />
+    <Compile Include="Health\HttpConsumerServiceHealthChecker.cs" />
     <Compile Include="Health\V83ApplicationProducerServiceHealthChecker.cs" />
     <Compile Include="Linq\Chunk.cs" />
     <Compile Include="Logging\KafkaLoggingHelper.cs" />
@@ -295,7 +295,7 @@
     <Compile Include="Logging\MsSqlLoggingHelper.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractSuspendableSettings.cs" />
-    <Compile Include="Models\Configuration\Kafka\AbstractVApplicationConsumerSettings.cs" />
+    <Compile Include="Models\Configuration\Kafka\AbstractCredentialsConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationProducerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\KafkaSettings.cs" />
@@ -303,7 +303,7 @@
     <Compile Include="Models\Configuration\Kafka\V77ApplicationConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\Kafka\V77ApplicationProducerSettings.cs" />
-    <Compile Include="Models\Configuration\Kafka\V83ApplicationConsumerSettings.cs" />
+    <Compile Include="Models\Configuration\Kafka\HttpConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationProducerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V77ApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\TimePeriod.cs" />
@@ -324,7 +324,7 @@
     <Compile Include="Models\Kafka\V77ApplicationPeriodProduceJobStatus.cs" />
     <Compile Include="Models\Kafka\V77ApplicationProducerStatus.cs" />
     <Compile Include="Models\Kafka\V83ApplicationProducerNewTransactionRequest.cs" />
-    <Compile Include="Models\Kafka\V83ApplicationConsumerStatus.cs" />
+    <Compile Include="Models\Kafka\HttpConsumerStatus.cs" />
     <Compile Include="Models\Kafka\V83ApplicationProducerNewTransactionRequestObjectFilter.cs" />
     <Compile Include="Models\Kafka\V83ApplicationProducerStatus.cs" />
     <Compile Include="Models\RestartResult.cs" />
@@ -351,7 +351,7 @@
     <Compile Include="Services\Kafka\IV77ApplicationConsumerService.cs" />
     <Compile Include="Services\Kafka\IV77ApplicationPeriodProduceJobService.cs" />
     <Compile Include="Services\Kafka\IV77ApplicationProducerService.cs" />
-    <Compile Include="Services\Kafka\IV83ApplicationConsumerService.cs" />
+    <Compile Include="Services\Kafka\IHttpConsumerService.cs" />
     <Compile Include="Services\Kafka\IV83ApplicationProducerService.cs" />
     <Compile Include="Services\Kafka\KafkaService.cs" />
     <Compile Include="Services\Kafka\MsSqlConsumerService.cs" />
@@ -359,7 +359,7 @@
     <Compile Include="Services\Kafka\V77ApplicationPeriodProduceJobService.cs" />
     <Compile Include="Services\Kafka\V77ApplicationProducerService.cs" />
     <Compile Include="Services\Kafka\V77ApplicationHelper.cs" />
-    <Compile Include="Services\Kafka\V83ApplicationConsumerService.cs" />
+    <Compile Include="Services\Kafka\HttpConsumerService.cs" />
     <Compile Include="Services\Kafka\V83ApplicationProducerService.cs" />
     <Compile Include="Services\MsSqlService.cs" />
     <Compile Include="Services\OffsetService.cs" />

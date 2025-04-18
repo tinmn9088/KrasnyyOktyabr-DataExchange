@@ -1,23 +1,23 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Confluent.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Linq;
+using KrasnyyOktyabr.ApplicationNet48.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Threading;
-using KrasnyyOktyabr.ApplicationNet48.Logging;
-using System.IO;
-using System.Linq;
-using System;
-using KrasnyyOktyabr.ApplicationNet48.Linq;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 

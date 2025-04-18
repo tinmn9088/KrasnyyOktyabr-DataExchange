@@ -38,7 +38,7 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
 
                 await CheckHealthAndRestart<IV83ApplicationProducerService>(provider, logger, cancellationToken).ConfigureAwait(false);
 
-                await CheckHealthAndRestart<IV83ApplicationConsumerService>(provider, logger, cancellationToken).ConfigureAwait(false);
+                await CheckHealthAndRestart<IHttpConsumerService>(provider, logger, cancellationToken).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -66,7 +66,7 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
 
         (int producers1C8Stopped, int producers1C8Started) = await Restart<IV83ApplicationProducerService>(provider, cancellationToken).ConfigureAwait(false);
 
-        (int consumers1C8Stopped, int consumers1C8Started) = await Restart<IV83ApplicationConsumerService>(provider, cancellationToken).ConfigureAwait(false);
+        (int consumersHttpStopped, int consumersHttpStarted) = await Restart<IHttpConsumerService>(provider, cancellationToken).ConfigureAwait(false);
 
         int consumerInstructionCleared = provider.GetRequiredService<IJsonService>().ClearCachedExpressions();
 
@@ -85,8 +85,8 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
             Consumers1C7Stopped = consumers1C7Stopped,
             Consumers1C7Started = consumers1C7Started,
 
-            Consumers1C8Stopped = consumers1C8Stopped,
-            Consumers1C8Started = consumers1C8Started,
+            ConsumersHttpStopped = consumersHttpStopped,
+            ConsumersHttpStarted = consumersHttpStarted,
 
             ConsumersMsSqlStopped = consumersMsSqlStopped,
             ConsumersMsSqlStarted = consumersMsSqlStarted,

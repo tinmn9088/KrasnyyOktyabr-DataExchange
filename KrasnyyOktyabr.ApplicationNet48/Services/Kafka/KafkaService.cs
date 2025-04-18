@@ -1,15 +1,15 @@
 ﻿#nullable enable
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
 using Confluent.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using KrasnyyOktyabr.ApplicationNet48.Logging;
+using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 

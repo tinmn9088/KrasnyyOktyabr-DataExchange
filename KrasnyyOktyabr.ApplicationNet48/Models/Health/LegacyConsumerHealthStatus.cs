@@ -23,8 +23,8 @@ public class LegacyConsumerHealthStatus
     [JsonProperty("topics")]
     public string[]? Topics { get; set; }
 
-    [JsonProperty("infobaseName")]
-    public string? InfobaseName { get; set; }
+    [JsonProperty("name")]
+    public string? Name { get; set; }
 
     [JsonProperty("consumerGroup")]
     public string? ConsumerGroup { get; set; }

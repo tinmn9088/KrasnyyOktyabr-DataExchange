@@ -43,7 +43,7 @@ public class V77ApplicationResolverController(IComV77ApplicationConnectionFactor
                     context: request.FormParams,
                     resultName: request.ResultName);
 
-            object ? result = await resolver.ResolveAsync(cancellationToken);
+            object? result = await resolver.ResolveAsync(cancellationToken);
 
             return result is not null
                 ? base.ResponseMessage(new HttpResponseMessage() { Content = new StringContent(result.ToString()) })

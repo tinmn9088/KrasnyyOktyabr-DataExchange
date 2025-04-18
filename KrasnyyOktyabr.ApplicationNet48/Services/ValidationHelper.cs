@@ -54,7 +54,7 @@ public static class ValidationHelper
         }
         catch (ValidationException ex)
         {
-            logger.LogError(ex, "Invalid configuration at '{Position}'",  section);
+            logger.LogError(ex, "Invalid configuration at '{Position}'", section);
         }
 
         return null;

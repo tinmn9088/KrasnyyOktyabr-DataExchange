@@ -2,7 +2,7 @@
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 
-public class V77ApplicationConsumerSettings : AbstractVApplicationConsumerSettings
+public class V77ApplicationConsumerSettings : AbstractCredentialsConsumerSettings
 {
     public static string Position => "Kafka:Clients:Consumers:1C7";
 

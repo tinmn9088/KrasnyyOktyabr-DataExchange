@@ -5,12 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Newtonsoft.Json;
 using KrasnyyOktyabr.ApplicationNet48.Health;
 using KrasnyyOktyabr.ApplicationNet48.Models.Health;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Newtonsoft.Json;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
@@ -30,7 +30,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
 
         AddProducerStatuses(GetV83ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
-        AddConsumerStatuses(GetV83ApplicationConsumerStatuses, healthReport, ref consumerStatuses);
+        AddConsumerStatuses(GetHttpConsumerStatuses, healthReport, ref consumerStatuses);
 
         AddProducerStatuses(GetV77ApplicationProducerStatuses, healthReport, ref producerStatuses);
 
@@ -161,7 +161,7 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
                 ErrorMessage = status.ErrorMessage,
                 Consumed = status.Consumed,
                 Saved = status.Saved,
-                InfobaseName = status.InfobaseName,
+                Name = status.InfobaseName,
                 Topics = [.. status.Topics],
                 ConsumerGroup = status.ConsumerGroup,
                 SuspendSchedule = status.SuspendSchedule,
@@ -209,11 +209,11 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
         return oldStatuses;
     }
 
-    private static List<LegacyConsumerHealthStatus>? GetV83ApplicationConsumerStatuses(HealthReport healthReport)
+    private static List<LegacyConsumerHealthStatus>? GetHttpConsumerStatuses(HealthReport healthReport)
     {
-        IReadOnlyList<V83ApplicationConsumerStatus>? statuses = GetStatusFromHealthReport<V83ApplicationConsumerStatus>(
+        IReadOnlyList<HttpConsumerStatus>? statuses = GetStatusFromHealthReport<HttpConsumerStatus>(
             healthReport,
-            dataKey: V83ApplicationConsumerServiceHealthChecker.DataKey);
+            dataKey: HttpConsumerServiceHealthChecker.DataKey);
 
         if (statuses is null)
         {
@@ -222,17 +222,17 @@ public class HealthController(HealthCheckService healthCheckService) : ApiContro
 
         List<LegacyConsumerHealthStatus> oldStatuses = [];
 
-        foreach (V83ApplicationConsumerStatus status in statuses)
+        foreach (HttpConsumerStatus status in statuses)
         {
             oldStatuses.Add(new LegacyConsumerHealthStatus()
             {
-                Type = nameof(V83ApplicationConsumerService),
+                Type = nameof(HttpConsumerService),
                 Active = status.Active,
                 LastActivity = status.LastActivity,
                 ErrorMessage = status.ErrorMessage,
                 Consumed = status.Consumed,
-                Saved = status.Saved,
-                InfobaseName = status.InfobaseName,
+                Saved = status.Sent,
+                Name = status.Url,
                 Topics = [.. status.Topics],
                 ConsumerGroup = status.ConsumerGroup,
                 SuspendSchedule = status.SuspendSchedule,
