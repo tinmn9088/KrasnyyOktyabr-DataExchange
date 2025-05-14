@@ -14,27 +14,23 @@ public static class WebApiConfig
         config.MapHttpAttributeRoutes();
 
         config.Routes.MapHttpRoute(
-            name: "HealthApi",
-            routeTemplate: "api/{controller}" // HealthController
-        );
-
-        config.Routes.MapHttpRoute(
             name: "LegacyHealthApi",
             routeTemplate: "HealthService.svc/Status", // HealthController
             defaults: new { controller = "health" }
         );
 
         config.Routes.MapHttpRoute(
-            name: "RestartApi",
-            routeTemplate: "api/{controller}" // RestartController
+            name: "ControllerApi",
+            routeTemplate: "api/{controller}" // HealthController, RestartController
         );
 
         config.Routes.MapHttpRoute(
-            name: "JsonTransformApi",
-            routeTemplate: "api/{controller}/{action}" // JsonTransformController
+            name: "ControllerActionApi",
+            routeTemplate: "api/{controller}/{action}" // JsonTransformController, TerminalController
         );
 
         // Enable models validation
         config.Filters.Add(new ValidateModelAttribute());
+        config.Filters.Add(new EnabledInSettingsAttribute());
     };
 }

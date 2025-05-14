@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
+using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Services;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using KrasnyyOktyabr.ComV77Application;
@@ -84,6 +85,14 @@ public class WebApiApplication : HttpApplication
         string configurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
 
         builder.Configuration.AddJsonFile(configurationPath, optional: false, reloadOnChange: true);
+
+        // Setup terminal settings
+        IConfigurationSection terminalSettingSection = builder.Configuration.GetSection(TerminalSettings.Position);
+
+        if (terminalSettingSection.Exists())
+        {
+            builder.Services.Configure<TerminalSettings>(terminalSettingSection);
+        }
 
         // Setup logging
         builder.Logging.ClearProviders();

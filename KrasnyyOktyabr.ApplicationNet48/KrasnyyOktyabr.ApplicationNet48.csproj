@@ -267,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Controllers\V77ApplicationResolverController.cs" />
     <Compile Include="Controllers\ControllersHelper.cs" />
     <Compile Include="Controllers\HealthController.cs" />
@@ -278,6 +279,7 @@
     <Compile Include="DependencyInjection\JsonTransformDependencyInjectionHelper.cs" />
     <Compile Include="DependencyInjection\KafkaDependencyInjectionHelper.cs" />
     <Compile Include="DependencyInjection\ServiceProviderExtensions.cs" />
+    <Compile Include="Filters\EnabledInSettingsAttribute.cs" />
     <Compile Include="Filters\ValidateModelAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -298,6 +300,7 @@
     <Compile Include="Models\Configuration\Kafka\AbstractCredentialsConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationProducerSettings.cs" />
+    <Compile Include="Models\Configuration\TerminalSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\KafkaSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\MsSqlConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V77ApplicationConsumerSettings.cs" />

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
