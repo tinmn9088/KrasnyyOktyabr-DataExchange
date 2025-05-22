@@ -30,15 +30,13 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
 
                 logger.LogTrace("Checking status");
 
-                await CheckHealthAndRestart<IV77ApplicationProducerService>(provider, logger, cancellationToken).ConfigureAwait(false);
-
-                await CheckHealthAndRestart<IV77ApplicationConsumerService>(provider, logger, cancellationToken).ConfigureAwait(false);
-
-                await CheckHealthAndRestart<IMsSqlConsumerService>(provider, logger, cancellationToken).ConfigureAwait(false);
-
-                await CheckHealthAndRestart<IV83ApplicationProducerService>(provider, logger, cancellationToken).ConfigureAwait(false);
-
-                await CheckHealthAndRestart<IHttpConsumerService>(provider, logger, cancellationToken).ConfigureAwait(false);
+                await Task.WhenAll(
+                    CheckHealthAndRestart<IV77ApplicationProducerService>(provider, logger, cancellationToken),
+                    CheckHealthAndRestart<IV77ApplicationConsumerService>(provider, logger, cancellationToken),
+                    CheckHealthAndRestart<IMsSqlConsumerService>(provider, logger, cancellationToken),
+                    CheckHealthAndRestart<IV83ApplicationProducerService>(provider, logger, cancellationToken),
+                    CheckHealthAndRestart<IHttpConsumerService>(provider, logger, cancellationToken))
+                    .ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -58,15 +56,19 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
     {
         logger.LogTrace("Restaring all");
 
-        (int producers1C7Stopped, int producers1C7Started) = await Restart<IV77ApplicationProducerService>(provider, cancellationToken).ConfigureAwait(false);
+        (int, int)[] result = await Task.WhenAll(
+            Restart<IV77ApplicationProducerService>(provider, cancellationToken),
+            Restart<IV77ApplicationConsumerService>(provider, cancellationToken),
+            Restart<IMsSqlConsumerService>(provider, cancellationToken),
+            Restart<IV83ApplicationProducerService>(provider, cancellationToken),
+            Restart<IHttpConsumerService>(provider, cancellationToken))
+            .ConfigureAwait(false);
 
-        (int consumers1C7Stopped, int consumers1C7Started) = await Restart<IV77ApplicationConsumerService>(provider, cancellationToken).ConfigureAwait(false);
-
-        (int consumersMsSqlStopped, int consumersMsSqlStarted) = await Restart<IMsSqlConsumerService>(provider, cancellationToken).ConfigureAwait(false);
-
-        (int producers1C8Stopped, int producers1C8Started) = await Restart<IV83ApplicationProducerService>(provider, cancellationToken).ConfigureAwait(false);
-
-        (int consumersHttpStopped, int consumersHttpStarted) = await Restart<IHttpConsumerService>(provider, cancellationToken).ConfigureAwait(false);
+        (int producers1C7Stopped, int producers1C7Started) = result[0];
+        (int consumers1C7Stopped, int consumers1C7Started) = result[1];
+        (int consumersMsSqlStopped, int consumersMsSqlStarted) = result[2];
+        (int producers1C8Stopped, int producers1C8Started) = result[3];
+        (int consumersHttpStopped, int consumersHttpStarted) = result[4];
 
         int consumerInstructionCleared = provider.GetRequiredService<IJsonService>().ClearCachedExpressions();
 
@@ -95,7 +97,7 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
         };
     }
 
-    private static async ValueTask<(int, int)> Restart<T>(IServiceProvider provider, CancellationToken cancellationToken) where T : IRestartableHostedService
+    private static async Task<(int, int)> Restart<T>(IServiceProvider provider, CancellationToken cancellationToken) where T : IRestartableHostedService
     {
 #nullable enable
         T? service = provider.GetService<T>();
@@ -116,7 +118,7 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
         return (stopped, started);
     }
 
-    private static async ValueTask CheckHealthAndRestart<T>(IServiceProvider provider, ILogger logger, CancellationToken cancellationToken)
+    private static async Task CheckHealthAndRestart<T>(IServiceProvider provider, ILogger logger, CancellationToken cancellationToken)
         where T : IRestartableHostedService<IStatusContainer<AbstractStatus>>
     {
 #nullable enable
