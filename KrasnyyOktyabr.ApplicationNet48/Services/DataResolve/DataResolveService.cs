@@ -90,6 +90,7 @@ public class DataResolveService : IDataResolveService
         string username = GetRequired<string>(args, "username");
         string password = GetRequired<string>(args, "password");
         string ertName = GetRequired<string>(args, "ertName");
+        JsonTransform.Numerics.Number retryTimes = GetOptional(args, "retryTimes", new JsonTransform.Numerics.Number(1));
 
         Dictionary<string, object?>? context = GetOptional<Dictionary<string, object?>?>(args, "formParams", null);
         string? resultName = GetOptional<string?>(args, "resultName", null);
@@ -98,7 +99,8 @@ public class DataResolveService : IDataResolveService
         ConnectionProperties connectionProperties = new(
             infobasePath: infobasePath,
             username: username,
-            password: password
+            password: password,
+            retryTimes: Convert.ToInt32(retryTimes.Long ?? 1)
         );
 
         Dictionary<string, string>? convertedContext = null;

@@ -10,20 +10,21 @@ public class V77ApplicationResolverRequest
     public string InfobasePath { get; set; }
 
     [Required]
-    [JsonProperty("username")]
-    public string Username { get; set; }
-
-    [Required]
-    [JsonProperty("password")]
-    public string Password { get; set; }
-
-    [Required]
     [JsonProperty("ertName")]
     public string ErtName { get; set; }
 
     [Required]
     [JsonProperty("resultName")]
     public string ResultName { get; set; }
+
+    [JsonProperty("username")]
+    public string Username { get; set; } = string.Empty;
+
+    [JsonProperty("password")]
+    public string Password { get; set; } = string.Empty;
+
+    [JsonProperty("retryTimes")]
+    public int RetryTimes { get; set; } = 1;
 
 #nullable enable
     [JsonProperty("formParams")]

@@ -37,12 +37,15 @@ public static partial class LoggingHelper
     [LoggerMessage(EventId = 1002, Level = LogLevel.Trace, Message = "Invoke '{memberName}' with args: {args}")]
     public static partial void InvokingMember(this ILogger logger, string memberName, string args);
 
-    [LoggerMessage(EventId = 1003, Level = LogLevel.Trace, Message = "Connection '{infobasePath}' was inactive for {disposeTimeout}")]
+    [LoggerMessage(EventId = 1003, Level = LogLevel.Trace, Message = "Retrying to invoke '{memberName}' ({attempt} attempt)")]
+    public static partial void RetryingToInvokeMember(this ILogger logger, string memberName, int attempt);
+
+    [LoggerMessage(EventId = 1004, Level = LogLevel.Trace, Message = "Connection '{infobasePath}' was inactive for {disposeTimeout}")]
     public static partial void DisposeTimeoutExceeded(this ILogger logger, string infobasePath, TimeSpan disposeTimeout);
 
-    [LoggerMessage(EventId = 1004, Level = LogLevel.Trace, Message = "Releasing COM object of connection '{infobasePath}'")]
+    [LoggerMessage(EventId = 1005, Level = LogLevel.Trace, Message = "Releasing COM object of connection '{infobasePath}'")]
     public static partial void ReleasingComObject(this ILogger logger, string infobasePath);
 
-    [LoggerMessage(EventId = 1005, Level = LogLevel.Trace, Message = "Dispose connection '{infobasePath}' from factory")]
+    [LoggerMessage(EventId = 1006, Level = LogLevel.Trace, Message = "Dispose connection '{infobasePath}' from factory")]
     public static partial void DisposingConnectionFromFactory(this ILogger logger, string infobasePath);
 }

@@ -370,12 +370,18 @@ public sealed class V77ApplicationPeriodProduceJobService(
 
         public async ValueTask DisposeAsync()
         {
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource.Dispose();
-
             _logger.LogDisposingPeriodProduceJob(InfobasePath, Start, End);
 
-            await _produceTask.ConfigureAwait(false);
+            try
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+
+                await _produceTask.ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+            }
 
             _logger.LogDisposedPeriodProduceJob(InfobasePath, Start, End);
         }

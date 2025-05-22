@@ -283,7 +283,8 @@ public sealed partial class V77ApplicationProducerService(
         ConnectionProperties connectionProperties = new(
             infobasePath: infobaseFullPath,
             username: settings.Username,
-            password: settings.Password
+            password: settings.Password,
+            retryTimes: settings.RetryTimes ?? 1
         );
 
         List<string> objects = new(objectIds.Count);
@@ -606,7 +607,7 @@ public sealed partial class V77ApplicationProducerService(
 
         public Exception? Error { get; private set; }
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
             if (!_isDisposed)
             {
@@ -620,14 +621,13 @@ public sealed partial class V77ApplicationProducerService(
 
                 try
                 {
-                    _currentProcessingTask?.Wait();
+                    if (_currentProcessingTask is not null)
+                    {
+                        await _currentProcessingTask.ConfigureAwait(false);
+                    }
                 }
-                catch (OperationCanceledException)
+                catch (Exception)
                 {
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error on dispose");
                 }
 
                 _isDisposed = true;
@@ -636,8 +636,6 @@ public sealed partial class V77ApplicationProducerService(
             {
                 _logger.LogAlreadyDisposed(Key);
             }
-
-            return new ValueTask();
         }
 
         private void OnInfobaseChange(object sender, FileSystemEventArgs e)

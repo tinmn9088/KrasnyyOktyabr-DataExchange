@@ -532,12 +532,8 @@ public sealed class V83ApplicationProducerService(
 
                 await _producerTask.ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
+            catch (Exception)
             {
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error on dispose");
             }
 
             _logger.LogDisposed(Key);

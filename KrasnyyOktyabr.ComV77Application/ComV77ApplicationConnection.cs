@@ -314,16 +314,45 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            // OpenForm(ObjectName, Context, FullPath)
-            InvokeMember(
-                memberName: "OpenForm",
-                attributes: BindingFlags.Public | BindingFlags.InvokeMethod,
-                binder: null,
-                target: _comObject,
-                args: ["Report", contextValueList, ertFullPath]);
+            for (int attempt = 1; attempt <= _properties.RetryTimes; attempt++)
+            {
+                if (attempt > 1)
+                {
+                    _logger.RetryingToInvokeMember("OpenForm", attempt);
+                }
 
-            cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    // OpenForm(ObjectName, Context, FullPath)
+                    InvokeMember(
+                        memberName: "OpenForm",
+                        attributes: BindingFlags.Public | BindingFlags.InvokeMethod,
+                        binder: null,
+                        target: _comObject,
+                        args: ["Report", contextValueList, ertFullPath],
+                        incrementErrorsCount: false);
 
+                    break;
+                }
+                catch (FailedToInvokeMemberException ex)
+                {
+                    if (attempt >= _properties.RetryTimes)
+                    {
+                        throw;
+                    }
+                    else
+                    {
+                        TimeSpan delayBeforeNextAttempt = TimeSpan.FromSeconds(3);
+
+                        _logger.LogError(ex, "Failed to run ERT (next attempt in {DelayBeforeNextAttempt} seconds)", delayBeforeNextAttempt.Seconds);
+
+                        await Task.Delay(delayBeforeNextAttempt, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+        
             // Check if ERT wrote error message
             if (errorMessageName is not null)
             {
@@ -341,6 +370,8 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
                     throw new FailedToRunErtException(errorMessage.ToString());
                 }
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // ValueList.Get(Name)
             object? result = InvokeMember(
@@ -368,7 +399,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="FailedToInvokeMemberException"></exception>
     /// <exception cref="ErrorsCountExceededException"></exception>
-    private object? InvokeMember(string memberName, BindingFlags attributes, Binder? binder, object? target, object?[]? args, bool isInitializing = false)
+    private object? InvokeMember(string memberName, BindingFlags attributes, Binder? binder, object? target, object?[]? args, bool isInitializing = false, bool incrementErrorsCount = true)
     {
         CheckCurrentState(isInitializing: isInitializing);
 
@@ -378,7 +409,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         }
         catch (Exception ex)
         {
-            if (!isInitializing) // To prevent from incrementing errors count twice
+            if (incrementErrorsCount && !isInitializing) // To prevent from incrementing errors count twice
             {
                 _errorsCount++;
             }
@@ -465,7 +496,7 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     {
         private readonly SemaphoreSlim _factoryLock = new(1);
 
-        private readonly Dictionary<ConnectionProperties, ComV77ApplicationConnection> _propertiesConnections = [];
+        private readonly Dictionary<ConnectionProperties, ComV77ApplicationConnection> _propertiesConnections = new(new ConnectionEqualityComparer());
 
         private bool _isDisposed = false;
 
@@ -552,6 +583,19 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
             {
                 _factoryLock.Release();
             }
+        }
+
+        private class ConnectionEqualityComparer : EqualityComparer<ConnectionProperties>
+        {
+            public override bool Equals(ConnectionProperties connection1, ConnectionProperties connection2) =>
+                connection1.InfobasePath == connection2.InfobasePath
+                && connection1.Username == connection2.Username
+                && connection1.Password == connection2.Password;
+            
+            public override int GetHashCode(ConnectionProperties connection) =>
+                connection.InfobasePath.GetHashCode()
+                ^ connection.Username.GetHashCode()
+                ^ connection.Password?.GetHashCode() ?? 0;
         }
     }
 

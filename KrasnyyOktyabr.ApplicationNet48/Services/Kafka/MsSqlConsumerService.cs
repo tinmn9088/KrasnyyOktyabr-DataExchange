@@ -440,12 +440,8 @@ public sealed class MsSqlConsumerService(
 
                 await _consumerTask.ConfigureAwait(false);
             }
-            catch (OperationCanceledException)
+            catch (Exception)
             {
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error on dispose");
             }
 
             _logger.LogDisposed(Key);

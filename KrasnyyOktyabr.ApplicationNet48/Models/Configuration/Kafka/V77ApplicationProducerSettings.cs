@@ -14,4 +14,6 @@ public class V77ApplicationProducerSettings : AbstractVApplicationProducerSettin
 
 #nullable enable
     public string? ErtRelativePath { get; set; }
+
+    public int? RetryTimes { get; set; }
 }

@@ -58,6 +58,7 @@ Example:
   "Username": "InfobaseUser",
   "Password": "qwerty",
   "ErtRelativePath": "path\\to\\ert",
+  "RetryTimes": 3,
   "DataTypePropertyName": "T",
   "ObjectFilters": [
     {
@@ -90,6 +91,7 @@ Properties:
 1. `TransactionTypeFilters` - transaction types filters.
 1. (_optional_) `Username` - infobase user name.
 1. (_optional_) `Password` - infobase user password.
+1. (_optional_) `RetryTimes` - number of tries to execute `ErtRelativePath`.
 1. (_optional_) `ObjectFilters.Topic` - topic name (by default is generated like `<infobaseName>_<dataType>`).
 1. (_optional_) `ObjectFilters.ReadLastOnly` - produce only the last read transaction when multiple with equal object ids are found (by default `false`).
 1. (_optional_) `ObjectFilters.TransactionTypeFilters` - transaction types filters (overwrites `TransactionTypeFilters` value).

@@ -25,7 +25,8 @@ public class V77ApplicationResolverController(IComV77ApplicationConnectionFactor
             ConnectionProperties connectionProperties = new(
                 infobasePath: request.InfobasePath,
                 username: request.Username,
-                password: request.Password
+                password: request.Password,
+                retryTimes: request.RetryTimes
             );
 
             string ertRelativePath = Path.Combine(DataResolveService.DefaultErtRelativePathWithoutName, request.ErtName);
